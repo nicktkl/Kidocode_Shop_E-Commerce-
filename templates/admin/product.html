@@ -26,19 +26,22 @@
         </div>
         <div>
             <h1>Add Product</h1>
-            <form name="addproductform" action="/add" method="post">
+            <form name="addproductform" action="/add" method="post" enctype="multipart/form-data">
                 <table>
                     <tr>
+                        <td style="border: 1px solid rgb(77, 77, 77);" rowspan="5"><input type="file" name="p_img" accept="image/*"></td>
                         <td>Product Name :</td>
                         <td>Price :</td>
                         <td>Stock :</td>
-                        <td>Category :</td>
                     </tr>
                     <tr>
                         <td><input type="text" name="p_name" size="20" required></td>
                         <td><input type="text" name="p_price" size="5" min="0.01" step="0.01" required></td>
                         <td><input type="text" name="p_stock" size="3" min="0" required></td>
-                        <td>
+                    </tr>
+                    <tr>
+                        <td>Category :</td>
+                        <td colspan="2">
                             <select name="p_category" required>
                                 <option selected disabled>Category</option>
                                 <option value="1">Electronics</option>
@@ -51,7 +54,7 @@
                         <td colspan="3">Description</td>
                     </tr>
                     <tr>
-                        <td colspan="3"><textarea name="p_desc" cols="40" rows="5" required></textarea></td>
+                        <td colspan="2"><textarea name="p_desc" cols="40" rows="5" required></textarea></td>
                         <td align="center">
                             <input type="submit" name="btnadd" value="Add">
                         </td>
@@ -81,7 +84,13 @@
                     <form action="/update" method="post">
                         <tr>
                             <td>{{ product.productID }}</td>
-                            <td><img width="100" src="{{ url_for('static', filename='images/dummy.png') }}"></td>
+                            <td>
+                                {% if product.img is none %}
+                                    <img width="100" src="{{ url_for('static', filename='images/dummy.png') }}">
+                                {% else %}
+                                    <img width="100" src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}">
+                                {% endif %}
+                            </td>                            
                             <td>
                                 <input type="text" name="p_name" size="20" required value="{{ product.productName }}"><br>
                                 <textarea name="p_desc" cols="40" rows="3" required>{{ product.description }}</textarea> <br>

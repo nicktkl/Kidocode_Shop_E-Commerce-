@@ -6,6 +6,7 @@ class Product(db.Model):
     productID = db.Column(db.Integer, primary_key=True) 
     productName = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    img = db.Column(db.String(255), nullable=True)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
     categoryID = db.Column(db.Integer, nullable=False)

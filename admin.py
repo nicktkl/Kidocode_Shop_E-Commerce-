@@ -73,11 +73,25 @@ def product():
 
     return render_template("/admin/product.html", product=products)
 
+import os
+from werkzeug.utils import secure_filename
+
 @app.route('/add', methods=["GET", "POST"])
 def add_product():
+    img = request.files['p_img']
+    if img:
+        img_filename = secure_filename(img.filename)
+        img_folder = os.path.join('static', 'images')
+        if not os.path.exists(img_folder):
+            os.makedirs(img_folder)
+        img_path = os.path.join('images', img_filename)
+        img.save(os.path.join(img_folder, img_filename))
+    else:
+        img_path = None
     new_product = Product(
         productName= request.form['p_name'],
         description= request.form['p_desc'],
+        img = img_path,
         price= float(request.form['p_price']),
         stock= int(request.form['p_stock']),
         categoryID= int(request.form['p_category'])
