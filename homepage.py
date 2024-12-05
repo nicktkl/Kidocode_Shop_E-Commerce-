@@ -28,7 +28,7 @@ def home():
     email = session.get('email', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('HomePage.html', products = random_products, email = email)
+    return render_template('/homepage/HomePage.html', products = random_products, email = email)
 
 @app.route('/add-to-cart', methods = ['POST'])
 def add_to_cart():
@@ -58,7 +58,7 @@ def get_cart():
 
 @app.route('/cart')
 def cart():
-    return render_template('Cart.html')
+    return render_template('/homepage/Cart.html')
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -77,7 +77,7 @@ def login():
             return redirect(url_for('home'))
         else:
             flash('Incorrect e-mail or password.', 'danger')
-    return render_template('UserLogin.html')
+    return render_template('/homepage/UserLogin.html')
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
@@ -98,7 +98,7 @@ def register():
         cursor.close()
         flash('Registration successful! Proceed to log in.', 'success')
         return redirect(url_for('login'))
-    return render_template('UserRegister.html')
+    return render_template('/homepage/UserRegister.html')
 
 @app.route('/logout')
 def logout():
