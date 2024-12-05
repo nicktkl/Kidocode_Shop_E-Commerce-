@@ -1,14 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
-from models import Product , Customer,Order,OrderItem,Payment,Review,db
+from flask import Blueprint, render_template, request, redirect, url_for
+from models import Product, Customer, Order, OrderItem, Payment, Review, db
 from sqlalchemy.sql import func
+import os
+from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost:3306/ecommerce'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
-
-@app.route('/admin/dashboard')
+@admin_blueprint.route('/dashboard')
 def dashboard():
     cust_result = db.session.query(
         func.date_format(Customer.createdAt, '%Y-%u').label('week_date'),
@@ -60,7 +58,7 @@ def dashboard():
     )
 
 
-@app.route('/admin/product')
+@admin_blueprint.route('/product')
 def product():
     search_query = request.args.get('searchProduct', '')  
     if search_query:
@@ -73,10 +71,7 @@ def product():
 
     return render_template("/admin/product.html", product=products)
 
-import os
-from werkzeug.utils import secure_filename
-
-@app.route('/add', methods=["GET", "POST"])
+@admin_blueprint.route('/add', methods=["GET", "POST"])
 def add_product():
     img = request.files['p_img']
     if img:
@@ -105,7 +100,7 @@ def add_product():
         db.session.rollback()
         return f"An error occurred: {e}"
 
-@app.route('/update', methods=["POST"])
+@admin_blueprint.route('/update', methods=["POST"])
 def update_product():
     p_ID = request.form.get('p_ID')
     
@@ -135,7 +130,7 @@ def update_product():
     else:
         return "Product ID not provided", 400
     
-@app.route('/admin/review')
+@admin_blueprint.route('/review')
 def review():
     search_query = request.args.get('rating', '')  
     if search_query:
@@ -146,7 +141,7 @@ def review():
         review = Review.query.all()
     return render_template("/admin/review.html", review=review)
 
-@app.route('/admin/customer')
+@admin_blueprint.route('/customer')
 def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
@@ -159,7 +154,7 @@ def customer():
         customer = Customer.query.all()
     return render_template("/admin/customer.html", customer=customer)
 
-@app.route('/admin/order')
+@admin_blueprint.route('/order')
 def order():
     search_query = request.args.get('searchOrder', '')  
     if search_query:
@@ -173,7 +168,7 @@ def order():
     
     return render_template("/admin/order.html", order=orders, orderItem=orderItems)
 
-@app.route('/admin/transaction')
+@admin_blueprint.route('/transaction')
 def transaction():
     search_query = request.args.get('searchPayment', '')  
     if search_query:
@@ -183,6 +178,3 @@ def transaction():
     else:
         payment = Payment.query.all()
     return render_template("/admin/transaction.html", payment=payment)
-
-if __name__ == '__main__':
-    app.run(debug=True)

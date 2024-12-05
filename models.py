@@ -11,9 +11,6 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False)
     categoryID = db.Column(db.Integer, nullable=False)
 
-    def __repr__(self):
-        return f"<Product {self.productName}>"
-
 class Customer(db.Model):
     __tablename__ = 'customer'
     customerID = db.Column(db.Integer, primary_key=True)
@@ -25,9 +22,6 @@ class Customer(db.Model):
     address = db.Column(db.Text, nullable=True)
     createdAt = db.Column(db.DateTime, default=db.func.current_timestamp())
     updatedAt = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-
-    def __repr__(self):
-        return f"<Customer {self.firstName} {self.lastName}>"
     
 class Order(db.Model):
     __tablename__ = 'order'
@@ -42,9 +36,6 @@ class Order(db.Model):
 
     customer = db.relationship('Customer', backref='orders', lazy=True)
 
-    def __repr__(self):
-        return f"<Order {self.orderID} for Customer {self.customerID}>"
-
 class OrderItem(db.Model):
     __tablename__ = 'orderItem'
     orderItemID = db.Column(db.Integer, primary_key=True)
@@ -55,9 +46,6 @@ class OrderItem(db.Model):
 
     order = db.relationship('Order', backref='order_items', lazy=True)
     product = db.relationship('Product', backref='order_items', lazy=True)
-
-    def __repr__(self):
-        return f"<OrderItem {self.orderItemID} for Order {self.orderID} and Product {self.productID}>"
 
 class Payment(db.Model):
     __tablename__ = 'payment'
@@ -70,9 +58,6 @@ class Payment(db.Model):
 
     order = db.relationship('Order', backref='payments', lazy=True)
 
-    def __repr__(self):
-        return f"<Payment {self.paymentID} for Order {self.orderID}>"
-
 class Review(db.Model):
     __tablename__ = 'review'
     reviewID = db.Column(db.Integer, primary_key=True)
@@ -84,8 +69,5 @@ class Review(db.Model):
 
     product = db.relationship('Product', backref='reviews', lazy=True) 
     customer = db.relationship('Customer', backref='reviews', lazy=True)
-
-    def __repr__(self):
-        return f"<Review {self.reviewID} for Product {self.productID} by Customer {self.customerID}>"
 
  
