@@ -28,8 +28,8 @@
                     <tr>
                         <td>{{ item.name }}</td>
                         <td>RM{{ item.price }}</td>
-                        <td>1</td>
-                        <td>RM{{ item.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>RM{{ item.price * item.quantity }}</td>
                         <td><button class="btn btn-danger btn-sm remove-from-cart-btn" data-id="{{ item.id }}">Remove</button></td>
                     </tr>
                     {% endfor %}
