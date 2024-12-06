@@ -56,9 +56,19 @@ def get_cart():
     cart = session.get('cart', {})
     return jsonify(session.get('cart', {}))
 
+@app.route('/remove-from-cart', methods = ['POST'])
+def remove_from_cart():
+    product_name = request.get_json().get('name')
+    if 'cart' in session and product_name in session['cart']:
+        del session['cart'][product_name]
+        session.modified = True
+    return jsonify({'success': True, 'cart': session.get('cart', {})})
+
 @app.route('/cart')
 def cart():
-    return render_template('/homepage/Cart.html')
+    cart_items = session.get('cart', [])
+    total_price = sum(item['price'] for item in cart_items)
+    return render_template('/homepage/Cart.html', cart_items = cart_items, total_price = total_price)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():

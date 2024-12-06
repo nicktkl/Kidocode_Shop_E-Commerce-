@@ -12,5 +12,32 @@
                 <a href="{{ url_for('home')}}" class="nav-brand fs-2">KidoShop</a>
             </div>
         </nav>
+        <h1 class="text-center my-4">Kidocode Cart</h1>
+        <div class="container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>RM{{ item.price }}</td>
+                        <td>1</td>
+                        <td>RM{{ item.price }}</td>
+                        <td><button class="btn btn-danger btn-sm remove-from-cart-btn" data-id="{{ item.id }}">Remove</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h3>Total: RM{{ total_price }}</h3>
+            <a href="#" class="btn btn-primary">Proceed to Payment</a>
+            <a href="{{ url_for('homepage') }}" class="btn btn-secondary">Continue Shopping</a>
+        </div>
     </body>
 </html>

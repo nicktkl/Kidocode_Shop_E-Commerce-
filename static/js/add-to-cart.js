@@ -30,9 +30,7 @@ function addToCart(product) {
 
     // Send the product to the server using Fetch API
     fetch('/add-to-cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product }),
     })
         .then(response => response.json())
         .then(data => {
@@ -66,12 +64,43 @@ function updateCartItems(cart) {
     }
 
     for (const [name, { price, quantity }] of Object.entries(cart)) {
-        const listItem = `
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                ${name} (x${quantity})
-                <span>$${(price * quantity).toFixed(2)}</span>
-            </li>
-        `;
-        cartItems.innerHTML += listItem;
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        listItem.innerHTML = `
+            <span>${name} (x${quantity})</span>
+            <span>$${(price * quantity).toFixed(2)}</span>
+            `;
+        
+            const removeButton = document.createElement('button');
+            removeButton.className = 'btn btn-danger btn-sm ms-2';
+            removeButton.textontent = 'Rmove';
+            removeButton.dataset.name = name;
+            removeButton.addEventListener('click', () => {
+                removeFromCart(name);
+            });
+
+            listItem.appendChild(removeButton);
+            cartItems.appendChild(listItem);
     }
+}
+
+function removeFromCart(productName){
+    console.log('Removing ${productName} from cart');
+
+    fetch('/remove-from-cart', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: productName }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                console.log('${productName} removed from cart.');
+                updateCartCount(data.cart);
+                updateCartItems(data.cart);
+            } else{
+                alert('Failed to remove the product from the cart.');
+            }
+        })
+        .catch(error => {
+            console.error('Error removeing produt from cart:', error);
+        });
 }
