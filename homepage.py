@@ -22,7 +22,7 @@ def home():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM products")
     products = cursor.fetchall()
-    # Shows 5 products at random
+    # Shows products at random
     random_products = random.sample(products, min(len(products), 8))
     cursor.close()
     email = session.get('email', None)
