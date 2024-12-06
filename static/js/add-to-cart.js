@@ -48,13 +48,18 @@ function addToCart(product) {
 }
 
 // Function to update the cart count in the UI
-function updateCartCount(cart) {
+function updateCartCount(cart){
+    if(!cart || Object.keys(cart).length === 0) {
+        document.getElementById('cart-count').textContent = 0;
+        return;
+    }
     const count = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
     document.getElementById('cart-count').textContent = count;
 }
 
+
 // Function to update cart items in the UI
-function updateCartItems(cart) {
+function updateCartItems(cart){
     const cartItems = document.getElementById('cart-items');
     cartItems.innerHTML = '';
 
