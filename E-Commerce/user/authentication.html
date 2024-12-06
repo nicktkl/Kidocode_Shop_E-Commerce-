@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aunthentication</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container my-4">
+        <!-- Left Logo -->
+        <div class="d-flex justify-content-between align-items-center">
+            <a class="logo-brand" href="#">
+                <img src="images/kidocode_logo.png" alt="Kidocode Logo">
+            </a>
+        </div>
+
+        <!-- Breadcrumb -->
+        <nav class="my-3" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Cart</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Details</li>
+                <li class="breadcrumb-item active" aria-current="page">Shipping</li>
+                <li class="breadcrumb-item active" aria-current="page">Payment</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Left Form Section -->
+            <div class="col-md-7">
+                <div class="form-section">
+                    <h5>Contact</h5>
+                    <form>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Email or mobile phone number">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="newsletter">
+                            <label class="form-check-label" for="newsletter">Add me to Candleaf newsletter for a 10% discount</label>
+                        </div>
+
+                        <h5>Shipping Address</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" placeholder="Name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" placeholder="Second Name">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Address and number">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Shipping note (optional)">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <input type="text" class="form-control" placeholder="City">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <input type="text" class="form-control" placeholder="Postal Code">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <select class="form-select">
+                                    <option selected>Province</option>
+                                    <option>Province 1</option>
+                                    <option>Province 2</option>
+                                    <option>Province 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select">
+                                <option selected>Country/Region</option>
+                                <option>Malaysia</option>
+                                <option>Sinngapore</option>
+                                <option>Indonesia</option>
+                            </select>
+                        </div>
+                        <div class="form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="saveInfo">
+                            <label class="form-check-label" for="saveInfo">Save this information for a future fast checkout</label>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <!-- Back to Shopping Link -->
+                            <a href="cart.html" class="text-decoration-none">
+                                Back to shopping
+                            </a>
+                        
+                            <!-- Go to Shipping Button -->
+                            <a href="shipping.html" class="btn btn-primary px-4">
+                                Go to shipping
+                            </a>
+                        </div>                        
+                    </form>
+                    
+                </div>
+            </div>
+
+            <!-- Right Summary Section -->
+            <div class="col-md-5">
+                <div class="summary">
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Product Image -->
+                        <img src="images/cubie_kidocode.png" class="img-thumbnail" style="width: 100px; height: auto;" alt="Product Image">
+                        
+                        <!-- Product Details (Beside the Image) -->
+                        <div class="ms-3">
+                            <p class="mb-1"><strong>Cubie 1-month access</strong></p>
+                            <p class="mb-0">$9.99</p>
+                        </div>
+                    </div>
+            
+                    <!-- Coupon Code Input -->
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Coupon code">
+                        <button class="btn btn-outline-secondary" type="button">Add code</button>
+                    </div>
+                    <hr>
+            
+                    <!-- Subtotal, Shipping, and Total -->
+                    <div class="d-flex justify-content-between">
+                        <p>Subtotal</p>
+                        <p>$9.99</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p>Shipping</p>
+                        <p>Calculated at the next step</p>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total</strong>
+                        <strong>$9.99</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/payment.css">
+    <script src="../script/script.js"></script>
+</head>
+<body>
+    <div class="container my-4">
+        <!-- Logo -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a class="logo-brand" href="#">
+                <img src="../images/kidocode_logo.png" alt="Kidocode Logo" width="150">
+            </a>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div class="container my-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="cart.html">Cart</a></li>
+                    <li class="breadcrumb-item"><a href="authentication.html">Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Shipping</li>
+                    <li class="breadcrumb-item"><a href="payment.html">Payment</a></li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="row">
+            <!-- Left Section -->
+            <div class="col-lg-7">
+                <!-- Contact Section -->
+                <div class="section-box">
+                    <h5>Contact</h5>
+                    <div class="d-flex justify-content-between">
+                        <span>Nicholas@gmail.com</span>
+                        <a href="#" class="text-primary">Edit</a>
+                    </div>
+                </div>
+
+                <!-- Ship To Section -->
+                <div class="section-box">
+                    <h5>Ship to</h5>
+                    <div class="d-flex justify-content-between">
+                        <span>Via Firenze 23, 92023, Campobello di Licata AG, Italia</span>
+                        <a href="#" class="text-primary">Edit</a>
+                    </div>
+                </div>
+
+                <!-- Shipping Method Section -->
+                <div class="section-box">
+                    <h5>Shipping Method</h5>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="shippingMethod" id="standardShipping" checked>
+                        <label class="form-check-label" for="standardShipping">
+                            Standard Shipping <span class="text-muted">Free</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button class="btn btn-secondary">Back to details</button>
+                    <button class="btn btn-primary">Go to payment</button>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col-lg-5">
+                <div class="sidebar">
+                    <h5 class="mb-3">Order Summary</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="../images/cubie_kidocode.png" alt="Product Image" class="product-img">
+                        <div class="ms-3">
+                            <p class="mb-0">Cubie 1 Month Access</p>
+                            <p class="text-muted mb-0">$9.99</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponCode" class="form-label">Coupon code</label>
+                        <div class="input-group">
+                            <input type="text" id="couponCode" class="form-control" placeholder="Enter code">
+                            <button class="btn btn-outline-secondary" type="button">Add code</button>
+                        </div>
+                    </div>
+                    <table class="summary-table w-100">
+                        <tr>
+                            <td>Subtotal:</td>
+                            <td class="text-end">$9.99</td>
+                        </tr>
+                        <tr>
+                            <td>Shipping:</td>
+                            <td class="text-end">Free Shipping</td>
+                        </tr>
+                        <tr>
+                            <td>Total:</td>
+                            <td class="text-end fw-bold">$9.99</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
