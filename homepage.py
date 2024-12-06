@@ -32,7 +32,7 @@ def home():
 
 @app.route('/add-to-cart', methods = ['POST'])
 def add_to_cart():
-    product = request.json.get('product')
+    product = request.get_json().get('product')
 
     if not product or 'name' not in product or 'price' not in product:
         return jsonify({'success': False, 'message': 'Invalid product data.'}), 400
@@ -66,9 +66,14 @@ def remove_from_cart():
 
 @app.route('/cart')
 def cart():
-    cart_items = session.get('cart', [])
-    total_price = sum(item['price'] for item in cart_items)
-    return render_template('/homepage/Cart.html', cart_items = cart_items, total_price = total_price)
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    cart_list = [
+        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        for name, details in cart_items.items()
+    ]
+    return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
