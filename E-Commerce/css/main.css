@@ -40,6 +40,47 @@ body{
     background-color: #f5f5f5;
 }
 
+/* Card Styles */
+.hero-card {
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-card h1 {
+    font-size: 3rem;
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.hero-card p {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #0066ff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0052cc;
+    transform: scale(1.05);
+}
+
 .testimonials-section img {
     border: 2px solid #ddd;
     padding: 5px;
@@ -96,4 +137,23 @@ body{
 }
 .footer-bottom .copyright-container {
     display: inline-block; 
+}
+
+.section-box {
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    width: 100%;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #007bff;
+    text-decoration: underline;
+    border: none;
 }
