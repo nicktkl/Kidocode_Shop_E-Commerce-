@@ -36,6 +36,7 @@
                 </tbody>
             </table>
             <h3>Total: RM{{ total_price }}</h3>
+            <h4 id="cart-count" class="badge bg-primary ms-2">{{ cart_total_items }}</h4>Total Item
             <a href="#" class="btn btn-primary">Proceed to Payment</a>
             <a href="{{ url_for('home') }}" class="btn btn-secondary">Continue Shopping</a>
         </div>
