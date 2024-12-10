@@ -49,12 +49,18 @@ function addToCart(product) {
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
+    const cartCountElement = document.getElementById('cart-count');
+    if(!cartCountElement){
+        console.warn(`Cart count element not found in the DOM.`);
+        return;
+    }
+
     if(!cart || Object.keys(cart).length === 0) {
-        document.getElementById('cart-count').textContent = 0;
+        cartCountElement.textContent = 0;
         return;
     }
     const count = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
-    document.getElementById('cart-count').textContent = count;
+    cartCountElement.textContent = count;
 }
 
 
@@ -78,7 +84,7 @@ function updateCartItems(cart){
         
             const removeButton = document.createElement('button');
             removeButton.className = 'btn btn-danger btn-sm ms-2';
-            removeButton.textontent = 'Rmove';
+            removeButton.textContent = 'Remove';
             removeButton.dataset.name = name;
             removeButton.addEventListener('click', () => {
                 removeFromCart(name);
@@ -90,7 +96,7 @@ function updateCartItems(cart){
 }
 
 function removeFromCart(productName){
-    console.log('Removing ${productName} from cart');
+    console.log(`Removing ${productName} from cart`);
 
     fetch('/remove-from-cart', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: productName }),
@@ -106,6 +112,6 @@ function removeFromCart(productName){
             }
         })
         .catch(error => {
-            console.error('Error removeing produt from cart:', error);
+            console.error('Error removing produt from cart:', error);
         });
 }
