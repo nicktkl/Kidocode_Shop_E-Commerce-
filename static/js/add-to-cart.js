@@ -65,33 +65,63 @@ function updateCartCount(cart){
 
 
 // Function to update cart items in the UI
-function updateCartItems(cart){
-    const cartItems = document.getElementById('cart-items');
-    cartItems.innerHTML = '';
+function updateCartItems(cart) {
+    const cartItems = document.getElementById('cart-items'); // For HomePage.html
+    const cartItemsTable = document.getElementById('cart-items-table'); // For Cart.html
 
-    if (Object.keys(cart).length === 0) {
-        cartItems.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
-        return;
+    // Clear existing content
+    if (cartItems) {
+        cartItems.innerHTML = '';
+        if (Object.keys(cart).length === 0) {
+            cartItems.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
+        } else {
+            for (const [name, { price, quantity }] of Object.entries(cart)) {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <span>${name} (x${quantity})</span>
+                    <span>RM${(price * quantity).toFixed(2)}</span>
+                `;
+
+                // Add remove button
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn btn-danger btn-sm ms-2';
+                removeButton.textContent = 'Remove';
+                removeButton.dataset.name = name;
+                removeButton.addEventListener('click', () => {
+                    removeFromCart(name);
+                });
+
+                listItem.appendChild(removeButton);
+                cartItems.appendChild(listItem);
+            }
+        }
     }
 
-    for (const [name, { price, quantity }] of Object.entries(cart)) {
-        const listItem = document.createElement('li');
-        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-        listItem.innerHTML = `
-            <span>${name} (x${quantity})</span>
-            <span>$${(price * quantity).toFixed(2)}</span>
-            `;
-        
-            const removeButton = document.createElement('button');
-            removeButton.className = 'btn btn-danger btn-sm ms-2';
-            removeButton.textContent = 'Remove';
-            removeButton.dataset.name = name;
-            removeButton.addEventListener('click', () => {
-                removeFromCart(name);
-            });
+    if (cartItemsTable) {
+        cartItemsTable.innerHTML = '';
+        if (Object.keys(cart).length === 0) {
+            cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
+        } else {
+            for (const [name, { price, quantity }] of Object.entries(cart)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>RM${price.toFixed(2)}</td>
+                    <td>${quantity}</td>
+                    <td>RM${(price * quantity).toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm remove-from-cart-btn" data-name="${name}">Remove</button></td>
+                `;
 
-            listItem.appendChild(removeButton);
-            cartItems.appendChild(listItem);
+                // Add event listener to the remove button
+                const removeButton = row.querySelector('.remove-from-cart-btn');
+                removeButton.addEventListener('click', () => {
+                    removeFromCart(name);
+                });
+
+                cartItemsTable.appendChild(row);
+            }
+        }
     }
 }
 
