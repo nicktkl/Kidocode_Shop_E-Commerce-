@@ -50,7 +50,7 @@
             <div class="row justify-content-center">
                 {% for product in products %}
                 <div class="col-md-3 card mx-2" style="width: 18rem;">
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="card-img-top" style="height: 150px; object-fit: fill;">
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text">{{ product.description }}</p>
