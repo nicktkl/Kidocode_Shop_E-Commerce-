@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Function to handle adding to the cart
-function addToCart(product) {
+function addToCart(product){
     console.log(`Adding ${product.name} to cart at $${product.price}`);
 
     // Send the product to the server using Fetch API
@@ -34,11 +34,11 @@ function addToCart(product) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if(data.success){
                 console.log('Product successfully added to cart:', data.cart);
                 updateCartCount(data.cart);
                 updateCartItems(data.cart);
-            } else {
+            } else{
                 alert('Failed to add the product to the cart.');
             }
         })
@@ -65,17 +65,21 @@ function updateCartCount(cart){
 
 
 // Function to update cart items in the UI
-function updateCartItems(cart) {
-    const cartItems = document.getElementById('cart-items'); // For HomePage.html
-    const cartItemsTable = document.getElementById('cart-items-table'); // For Cart.html
+function updateCartItems(cart){
+    const cartItems = document.getElementById('cart-items');
+    const cartItemsTable = document.getElementById('cart-items-table');
+    const totalPriceElement = document.getElementById('total-price');
+    const checkoutButton = document.getElementById('btn-checkout');
 
-    // Clear existing content
-    if (cartItems) {
-        cartItems.innerHTML = '';
-        if (Object.keys(cart).length === 0) {
-            cartItems.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
+    let totalPrice = 0;
+
+    if(cartItems){
+        cartItems.innerHTML = ''; // Clear existing content
+        if(Object.keys(cart).length === 0) {
+            cartItems.innerHTML = '<li class="list-group-item text-center">Your cart is empty!</li>';
+            checkoutButton.classList.add('d-none');
         } else {
-            for (const [name, { price, quantity }] of Object.entries(cart)) {
+            for(const [name, { price, quantity }] of Object.entries(cart)) {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
                 listItem.innerHTML = `
@@ -83,7 +87,6 @@ function updateCartItems(cart) {
                     <span>RM${(price * quantity).toFixed(2)}</span>
                 `;
 
-                // Add remove button
                 const removeButton = document.createElement('button');
                 removeButton.className = 'btn btn-danger btn-sm ms-2';
                 removeButton.textContent = 'Remove';
@@ -94,16 +97,20 @@ function updateCartItems(cart) {
 
                 listItem.appendChild(removeButton);
                 cartItems.appendChild(listItem);
+
+                totalPrice += price * quantity;
             }
+
+            checkoutButton.classList.remove('d-none');
         }
     }
 
-    if (cartItemsTable) {
-        cartItemsTable.innerHTML = '';
-        if (Object.keys(cart).length === 0) {
+    if(cartItemsTable){
+        cartItemsTable.innerHTML = ''; // Clear existing content
+        if(Object.keys(cart).length === 0) {
             cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
         } else {
-            for (const [name, { price, quantity }] of Object.entries(cart)) {
+            for(const [name, { price, quantity }] of Object.entries(cart)) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${name}</td>
@@ -113,15 +120,20 @@ function updateCartItems(cart) {
                     <td><button class="btn btn-danger btn-sm remove-from-cart-btn" data-name="${name}">Remove</button></td>
                 `;
 
-                // Add event listener to the remove button
                 const removeButton = row.querySelector('.remove-from-cart-btn');
                 removeButton.addEventListener('click', () => {
                     removeFromCart(name);
                 });
 
                 cartItemsTable.appendChild(row);
+
+                totalPrice += price * quantity;
             }
         }
+    }
+
+    if(totalPriceElement){
+        totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
     }
 }
 
