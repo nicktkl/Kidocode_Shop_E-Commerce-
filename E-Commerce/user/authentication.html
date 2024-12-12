@@ -24,10 +24,12 @@
         <div class="container my-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active"><a href="cart.html">Cart</a></li>
-                    <li class="breadcrumb-item"><a href="authentication.html">Details</a></li>
-                    <li class="breadcrumb-item " >Shipping</li>
-                    <li class="breadcrumb-item"><a href="payment.html">Payment</a></li>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="cart.html">Cart</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Details</li>
+                        <li class="breadcrumb-item">Shipping</li>
+                        <li class="breadcrumb-item">Payment</a></li>
+                    </ol>
                 </ol>
             </nav>
         </div>
@@ -39,11 +41,26 @@
                     <h5>Contact</h5>
                     <form>
                         <div class="mb-3">
-                            <input type="email" class="form-control" placeholder="Email or mobile phone number">
+                            <input type="email" class="form-control" placeholder="Email">
                         </div>
                         <div class="form-check mb-3">
                             <input type="checkbox" class="form-check-input" id="newsletter">
-                            <label class="form-check-label" for="newsletter">Add me to Candleaf newsletter for a 10% discount</label>
+                            <label class="form-check-label" for="newsletter">Email me with news or offers</label>
+                        </div>
+                        <h5>Delivery Method</h5>
+                        <div class="section-box">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="deliveryMethod" id="self" checked>
+                                <label class="form-check-label" for="deliveryMethod1">
+                                    Standard Shipping 
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="deliveryMethod" id="pickup" checked>
+                                <label class="form-check-label" for="deliveryMethod2">
+                                    Self Pick-up in Center <span class="text-muted">Free</span>
+                                </label>
+                            </div>
                         </div>
 
                         <h5>Shipping Address</h5>
@@ -58,9 +75,6 @@
                         <div class="mb-3">
                             <input type="text" class="form-control" placeholder="Address and number">
                         </div>
-                        <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Shipping note (optional)">
-                        </div>
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <input type="text" class="form-control" placeholder="City">
@@ -69,12 +83,7 @@
                                 <input type="text" class="form-control" placeholder="Postal Code">
                             </div>
                             <div class="col-md-4 mb-3">
-                                <select class="form-select">
-                                    <option selected>Province</option>
-                                    <option>Province 1</option>
-                                    <option>Province 2</option>
-                                    <option>Province 3</option>
-                                </select>
+                                <input type="text" class="form-control" placeholder="State territory">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -85,17 +94,17 @@
                                 <option>Indonesia</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Shipping note (optional)">
+                        </div>
                         <div class="form-check mb-4">
                             <input type="checkbox" class="form-check-input" id="saveInfo">
                             <label class="form-check-label" for="saveInfo">Save this information for a future fast checkout</label>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-4">
-                            <!-- Back to Shopping Link -->
                             <a href="cart.html" class="text-decoration-none">
                                 Back to shopping
                             </a>
-                        
-                            <!-- Go to Shipping Button -->
                             <a href="shipping.html" class="btn btn-primary px-4">
                                 Go to shipping
                             </a>
@@ -108,23 +117,15 @@
             <!-- Right Summary Section -->
             <div class="col-md-5">
                 <div class="summary">
+                    <h5 class="mb-3">Order Summary</h5>
                     <div class="d-flex align-items-center mb-3">
-                        <!-- Product Image -->
                         <img src="../images/cubie_kidocode.png" class="img-thumbnail" style="width: 100px; height: auto;" alt="Product Image">
                         
-                        <!-- Product Details (Beside the Image) -->
                         <div class="ms-3">
                             <p class="mb-1"><strong>Cubie 1-month access</strong></p>
                             <p class="mb-0">$9.99</p>
                         </div>
                     </div>
-            
-                    <!-- Coupon Code Input -->
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Coupon code">
-                        <button class="btn btn-outline-secondary" type="button">Add code</button>
-                    </div>
-                    <hr>
             
                     <!-- Subtotal, Shipping, and Total -->
                     <div class="d-flex justify-content-between">
