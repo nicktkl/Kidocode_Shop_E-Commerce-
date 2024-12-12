@@ -122,5 +122,9 @@ def logout():
     flash('You have been loged out.', 'info')
     return redirect(url_for('home'))
 
+@app.route('/checkout')
+def checkout():
+    return render_template('/homepage/Checkout.html')
+
 if __name__ == '__main__':
     app.run(debug = True)
