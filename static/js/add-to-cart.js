@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Function to handle adding to the cart
-function addToCart(product) {
+function addToCart(product){
     console.log(`Adding ${product.name} to cart at $${product.price}`);
 
     // Send the product to the server using Fetch API
@@ -34,11 +34,11 @@ function addToCart(product) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if(data.success){
                 console.log('Product successfully added to cart:', data.cart);
                 updateCartCount(data.cart);
                 updateCartItems(data.cart);
-            } else {
+            } else{
                 alert('Failed to add the product to the cart.');
             }
         })
@@ -49,48 +49,96 @@ function addToCart(product) {
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
+    const cartCountElement = document.getElementById('cart-count');
+    if(!cartCountElement){
+        console.warn(`Cart count element not found in the DOM.`);
+        return;
+    }
+
     if(!cart || Object.keys(cart).length === 0) {
-        document.getElementById('cart-count').textContent = 0;
+        cartCountElement.textContent = 0;
         return;
     }
     const count = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
-    document.getElementById('cart-count').textContent = count;
+    cartCountElement.textContent = count;
 }
 
 
 // Function to update cart items in the UI
 function updateCartItems(cart){
     const cartItems = document.getElementById('cart-items');
-    cartItems.innerHTML = '';
+    const cartItemsTable = document.getElementById('cart-items-table');
+    const totalPriceElement = document.getElementById('total-price');
+    const checkoutButton = document.getElementById('btn-checkout');
 
-    if (Object.keys(cart).length === 0) {
-        cartItems.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
-        return;
+    let totalPrice = 0;
+
+    if(cartItems){
+        cartItems.innerHTML = ''; // Clear existing content
+        if(Object.keys(cart).length === 0) {
+            cartItems.innerHTML = '<li class="list-group-item text-center">Your cart is empty!</li>';
+            checkoutButton.classList.add('d-none');
+        } else {
+            for(const [name, { price, quantity }] of Object.entries(cart)) {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <span>${name} (x${quantity})</span>
+                    <span>RM${(price * quantity).toFixed(2)}</span>
+                `;
+
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn btn-danger btn-sm ms-2';
+                removeButton.textContent = 'Remove';
+                removeButton.dataset.name = name;
+                removeButton.addEventListener('click', () => {
+                    removeFromCart(name);
+                });
+
+                listItem.appendChild(removeButton);
+                cartItems.appendChild(listItem);
+
+                totalPrice += price * quantity;
+            }
+
+            checkoutButton.classList.remove('d-none');
+        }
     }
 
-    for (const [name, { price, quantity }] of Object.entries(cart)) {
-        const listItem = document.createElement('li');
-        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-        listItem.innerHTML = `
-            <span>${name} (x${quantity})</span>
-            <span>$${(price * quantity).toFixed(2)}</span>
-            `;
-        
-            const removeButton = document.createElement('button');
-            removeButton.className = 'btn btn-danger btn-sm ms-2';
-            removeButton.textontent = 'Rmove';
-            removeButton.dataset.name = name;
-            removeButton.addEventListener('click', () => {
-                removeFromCart(name);
-            });
+    if(cartItemsTable){
+        cartItemsTable.innerHTML = ''; // Clear existing content
+        if(Object.keys(cart).length === 0) {
+            cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
+        } else {
+            for(const [name, { price, quantity }] of Object.entries(cart)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>RM${price.toFixed(2)}</td>
+                    <td>${quantity}</td>
+                    <td>RM${(price * quantity).toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm remove-from-cart-btn" data-name="${name}">Remove</button></td>
+                `;
 
-            listItem.appendChild(removeButton);
-            cartItems.appendChild(listItem);
+                const removeButton = row.querySelector('.remove-from-cart-btn');
+                removeButton.addEventListener('click', () => {
+                    removeFromCart(name);
+                });
+
+                cartItemsTable.appendChild(row);
+
+                totalPrice += price * quantity;
+            }
+        }
+    }
+
+    if(totalPriceElement){
+        totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
     }
 }
 
 function removeFromCart(productName){
-    console.log('Removing ${productName} from cart');
+    console.log(`Removing ${productName} from cart`);
 
     fetch('/remove-from-cart', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: productName }),
@@ -106,6 +154,6 @@ function removeFromCart(productName){
             }
         })
         .catch(error => {
-            console.error('Error removeing produt from cart:', error);
+            console.error('Error removing produt from cart:', error);
         });
 }
