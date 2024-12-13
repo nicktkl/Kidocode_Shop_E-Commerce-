@@ -95,7 +95,7 @@ def add_product():
     try:
         db.session.add(new_product)
         db.session.commit()
-        return redirect(url_for('product'))
+        return redirect(url_for('admin.product'))
     except Exception as e:
         db.session.rollback()
         return f"An error occurred: {e}"
@@ -111,7 +111,7 @@ def update_product():
             try:
                 db.session.delete(product)
                 db.session.commit()
-                return redirect(url_for('product'))
+                return redirect(url_for('admin.product'))
             except Exception as e:
                 db.session.rollback()
                 return f"An error occurred while deleting the product: {e}", 500
@@ -123,7 +123,7 @@ def update_product():
                 product.price = float(request.form['p_price'])
                 product.stock = int(request.form['p_stock'])
                 db.session.commit()
-                return redirect(url_for('product'))
+                return redirect(url_for('admin.product'))
             except Exception as e:
                 db.session.rollback()
                 return f"An error occurred while updating the product: {e}", 500

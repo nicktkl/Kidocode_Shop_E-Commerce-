@@ -16,7 +16,7 @@
         </div>
         <div>
             <h1>Add Product</h1>
-            <form name="addproductform" action="/add" method="post" enctype="multipart/form-data">
+            <form name="addproductform" action="/admin/add" method="post" enctype="multipart/form-data">
                 <table>
                     <tr>
                         <td style="border: 1px solid rgb(77, 77, 77);" rowspan="5"><input type="file" name="p_img" accept="image/*"></td>
@@ -71,7 +71,7 @@
                 </tr>
                 <tr><td colspan="5"><hr></td></tr>
                 {% for product in product %}
-                    <form action="/update" method="post">
+                    <form action="/admin/update" method="post">
                         <tr>
                             <td>{{ product.productID }}</td>
                             <td>
