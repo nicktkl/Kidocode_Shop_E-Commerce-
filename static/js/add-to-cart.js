@@ -70,6 +70,7 @@ function updateCartItems(cart){
     const cartItemsTable = document.getElementById('cart-items-table');
     const totalPriceElement = document.getElementById('total-price');
     const checkoutButton = document.getElementById('btn-checkout');
+    const viewCartButton = document.getElementById('btn-viewCart');
 
     let totalPrice = 0;
 
@@ -78,6 +79,7 @@ function updateCartItems(cart){
         if(Object.keys(cart).length === 0) {
             cartItems.innerHTML = '<li class="list-group-item text-center">Your cart is empty!</li>';
             checkoutButton.classList.add('d-none');
+            viewCartButton.classList.add('d-none');
         } else {
             for(const [name, { price, quantity }] of Object.entries(cart)) {
                 const listItem = document.createElement('li');
@@ -102,6 +104,7 @@ function updateCartItems(cart){
             }
 
             checkoutButton.classList.remove('d-none');
+            viewCartButton.classList.remove('d-none');
         }
     }
 
@@ -135,6 +138,32 @@ function updateCartItems(cart){
     if(totalPriceElement){
         totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
     }
+}
+
+function updateCheckoutCart(cart){
+    const cartItemsElement = document.getElementById('cart-items');
+    const totalPriceElement = document.getElementById('total-price');
+
+    let totalPrice = 0;
+    cartItemsElement.innerHTML = '';
+
+    if(Object.keys(cart).length === 0){
+        cartItemsElement.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
+    } else {
+        for(const[name, { price, quantity }] of Object.entries(cart)){
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.innerHTML = `
+                <span>${name} (x${quantity})</span>
+                <span>RM${(price * quantity).toFixed(2)}</span>
+            `;
+
+            cartItemsElement.appendChild(listItem);
+            totalPrice += price * quantity;
+        }
+    }
+
+    totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
 }
 
 function removeFromCart(productName){
