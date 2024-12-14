@@ -29,9 +29,9 @@
             </table>
             <div class="d-flex justify-content-end align-items-center">
                 <div class="text-end me-3">
-                    <h3 id="cart-count" class="badge bg-primary ms-2">{{ cart_total_items }}</h3>Total Item
+                    <h3 id="cart-count" class="badge bg-info ms-2">{{ cart_total_items }}</h3> Total Item(s)
                     <h3>Total: <span id="total-price"></span></h3>
-                    <a href="#" class="btn btn-success">Checkout</a>
+                    <a href="{{ url_for('checkout')}}" class="btn btn-success">Checkout</a>
                     <a href="{{ url_for('home') }}" class="btn btn-primary">Continue Shopping</a>
                 </div>
             </div> 
