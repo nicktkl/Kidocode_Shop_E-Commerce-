@@ -122,9 +122,29 @@ def logout():
     flash('You have been loged out.', 'info')
     return redirect(url_for('home'))
 
-@app.route('/checkout')
+@app.route('/checkout', methods = ['GET', 'POST'])
 def checkout():
-    return render_template('/homepage/Checkout.html')
+    if request.method == 'POST':
+        shipping_address = request.form.get('shipping_address')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        postcode = request.form.get('postcode')
+        phone = request.form.get('phone')
+        cart = session.get('cart', {})
+        total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+        
+        # Add here the things to save the info of the address and all on to database
+
+        session['cart'] = {}
+        session.modified = True
+
+        flash('Order placed successfully!', 'success')
+        return redirect(url_for('home'))
+    
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    return render_template('/homepage/Checkout.html', cart_items = cart_items, total_price = total_price)
 
 if __name__ == '__main__':
     app.run(debug = True)
