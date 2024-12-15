@@ -45,6 +45,7 @@ def add_to_cart():
     else:
         session['cart'][product['name']] ={
             'price': float(product['price']),
+            'image_url': product['image_url'],
             'quantity': 1
         }
 
