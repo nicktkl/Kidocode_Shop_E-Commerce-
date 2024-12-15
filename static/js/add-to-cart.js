@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
             addToCart({ name, price });
         });
     });
+
+    const deliveryInputs = document.querySelectorAll('input[name="delivery-method"]');
+    deliveryInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            const deliveryMethod = input.value;
+            updateDeliveryMethod(deliveryMethod);
+        });
+    });
 });
 
 // Function to handle adding to the cart
@@ -45,6 +53,28 @@ function addToCart(product){
         .catch(error => {
             console.error('Error adding product to cart:', error);
         });
+}
+
+// Function handle delivery method changes
+function updateDeliveryMethod(method){
+    console.log('Selectd delivery method: ${method}');
+
+    fetch('/update-delivery-method', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryMethod: method }),
+    })
+        .thenn(response => response.json())
+        .then(data => {
+            if(data.success){
+                console.log('Delivery method updated successfully.');
+                updateCartCount(data.cart);
+                updateCartItems(data.cart);
+            } else {
+                alert('Failed to update delivery method.');
+            }
+        })
+        .catch(error => {
+            console.log('Error updating delivery method:', error);
+        })
 }
 
 // Function to update the cart count in the UI
