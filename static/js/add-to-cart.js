@@ -17,20 +17,48 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             const name = button.dataset.name; // Get the product name
             const price = parseFloat(button.dataset.price); // Get the product price
+            const image_url = button.dataset.image; // Get the product's image
 
             // Call the addToCart function with the product details
-            addToCart({ name, price });
+            addToCart({ name, price, image_url });
         });
     });
 
-    const deliveryInputs = document.querySelectorAll('input[name="delivery-method"]');
-    deliveryInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            const deliveryMethod = input.value;
-            updateDeliveryMethod(deliveryMethod);
-        });
-    });
+    // const deliveryInputs = document.querySelectorAll('input[name="delivery-method"]');
+    // const shippingAddressSection = document.getElementById('shipping-address-section');
+    // const toggleDeliveryMethod = () => {
+    //     const selectedDeliveryMethod = document.querySelector('input[name="delivery-method"]:checked').value;
+    //     if(selectedDeliveryMethod == 'pickup'){
+    //         shippingAddressSection.style.display = 'none';
+    //     } else {
+    //         shippingAddressSection.style.display = 'block';
+    //     }
+    // };
+
+    // deliveryInputs.forEach(radio => {
+    //     radio.addEventListener('change', toggleDeliveryMethod);
+    // });
+
+    // toggleDeliveryMethod();
 });
+
+// document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+//     button.addEventListener('click', () => {
+//         const name = button.dataset.name; // Get the product name
+//         addToCart({ name }); // Send only the name
+//     });
+// });
+
+// document.querySelectorAll('input[name="delivery-method"]').forEach(input => {
+//     input.addEventListener('change', () => {
+//         const deliveryMethod = document.getElementById('shipping-address-section');
+//         if(input.value == 'pickup'){
+//             deliveryMethod.style.display = 'none';
+//         } else {
+//             deliveryMethod.style.display = 'block';
+//         }
+//     });
+// });
 
 // Function to handle adding to the cart
 function addToCart(product){
@@ -62,7 +90,7 @@ function updateDeliveryMethod(method){
     fetch('/update-delivery-method', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryMethod: method }),
     })
-        .thenn(response => response.json())
+        .then(response => response.json())
         .then(data => {
             if(data.success){
                 console.log('Delivery method updated successfully.');
@@ -74,8 +102,16 @@ function updateDeliveryMethod(method){
         })
         .catch(error => {
             console.log('Error updating delivery method:', error);
-        })
+        });
 }
+
+deliveryInputs.forEach(input => {
+    input.addEventListener('change', () => {
+        const deliveryMethod = input.value;
+        updateDeliveryMethod(deliveryMethod);
+        shippingAddressSection.style.display = deliveryMethod === 'pickup' ? 'none' : 'block';
+    });
+});
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
@@ -180,11 +216,15 @@ function updateCheckoutCart(cart){
     if(Object.keys(cart).length === 0){
         cartItemsElement.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
     } else {
-        for(const[name, { price, quantity }] of Object.entries(cart)){
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        for (const [name, { price, quantity, image_url }] of Object.entries(cart)) {
+            const listItem = document.createElement('div');
+            listItem.className = 'd-flex justify-content-between mb-2';
             listItem.innerHTML = `
-                <span>${name} (x${quantity})</span>
+                <div>
+                    <img src="${image_url}" alt="${name}" class="img-thumbnail"
+                         style="width: 60px; height: 60px; object-fit: cover;">
+                    <span>${name} (x${quantity})</span>
+                </div>
                 <span>RM${(price * quantity).toFixed(2)}</span>
             `;
 
