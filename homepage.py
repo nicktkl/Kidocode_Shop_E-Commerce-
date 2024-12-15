@@ -32,18 +32,27 @@ def home():
 
 @app.route('/add-to-cart', methods = ['POST'])
 def add_to_cart():
-    product = request.get_json().get('product')
+    product_data = request.get_json().get('product')
+    product_name = product_data.get('name')
 
-    if not product or 'name' not in product or 'price' not in product:
-        return jsonify({'success': False, 'message': 'Invalid product data.'}), 400
-    
+    if not product_name:
+        return jsonify({'success': False, 'message': 'Invalid product name.'}), 400
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT name, price, image_url FROM products WHERE name = %s", (product_name,))
+    product = cursor.fetchone()
+    cursor.close()
+
+    if not product:
+        return jsonify({'success': False, 'message': 'Product not found.'}), 404
+
     if 'cart' not in session:
         session['cart'] = {}
 
-    if product['name'] in session['cart']:
-        session['cart'][product['name']]['quantity'] += 1
+    if product_name in session['cart']:
+        session['cart'][product_name]['quantity'] += 1
     else:
-        session['cart'][product['name']] ={
+        session['cart'][product_name] = {
             'price': float(product['price']),
             'image_url': product['image_url'],
             'quantity': 1
