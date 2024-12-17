@@ -85,6 +85,20 @@ def cart():
     ]
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
 
+# @app.route('/update-delivery-method', methods=['POST'])
+# def update_delivery_method():
+#     data = request.get_json()
+#     delivery_method = data.get('deliveryMethod')
+
+#     if not delivery_method:
+#         return jsonify({'success': False, 'message': 'No delivery method provided.'}), 400
+
+#     # Save the delivery method to the session or database
+#     session['delivery_method'] = delivery_method
+#     session.modified = True
+
+#     return jsonify({'success': True, 'delivery_method': delivery_method})
+
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if request.method == 'POST':
