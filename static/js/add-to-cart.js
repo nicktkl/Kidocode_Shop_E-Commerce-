@@ -26,20 +26,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // const deliveryInputs = document.querySelectorAll('input[name="delivery-method"]');
     // const shippingAddressSection = document.getElementById('shipping-address-section');
-    // const toggleDeliveryMethod = () => {
-    //     const selectedDeliveryMethod = document.querySelector('input[name="delivery-method"]:checked').value;
-    //     if(selectedDeliveryMethod == 'pickup'){
+    // const toggleShippingAddressSection = () => {
+    //     const selectedMethod = document.querySelector('input[name="delivery-method"]:checked').value;
+    //     console.log('Selected delivery method:', selectedMethod);
+    //     if(selectedMethod === 'pickup'){
     //         shippingAddressSection.style.display = 'none';
-    //     } else {
+    //     } else if(selectedMethod === 'ship'){
     //         shippingAddressSection.style.display = 'block';
     //     }
     // };
 
-    // deliveryInputs.forEach(radio => {
-    //     radio.addEventListener('change', toggleDeliveryMethod);
+    // deliveryInputs.forEach((radio) => {
+    //     radio.addEventListener('change', toggleShippingAddressSection);
     // });
 
-    // toggleDeliveryMethod();
+    // toggleShippingAddressSection();
 });
 
 // document.querySelectorAll('.add-to-cart-btn').forEach(button => {
@@ -83,29 +84,29 @@ function addToCart(product){
         });
 }
 
-// Function handle delivery method changes
-function updateDeliveryMethod(method){
-    console.log('Selectd delivery method: ${method}');
+// // Function handle delivery method changes
+// function updateDeliveryMethod(method){
+//     console.log('Selectd delivery method: ${method}');
 
-    fetch('/update-delivery-method', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryMethod: method }),
-    })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success){
-                console.log('Delivery method updated successfully.');
-                updateCartCount(data.cart);
-                updateCartItems(data.cart);
-            } else {
-                alert('Failed to update delivery method.');
-            }
-        })
-        .catch(error => {
-            console.log('Error updating delivery method:', error);
-        });
-}
+//     fetch('/update-delivery-method', {
+//         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryMethod: method }),
+//     })
+//         .then(response => response.json())
+//         .then(data => {
+//             if(data.success){
+//                 console.log('Delivery method updated successfully.');
+//                 updateCartCount(data.cart);
+//                 updateCartItems(data.cart);
+//             } else {
+//                 alert('Failed to update delivery method.');
+//             }
+//         })
+//         .catch(error => {
+//             console.log('Error updating delivery method:', error);
+//         });
+// }
 
-deliveryInputs.forEach(input => {
+toggleDeliveryMethod.forEach(input => {
     input.addEventListener('change', () => {
         const deliveryMethod = input.value;
         updateDeliveryMethod(deliveryMethod);
