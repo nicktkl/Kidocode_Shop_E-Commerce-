@@ -106,13 +106,13 @@ function addToCart(product){
 //         });
 // }
 
-toggleDeliveryMethod.forEach(input => {
-    input.addEventListener('change', () => {
-        const deliveryMethod = input.value;
-        updateDeliveryMethod(deliveryMethod);
-        shippingAddressSection.style.display = deliveryMethod === 'pickup' ? 'none' : 'block';
-    });
-});
+// toggleDeliveryMethod.forEach(input => {
+//     input.addEventListener('change', () => {
+//         const deliveryMethod = input.value;
+//         updateDeliveryMethod(deliveryMethod);
+//         shippingAddressSection.style.display = deliveryMethod === 'pickup' ? 'none' : 'block';
+//     });
+// });
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
