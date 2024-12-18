@@ -30,6 +30,10 @@ def home():
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', products = random_products, email = email)
 
+@app.route("/all-products")
+def all_products():
+    return render_template('/homepage/AllProducts.html')
+
 @app.route('/add-to-cart', methods = ['POST'])
 def add_to_cart():
     product_data = request.get_json().get('product')
