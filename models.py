@@ -1,6 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+class Category(db.Model):
+    __tablename__ = 'category'  # Name of the table in the database
+
+    categoryID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    categoryName = db.Column(db.String(10), nullable=False)
+    description = db.Column(db.Text)
+                            
 class Product(db.Model):
     __tablename__ = 'product'
     productID = db.Column(db.Integer, primary_key=True) 
