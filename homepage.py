@@ -30,21 +30,35 @@ def home():
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', products = random_products, email = email)
 
+@app.route("/all-products")
+def all_products():
+    return render_template('/homepage/AllProducts.html')
+
 @app.route('/add-to-cart', methods = ['POST'])
 def add_to_cart():
-    product = request.get_json().get('product')
+    product_data = request.get_json().get('product')
+    product_name = product_data.get('name')
 
-    if not product or 'name' not in product or 'price' not in product:
-        return jsonify({'success': False, 'message': 'Invalid product data.'}), 400
-    
+    if not product_name:
+        return jsonify({'success': False, 'message': 'Invalid product name.'}), 400
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT name, price, image_url FROM products WHERE name = %s", (product_name,))
+    product = cursor.fetchone()
+    cursor.close()
+
+    if not product:
+        return jsonify({'success': False, 'message': 'Product not found.'}), 404
+
     if 'cart' not in session:
         session['cart'] = {}
 
-    if product['name'] in session['cart']:
-        session['cart'][product['name']]['quantity'] += 1
+    if product_name in session['cart']:
+        session['cart'][product_name]['quantity'] += 1
     else:
-        session['cart'][product['name']] ={
+        session['cart'][product_name] = {
             'price': float(product['price']),
+            'image_url': product['image_url'],
             'quantity': 1
         }
 
@@ -74,6 +88,20 @@ def cart():
         for name, details in cart_items.items()
     ]
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
+
+# @app.route('/update-delivery-method', methods=['POST'])
+# def update_delivery_method():
+#     data = request.get_json()
+#     delivery_method = data.get('deliveryMethod')
+
+#     if not delivery_method:
+#         return jsonify({'success': False, 'message': 'No delivery method provided.'}), 400
+
+#     # Save the delivery method to the session or database
+#     session['delivery_method'] = delivery_method
+#     session.modified = True
+
+#     return jsonify({'success': True, 'delivery_method': delivery_method})
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -122,9 +150,29 @@ def logout():
     flash('You have been loged out.', 'info')
     return redirect(url_for('home'))
 
-@app.route('/checkout')
+@app.route('/checkout', methods = ['GET', 'POST'])
 def checkout():
-    return render_template('/homepage/Checkout.html')
+    if request.method == 'POST':
+        shipping_address = request.form.get('shipping_address')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        postcode = request.form.get('postcode')
+        phone = request.form.get('phone')
+        cart = session.get('cart', {})
+        total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+        
+        # Add here the things to save the info of the address and all on to database
+
+        session['cart'] = {}
+        session.modified = True
+
+        flash('Order placed successfully!', 'success')
+        return redirect(url_for('home'))
+    
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    return render_template('/homepage/Checkout.html', cart_items = cart_items, total_price = total_price)
 
 if __name__ == '__main__':
     app.run(debug = True)
