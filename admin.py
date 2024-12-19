@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from models import Product, Customer, Order, OrderItem, Payment, Review, db
+from models import Product, User, Order, OrderItem, Payment, Review, db
 from sqlalchemy.sql import func
 import os
 from werkzeug.utils import secure_filename
@@ -9,10 +9,10 @@ admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 @admin_blueprint.route('/dashboard')
 def dashboard():
     cust_result = db.session.query(
-        func.date_format(Customer.createdAt, '%Y-%u').label('week_date'),
-        func.count(Customer.customerID).label('count'),
-        func.sum(func.count(Customer.customerID)).over(order_by=func.date_format(Customer.createdAt, '%Y-%u')).label('cumulative_count')
-    ).group_by(func.date_format(Customer.createdAt, '%Y-%u')).all()
+        func.date_format(User.createdAt, '%Y-%u').label('week_date'),
+        func.count(User.customerID).label('count'),
+        func.sum(func.count(User.customerID)).over(order_by=func.date_format(User.createdAt, '%Y-%u')).label('cumulative_count')
+    ).group_by(func.date_format(User.createdAt, '%Y-%u')).all()
 
     custlabels = [r.week_date for r in cust_result]
     custdata = [r.cumulative_count for r in cust_result]
@@ -36,7 +36,7 @@ def dashboard():
 
     product_count = Product.query.count()
     review_count = Review.query.count()
-    customer_count = Customer.query.count()
+    customer_count = User.query.count()
     payment_count = Payment.query.count()
     total_item_sold = db.session.query(func.sum(OrderItem.quantity)).scalar() or 0
     total_payment_amount = db.session.query(func.sum(Payment.amount)).scalar() or 0
@@ -145,14 +145,14 @@ def review():
 def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
-        customer = Customer.query.filter(
-            Customer.customerID.ilike(f'%{search_query}%') | 
-            Customer.firstName.ilike(f'%{search_query}%') |
-            Customer.lastName.ilike(f'%{search_query}%')
+        user = User.query.filter(
+            User.customerID.ilike(f'%{search_query}%') | 
+            User.firstName.ilike(f'%{search_query}%') |
+            User.lastName.ilike(f'%{search_query}%')
         ).all()  
     else:
-        customer = Customer.query.all()
-    return render_template("/admin/customer.html", customer=customer)
+        user = User.query.all()
+    return render_template("/admin/customer.html", user=user)
 
 @admin_blueprint.route('/order')
 def order():

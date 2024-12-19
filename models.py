@@ -11,8 +11,8 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False)
     categoryID = db.Column(db.Integer, nullable=False)
 
-class Customer(db.Model):
-    __tablename__ = 'customer'
+class User(db.Model):
+    __tablename__ = 'user'
     customerID = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(100), nullable=False)
     lastName = db.Column(db.String(100), nullable=False)
@@ -26,7 +26,7 @@ class Customer(db.Model):
 class Order(db.Model):
     __tablename__ = 'order'
     orderID = db.Column(db.Integer, primary_key=True)
-    customerID = db.Column(db.Integer, db.ForeignKey('customer.customerID'), nullable=False)
+    customerID = db.Column(db.Integer, db.ForeignKey('user.customerID'), nullable=False)
     orderDate = db.Column(db.Date, nullable=False)
     totalAmount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(15), nullable=False)
@@ -34,7 +34,7 @@ class Order(db.Model):
     createdAt = db.Column(db.DateTime, default=db.func.current_timestamp())
     updatedAt = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
-    customer = db.relationship('Customer', backref='orders', lazy=True)
+    user = db.relationship('User', backref='orders', lazy=True)
 
 class OrderItem(db.Model):
     __tablename__ = 'orderItem'
@@ -62,12 +62,12 @@ class Review(db.Model):
     __tablename__ = 'review'
     reviewID = db.Column(db.Integer, primary_key=True)
     productID = db.Column(db.Integer, db.ForeignKey('product.productID'), nullable=False)
-    customerID = db.Column(db.Integer, db.ForeignKey('customer.customerID'), nullable=False)
+    customerID = db.Column(db.Integer, db.ForeignKey('user.customerID'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
     createdAt = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     product = db.relationship('Product', backref='reviews', lazy=True) 
-    customer = db.relationship('Customer', backref='reviews', lazy=True)
+    user = db.relationship('User', backref='reviews', lazy=True)
 
  

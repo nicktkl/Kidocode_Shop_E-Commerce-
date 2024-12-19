@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from models import Product, Customer, Order, OrderItem, Payment, Review, db
+from models import Product, User, Order, OrderItem, Payment, Review, db
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
