@@ -177,3 +177,9 @@ def transaction():
     else:
         payment = Payment.query.all()
     return render_template("/admin/transaction.html", payment=payment)
+
+@admin_blueprint.route('/category')
+def category():
+    category = Category.query.all()
+
+    return render_template("/admin/category.html", category=category)
