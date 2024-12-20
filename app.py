@@ -3,6 +3,8 @@ from models import Product, User, Order, OrderItem, Payment, Review, Category, d
 from sqlalchemy.sql import func, desc
 from flask_bcrypt import Bcrypt
 
+import random
+
 from user import user_blueprint
 from admin import admin_blueprint
 
@@ -20,19 +22,14 @@ app.register_blueprint(admin_blueprint)
 
 @app.route('/')
 def home():
-    #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    #cursor.execute("SELECT * FROM products")
-    #products = cursor.fetchall()
     products = Product.query.all()
+    random_products = random.sample(products, min(len(products), 8))
     reviews = Review.query.filter_by(rating=5).all()
-    # Shows products at random
-    #random_products = random.sample(products, min(len(products), 8))
-    #cursor.close()
 
     email = session.get('email', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('index.html', product=products, review=reviews, email=email)
+    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
 
 @app.route("/allproducts")
 def all_products():
@@ -71,12 +68,7 @@ def register():
         
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
-        new_user = User(
-            email=email,
-            pwd=hashed_password,
-            firstName="test",
-            lastName="test"
-        )
+        new_user = User(email=email, password=hashed_password)
 
         try:
             db.session.add(new_user)
@@ -100,7 +92,7 @@ def logout():
     session.pop('loggedin', None)
     session.pop('email', None)
     flash('You have been loged out.', 'info')
-    return redirect()
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)
