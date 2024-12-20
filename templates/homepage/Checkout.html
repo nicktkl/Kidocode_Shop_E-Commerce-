@@ -168,5 +168,18 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Example: Toggle shipping address section based on delivery method
+            document.querySelectorAll('input[name="delivery-method"]').forEach(input => {
+                input.addEventListener('change', () => {
+                    const addressSection = document.getElementById('shipping-address-section');
+                    if (input.value === 'pickup') {
+                        addressSection.style.display = 'none';
+                    } else {
+                        addressSection.style.display = 'block';
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

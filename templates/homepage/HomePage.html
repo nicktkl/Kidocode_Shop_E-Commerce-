@@ -11,10 +11,10 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-xxl">
                 <a href="{{ url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
-                    <img src="./static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
+                    <img src="./static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
                     Shop
                 </a>
-                <div class="dropdown position-absolute top-0 end-0 m-3">
+                <div class="dropdown position-absolute top-0 end-0 pe-5 m-3">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user"></i>
                     </button>
@@ -28,13 +28,12 @@
                         {% endif %}
                     </ul>
                 </div>
-                <!-- maybe somewhere here both icon overlapping -->
-                    <a href="#" id="cart-icon" class="btn btn-outline-primary position-absolute top-0 end-0 m-3" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            0
-                        </span>
-                    </a>
+                <a href="#" id="cart-icon" class="btn btn-outline-primary position-absolute top-0 end-0 m-3" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
             </div>
         </nav>
         <div class="offcanvas offcanvas-end" id="cartOffcanvas" tabindex="-1" aria-labelledby="cartOffcanvasLabel">
