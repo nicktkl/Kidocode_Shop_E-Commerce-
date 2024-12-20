@@ -11,7 +11,7 @@ from admin import admin_blueprint
 app = Flask(__name__)
 app.secret_key = 'kidocodeverysecretkey'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:dlvvkxl@localhost:3306/ecommerce'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@127.0.0.1:3306/ecommerce'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -31,11 +31,23 @@ def home():
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
 
-@app.route("/allproducts")
+@app.route('/allproducts')
 def all_products():
     products = Product.query.all()
     category = Category.query.all()
     return render_template('all_product.html', product=products, category=category)
+
+@app.route('/cart')
+def cart():
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    cart_list = [
+        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        for name, details in cart_items.items()
+    ]
+    return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
