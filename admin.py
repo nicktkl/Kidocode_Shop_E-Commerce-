@@ -178,11 +178,58 @@ def transaction():
         payment = Payment.query.all()
     return render_template("/admin/transaction.html", payment=payment)
 
-@admin_blueprint.route('/category')
+@admin_blueprint.route('/category', methods=["GET","POST"])
 def category():
-    main_categories = Category.query.filter_by(parentID=None).all()
+    if request.method == 'POST':
 
-    for category in main_categories:
-        category.subcategories = Category.query.filter_by(parentID=category.categoryID).all()
+        if 'btnadd' in request.form:
+            name = request.form['c_name']
+            parent = request.form.get('c_type', None)
+
+            try:
+                if parent:
+                    last_3_words = parent.strip()[-3:].upper()
+                    category_count = Category.query.filter_by(parentID=parent).count()
+                    first_letter = name[0].upper()
+
+                    ID = f"{last_3_words}{category_count + 1:03d}{first_letter}"
+                else:
+                    total_category_count =  Category.query.filter_by(parentID=None).count()
+                    first_three_letters = name.strip()[:3].upper().ljust(3, 'X')
+                    ID = f"K{total_category_count + 1:03d}{first_three_letters}"
+                    parent = None    
+
+                new_category = Category(
+                    name=name,
+                    categoryID=ID,
+                    parentID=parent
+                )
+
+                db.session.add(new_category)
+                db.session.commit()
+                return redirect(url_for('admin.category'))
+            
+            except Exception as e:
+                print(f"Error occurred: {str(e)}")
+                db.session.rollback()
+                print(parent)
+
+        elif 'btnedit' in request.form:
+
+        elif 'btndelete' in request.form:
+            deleteID = request.form.get('btndelete')
+            if deleteID:
+                category_to_delete = Category.query.filter_by(categoryID=deleteID).first()
+                if category_to_delete:
+                    try:
+                        db.session.delete(category_to_delete)
+                        db.session.commit()
+                        return redirect(url_for('admin.category'))
+                    except Exception as e:
+                        db.session.rollback()
+                        return f"An error occurred while deleting the category: {e}", 500
+            return "Category ID not provided", 400
+        
+    main_categories = Category.query.filter_by(parentID=None).all()
 
     return render_template("/admin/category.html", main_categories=main_categories)
