@@ -3,11 +3,23 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class Category(db.Model):
-    __tablename__ = 'category'  # Name of the table in the database
-
-    categoryID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    categoryName = db.Column(db.String(10), nullable=False)
-    description = db.Column(db.Text)
+    __tablename__ = 'category'
+    
+    categoryID = db.Column(db.String(7), primary_key=True) 
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    parentID = db.Column(db.String(7), db.ForeignKey('category.categoryID'), nullable=True)  # Foreign Key referencing categoryID (self-referential)
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())  # Timestamp for creation time
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())  # Timestamp for update time
+    
+    parent_category = db.relationship('Category', backref=db.backref('subcategories', lazy=True), remote_side=[categoryID])
+    
+    def __init__(self, categoryID, name, parentID=None):
+        self.categoryID = categoryID
+        self.name = name
+        self.parentID = parentID
+    
+    def __repr__(self):
+        return f"<Category {self.name}>"
                             
 class Product(db.Model):
     __tablename__ = 'product'

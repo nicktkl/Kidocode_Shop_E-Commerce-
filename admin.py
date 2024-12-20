@@ -180,6 +180,9 @@ def transaction():
 
 @admin_blueprint.route('/category')
 def category():
-    category = Category.query.all()
+    main_categories = Category.query.filter_by(parentID=None).all()
 
-    return render_template("/admin/category.html", category=category)
+    for category in main_categories:
+        category.subcategories = Category.query.filter_by(parentID=category.categoryID).all()
+
+    return render_template("/admin/category.html", main_categories=main_categories)
