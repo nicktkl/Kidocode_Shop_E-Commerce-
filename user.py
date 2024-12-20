@@ -34,4 +34,52 @@ def add_to_cart():
 
     session.modified = True
     return jsonify({'success': True, 'cart': session['cart']})
+
+@user_blueprint('/user/get-cart', methods=['GET'])
+def get_cart():
+    cart = session.get('cart', {})
+    return jsonify(cart)
+
+@user_blueprint('/user/remove-from-cart', methods=['POST'])
+def remove_from_cart():
+    product_name = request.get_json().get('name')
+    if 'cart' in session and product_name in session['cart']:
+        del session['cart'][product_name]
+        session.modified = True
+    return jsonify({'success': True, 'cart': session.get('cart', {})})
+
+@user_blueprint('/user/cart')
+def cart():
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    cart_list = [
+        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        for name, details in cart_items.items()
+    ]
+    return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
+
+@user_blueprint('/user/checkout', methods=['GET', 'POST'])
+def checkout():
+    if request.method == 'POST':
+        shipping_address = request.form.get('shipping_address')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        postcode = request.form.get('postcode')
+        phone = request.form.get('phone')
+        cart = session.get('cart', {})
+        total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+
+        # Save order details in the database if needed
+
+        session['cart'] = {}
+        session.modified = True
+
+        flash('Order placed successfully!', 'success')
+        return redirect(url_for('home'))
+    
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
 #routes here
