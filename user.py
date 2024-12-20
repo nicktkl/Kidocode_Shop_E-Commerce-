@@ -10,7 +10,7 @@ def homepage():
 @user_blueprint.route('/user/add-to-cart', methds=['POST'])
 def add_to_cart():
     product_data = request.get_json().get('product')
-    product_data = product_data.get('name')
+    product_name = product_data.get('name')
 
     if not product_name:
         return jsonify({'success': False, 'message': 'Invalid product name.'}), 400
