@@ -50,6 +50,8 @@ LEFT JOIN
 ORDER BY
     c1.name, c2.name;
 
+DROP TABLE IF EXISTS `products`;
+
 CREATE TABLE products(
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -64,8 +66,6 @@ CREATE TABLE products(
     Foreign Key (category_id) REFERENCES categories(category_id) ON DELETE SET NULL
 );
 
-DROP TABLE IF EXISTS 'products';
-
 INSERT INTO products(product_id, name, description, price, stock, category_id, image_url, status)
 VALUES
     (1, 'Testing 01', 'This product is just a testing due to the current situation is testing.', 9.99, 1, '3DP001A', 'static/images/dummy.png', 'active'),
@@ -78,7 +78,7 @@ VALUES
     (8, 'Testing 08', 'This product is just a testing due to the current situation is testing.', 79.99, 8, 'ELE004W', 'static/images/dummy8.png', 'active'),
     (9, 'Testing 09', 'This product is just a testing due to the current situation is testing.', 89.99, 9, 'ELE003C', 'static/images/dummy9.png', 'active'),
     (10, 'Testing 10', 'This product is just a testing due to the current situation is testing.', 99.99, 10, 'ELE002B', 'static/images/dummy10.png', 'active'),
-    (10, 'Testing 11', 'This product is just a testing due to the current situation is testing.', 109.99, 11, 'ELE001K', 'static/images/dummy11.png', 'active'),
-    (10, 'Testing 12', 'This product is just a testing due to the current situation is testing.', 119.99, 12, '3DP003O', 'static/images/dummy12.png', 'active'),
-    (10, 'Testing 13', 'This product is just a testing due to the current situation is testing.', 129.99, 13, '3DP002V', 'static/images/dummy13.png', 'active'),
-    (10, 'Testing 14', 'This product is just a testing due to the current situation is testing.', 139.99, 14, '3DP001A', 'static/images/dummy14.png', 'active');
+    (11, 'Testing 11', 'This product is just a testing due to the current situation is testing.', 109.99, 11, 'ELE001K', 'static/images/dummy11.png', 'active'),
+    (12, 'Testing 12', 'This product is just a testing due to the current situation is testing.', 119.99, 12, '3DP003O', 'static/images/dummy12.png', 'active'),
+    (13, 'Testing 13', 'This product is just a testing due to the current situation is testing.', 129.99, 13, '3DP002V', 'static/images/dummy13.png', 'active'),
+    (14, 'Testing 14', 'This product is just a testing due to the current situation is testing.', 139.99, 14, '3DP001A', 'static/images/dummy14.png', 'active');
