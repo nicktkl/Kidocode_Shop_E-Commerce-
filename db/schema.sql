@@ -64,6 +64,8 @@ CREATE TABLE products(
     Foreign Key (category_id) REFERENCES categories(category_id) ON DELETE SET NULL
 );
 
+DROP TABLE IF EXISTS 'products';
+
 INSERT INTO products(product_id, name, description, price, stock, category_id, image_url, status)
 VALUES
     (1, 'Testing 01', 'This product is just a testing due to the current situation is testing.', 9.99, 1, '3DP001A', 'static/images/dummy.png', 'active'),
