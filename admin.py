@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 import os
+from sqlalchemy.sql import func, desc
 from werkzeug.utils import secure_filename
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
@@ -8,7 +9,54 @@ admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 #DASHBOARD
 @admin_blueprint.route('/dashboard')
 def dashboard():
-    return render_template("/admin/dashboard.html")
+    cust_result = db.session.query(
+        func.date_format(User.createdAt, '%Y-%u').label('week_date'),
+        func.count(User.userID).label('count'),
+        func.sum(func.count(User.userID)).over(order_by=func.date_format(User.createdAt, '%Y-%u')).label('cumulative_count')
+    ).group_by(func.date_format(User.createdAt, '%Y-%u')).all()
+
+    custlabels = [r.week_date for r in cust_result]
+    custdata = [r.cumulative_count for r in cust_result]
+
+    sale_result = db.session.query(
+        Product.productName,
+        func.sum(OrderItem.quantity).label('total_quantity')
+    ).join(OrderItem, Product.productID == OrderItem.productID) \
+     .group_by(Product.productID).all()
+
+    salelabels = [r.productName for r in sale_result]
+    saledata = [r.total_quantity for r in sale_result]
+
+    review_result = db.session.query(
+        Review.rating,
+        func.count(Review.rating).label('rating_count')
+    ).filter(Review.rating.isnot(None)).group_by(Review.rating).all()
+
+    reviewlabels = [str(r.rating) for r in review_result]
+    reviewdata = [r.rating_count for r in review_result]
+
+    product_count = Product.query.count()
+    review_count = Review.query.count()
+    customer_count = User.query.count()
+    payment_count = Payment.query.count()
+    total_item_sold = db.session.query(func.sum(OrderItem.quantity)).scalar() or 0
+    total_payment_amount = db.session.query(func.sum(Payment.amount)).scalar() or 0
+
+    return render_template(
+        "/admin/dashboard.html",
+        product_count=product_count,
+        review_count=review_count,
+        customer_count=customer_count,
+        payment_count=payment_count,
+        total_payment_amount=total_payment_amount,
+        total_item_sold=total_item_sold,
+        custlabels=custlabels,
+        custdata=custdata,
+        salelabels=salelabels,
+        saledata=saledata,
+        reviewlabels=reviewlabels,
+        reviewdata=reviewdata
+    )
 
 #CATEGORY
 @admin_blueprint.route('/category', methods=["GET","POST"])
@@ -165,7 +213,7 @@ def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
         user = User.query.filter(
-            User.customerID.ilike(f'%{search_query}%') |
+            User.userID.ilike(f'%{search_query}%') |
             User.firstName.ilike(f'%{search_query}%') |
             User.lastName.ilike(f'%{search_query}%')
         ).all()  

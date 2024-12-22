@@ -1,91 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            margin: 5% auto;
-            text-align: center;
-            width: 80%;
-            border-collapse: collapse;
-        }
-        td {
-            padding: 10px 20px;
-            border: 1px solid #ddd;
-        }
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .charts-container {
-            display: flex;          
-            justify-content: space-evenly;         
-            flex-wrap: wrap;      
-            margin-top: 20px;
-            max-width: 90%;
-            max-height: 400px; 
-        }
-        .charts-container-pie {
-            display: flex;          
-            justify-content: space-evenly; 
-            gap: 30px;           
-            flex-wrap: wrap;      
-            margin-top: 20px;
-            max-width: 90%;
-            max-height: 500px; 
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <h1>Dashboard</h1>
-        <div>
-            <ul>  
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li><a href="/admin/product">Products</a></li>
-                <li><a href="/admin/order">Orders</a></li>
-                <li><a href="/admin/customer">Customers</a></li>
-                <li><a href="/admin/review">Reviews</a></li>
-                <li><a href="/admin/transaction">Transactions</a></li>
-            </ul>
-        </div>
-        <table>
-            <tr>
-                <td><a href="/admin/customer">Customers</a></td>
-                <td><a href="/admin/product">Product Catalogue</a></td>
-                <td><a href="/admin/order">Items Sold</a></td>
-                <td><a href="/admin/transaction">Total Sales</a></td>
-                <td><a href="/admin/review">Reviews</a></td>
-            </tr>
-            <tr>
-                <td>{{ customer_count }}</td>
-                <td>{{ product_count }}</td>
-                <td>{{ total_item_sold }}</td>
-                <td>RM {{ total_payment_amount }}</td>
-                <td>{{ review_count }}</td>
-            </tr>
-        </table>
 
-        <div class="charts-container">
-            <h1>Customers data</h1>
+    {% include "/admin/index.html" %}
+
+    <div class="container my-5">
+        <h1 class="text-primary">Dashboard</h1>
+        
+        <div class="row justify-content-between g-4">
+            <!-- Customer Card -->
+            <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">CPU Traffic</span>
+                  <span class="info-box-number">
+                    10
+                    <small>%</small>
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+            <div class="col-2">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Customers</h5>
+                        <p class="card-text">{{ customer_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Catalogue Card -->
+            <div class="col-2">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Product Catalogue</h5>
+                        <p class="card-text">{{ product_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Sold Card -->
+            <div class="col-2">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Items Sold</h5>
+                        <p class="card-text">{{ total_item_sold }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Sales Card -->
+            <div class="col-2">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Sales</h5>
+                        <p class="card-text">RM {{ total_payment_amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Card -->
+            <div class="col-2">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Reviews</h5>
+                        <p class="card-text">{{ review_count }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h2 class="text-center">Customers Data</h2>
             <canvas id="customerdata"></canvas>
         </div>
 
-        <div class="charts-container">
-            <h1>Sale data</h1>
+        <div class="mb-5">
+            <h2 class="text-center">Sale Data</h2>
             <canvas id="saledata"></canvas>
         </div>
 
-        <div class="charts-container-pie">
-            <h1>Reviews</h1>
+        <div class="mb-5">
+            <h2 class="text-center">Reviews</h2>
             <canvas id="reviewdata"></canvas>
         </div>
-        
+
     </div>
 
     <script>
@@ -164,16 +171,14 @@
                         'rgba(54, 162, 235, 1)'
                     ],
                     borderWidth: 2,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {legend: {display: true, position: 'right' }},
-                    layout: {padding: 10}
-                    },
-                });
-
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {legend: {display: true, position: 'right'}},
+                layout: {padding: 10}
+            },
+        });
     </script>
-    
 </body>
 </html>

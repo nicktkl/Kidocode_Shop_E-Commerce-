@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from models import Product, User, Category, db
-from sqlalchemy.sql import func, desc
 from flask_bcrypt import Bcrypt
 
 import random
