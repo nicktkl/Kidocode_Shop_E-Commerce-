@@ -1,4 +1,9 @@
--- Active: 1733283387949@@127.0.0.1@3306@ecommerce
+-- Active: 1733837847961@@127.0.0.1@3306@ecommercenewn
+
+CREATE DATABASE ecommerceNEW;
+
+USE ecommerceNEW;
+
 CREATE TABLE category (
     categoryID VARCHAR(7) PRIMARY KEY, 
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -84,7 +89,7 @@ CREATE TABLE user (
   UNIQUE KEY email (email)
 );
 
-INSERT INTO user (firstName, lastName, email, pwd, phone, address)
+INSERT INTO user (firstName, lastName, email, password, phone, address)
 VALUES
 ('John', 'Doe', 'john.doe@example.com', 'password123', '1234567890', '123 Main St, City, Country'),
 ('Jane', 'Smith', 'jane.smith@example.com', 'password123', '0987654321', '456 Oak Rd, Town, Country'),
