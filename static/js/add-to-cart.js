@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch the cart from the server on page load
-    fetch('/get-cart')
+    fetch('/user/get-cart')
         .then(response => response.json())
         .then(cart => {
             // Sync the client-side cart with the server cart
@@ -66,7 +66,7 @@ function addToCart(product){
     console.log(`Adding ${product.name} to cart at $${product.price}`);
 
     // Send the product to the server using Fetch API
-    fetch('/add-to-cart', {
+    fetch('/user/add-to-cart', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product }),
     })
         .then(response => response.json())
@@ -88,7 +88,7 @@ function addToCart(product){
 // function updateDeliveryMethod(method){
 //     console.log('Selectd delivery method: ${method}');
 
-//     fetch('/update-delivery-method', {
+//     fetch('/user/update-delivery-method', {
 //         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryMethod: method }),
 //     })
 //         .then(response => response.json())
@@ -240,7 +240,7 @@ function updateCheckoutCart(cart){
 function removeFromCart(productName){
     console.log(`Removing ${productName} from cart`);
 
-    fetch('/remove-from-cart', {
+    fetch('/user/remove-from-cart', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: productName }),
     })
         .then(response => response.json())

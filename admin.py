@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 import os
-from sqlalchemy.sql import func, desc
+from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from models import Product, User, Category, db
+from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from flask_bcrypt import Bcrypt
 
 import random
@@ -28,7 +28,7 @@ def home():
     email = session.get('email', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
+    return render_template('/homepage/HomePage.html', product=random_products, p=products, review=reviews, email=email)
 
 @app.route('/allproducts')
 def all_products():

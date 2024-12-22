@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# Category model
 class Category(db.Model):
     __tablename__ = 'category'
     
@@ -11,6 +12,7 @@ class Category(db.Model):
     createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
+    # Self-referential relationship to handle subcategories
     parent_category = db.relationship('Category', backref=db.backref('subcategories', lazy=True), remote_side=[categoryID])
     
     def __init__(self, categoryID, name, parentID=None):
@@ -21,26 +23,43 @@ class Category(db.Model):
     def __repr__(self):
         return f"<Category {self.name}>"
 
+# Product model
 class Product(db.Model):
     __tablename__ = 'product'
 
     productID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     productName = db.Column(db.String(30), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    img = db.Column(db.String(255), nullable=True, default=None)
+    description = db.Column(db.Text)
+    img = db.Column(db.String(255), default=None)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
-    categoryID = db.Column(db.String(7), db.ForeignKey('category.categoryID', ondelete='SET NULL'), nullable=True)
-    createdAt = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
-    updatedAt = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    categoryID = db.Column(db.String(7), db.ForeignKey('category.categoryID', ondelete='SET NULL'))
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
+    status = db.Column(db.Enum('active', 'inactive', name='status_enum'), default='active', nullable=False)
 
-    category = db.relationship('Category', backref=db.backref('products', lazy=True))
+    # Relationship with Category model
+    category = db.relationship('Category', backref='products')
+
+    # Relationship with OrderItem (through OrderItem model)
     order_items = db.relationship('OrderItem', back_populates='product')
-    reviews = db.relationship('Review', back_populates='product')  # Added relationship for reviews
+
+    # Relationship with Review model
+    reviews = db.relationship('Review', back_populates='product')
+
+    def __init__(self, productName, description, price, stock, categoryID, img=None, status='active'):
+        self.productName = productName
+        self.description = description
+        self.price = price
+        self.stock = stock
+        self.categoryID = categoryID
+        self.img = img
+        self.status = status
 
     def __repr__(self):
-        return f"<Product {self.productName}>"
+        return f"<Product {self.productName}, Status: {self.status}>"
 
+# User model
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -55,12 +74,14 @@ class User(db.Model):
     createdAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     updatedAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
+    # Relationships with Order and Review
     orders = db.relationship('Order', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')  # Relationship for reviews
 
     def __repr__(self):
         return f"<User {self.firstName} {self.lastName}>"
 
+# Order model
 class Order(db.Model):
     __tablename__ = 'orders'
 
@@ -80,6 +101,7 @@ class Order(db.Model):
     def __repr__(self):
         return f"<Order {self.orderID} for User {self.userID}>"
 
+# OrderItem model
 class OrderItem(db.Model):
     __tablename__ = 'orderitem'
 
@@ -95,6 +117,7 @@ class OrderItem(db.Model):
     def __repr__(self):
         return f"<OrderItem {self.orderItemID} for Order {self.orderID}, Product {self.productID}>"
 
+# Review model
 class Review(db.Model):
     __tablename__ = 'review'
 
@@ -111,6 +134,7 @@ class Review(db.Model):
     def __repr__(self):
         return f"<Review {self.reviewID} for Product {self.productID}, User {self.userID}>"
 
+# Payment model
 class Payment(db.Model):
     __tablename__ = 'payment'
 
