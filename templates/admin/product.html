@@ -1,100 +1,163 @@
 <html>
     <head>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin - Product</title>
     </head>
     <body>
-        <div>
-            <ul>  
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li><a href="/admin/product">Products</a></li>
-                <li><a href="/admin/order">Orders</a></li>
-                <li><a href="/admin/customer">Customers</a></li>
-                <li><a href="/admin/review">Reviews</a></li>
-                <li><a href="/admin/transaction">Transactions</a></li>
-            </ul>
-        </div>
-        <div>
-            <h1>Add Product</h1>
-            <form name="addproductform" action="/admin/add" method="post" enctype="multipart/form-data">
-                <table>
-                    <tr>
-                        <td style="border: 1px solid rgb(77, 77, 77);" rowspan="5"><input type="file" name="p_img" accept="image/*"></td>
-                        <td>Product Name :</td>
-                        <td>Price :</td>
-                        <td>Stock :</td>
-                    </tr>
-                    <tr>
-                        <td><input type="text" name="p_name" size="20" required></td>
-                        <td><input type="text" name="p_price" size="5" min="0.01" step="0.01" required></td>
-                        <td><input type="text" name="p_stock" size="3" min="0" required></td>
-                    </tr>
-                    <tr>
-                        <td>Category :</td>
-                        <td colspan="2">
-                            <select name="p_category" required>
-                                <option selected disabled>Category</option>
-                                <option value="1">Electronics</option>
-                                <option value="2">Clothing</option>
-                                <option value="3">Toys</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">Description</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><textarea name="p_desc" cols="40" rows="5" required></textarea></td>
-                        <td align="center">
-                            <input type="submit" name="btnadd" value="Add">
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <div>
-            <h1>
-                <form action="/admin/product" method="get">
-                    Products
-                    <input type="text" name="searchProduct" placeholder="Search a product" value="{{ request.args.get('searchProduct', '') }}">
-                    <button type="submit" name="btnSearch">
-                        <i class="fa fa-search"></i>
+        {% include "/admin/index.html" %}
+    
+        <div class="container my-5">
+            <h1 class="text-primary">Products</h1>
+            <div class="d-flex align-items-center my-3">
+                <form class="d-flex w-100 align-items-center" action="/admin/product" method="get">
+                    <div class="flex-grow-1 me-2">
+                        <input type="text" class="form-control" name="searchProduct" placeholder="Search a product"
+                            value="{{ request.args.get('searchProduct', '') }}">
+                    </div>
+                    <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
+                        <i class="fa fa-search me-2"></i>Search
+                    </button>
+                    <button class="btn btn-outline-primary d-flex align-items-center px-3" type="button" data-bs-toggle="modal" data-bs-target="#addProduct">
+                        <i class="bi bi-plus-circle me-2"></i>Add New
                     </button>
                 </form>
-            </h1>
-            <table>
-                 <tr>
-                    <th>Product ID</th>
-                    <th colspan="2">Product Name</th>
-                    <th>Price</th>
-                    <th>In stock</th>
-                </tr>
-                <tr><td colspan="5"><hr></td></tr>
-                {% for product in product %}
-                    <form action="/admin/update" method="post">
+            </div>
+            
+    
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Image</th>
+                        <th>Details</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in product %}
+                    <form action="/admin/product" method="post">
                         <tr>
                             <td>{{ product.productID }}</td>
                             <td>
                                 {% if product.img is none %}
-                                    <img width="100" src="{{ url_for('static', filename='images/dummy.png') }}">
+                                <img src="https://via.placeholder.com/100" class="img-thumbnail">
                                 {% else %}
-                                    <img width="100" src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}">
+                                <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" class="img-thumbnail"
+                                    width="100">
                                 {% endif %}
-                            </td>                            
-                            <td>
-                                <input type="text" name="p_name" size="20" required value="{{ product.productName }}"><br>
-                                <textarea name="p_desc" cols="40" rows="3" required>{{ product.description }}</textarea> <br>
-                                <input type="hidden" name="p_ID" value="{{ product.productID }}">
-                                <input type="submit" name="btndelete" value="Remove">
-                                <input type="submit" name="btnedit" value="Update">
                             </td>
-                            <td><input type="text" name="p_price" size="5" min="0.01" step="0.01" value="{{ product.price }}" required></td>
-                            <td><input type="text" name="p_stock" size="3" min="0" value="{{ product.stock }}" required></td>
+                            <td>
+                                <input type="text" class="form-control my-1" name="p_name" required value="{{ product.productName }}">
+                                <textarea class="form-control my-1" name="p_desc" rows="3" required>{{ product.description }}</textarea>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control text-center" name="p_price" min="0.01" step="0.01" value="{{ product.price }}" required>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control text-center" name="p_stock" min="0" value="{{ product.stock }}" required>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column justify-content-start my-1">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm mb-2" name="btndelete" value="{{product.productID}}">
+                                        <i class="bi bi-trash"></i> Remove
+                                    </button>
+                                    <button type="submit" class="btn btn-outline-success btn-sm" name="btnedit" value="{{product.productID}}">
+                                        <i class="bi bi-save"></i> Update
+                                    </button>
+                                </div>                                
+                            </td>
                         </tr>
-                        <tr><td colspan="5"><hr></td></tr>
                     </form>
-                {% endfor %}
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
+    
+        <!-- Add Product Modal -->
+        <div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductLabel">Add Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form name="addproductform" action="/admin/product" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="productImage" class="form-label">Image</label>
+                                <input class="form-control" type="file" id="productImage" name="p_img" accept="image/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="productName" name="p_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productDescription" class="form-label">Description</label>
+                                <textarea id="productDescription" name="p_desc" class="form-control" required></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="productPrice" class="form-label">Price</label>
+                                    <input type="number" class="form-control" id="productPrice" name="p_price" min="0.01" step="0.01" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="productStock" class="form-label">Stock</label>
+                                    <input type="number" class="form-control" id="productStock" name="p_stock" min="0" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="p_category" class="form-label">Category</label>
+                                    <select id="p_category" name="p_category" class="form-select" aria-label="Category" required>
+                                        <option disabled selected>Select category</option>
+                                        {% for category in category %}
+                                        <option value="{{ category.categoryID }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="p_subcategory" class="form-label">Subcategory</label>
+                                    <select id="p_subcategory" name="p_subcategory" class="form-select" aria-label="Subcategory" disabled>
+                                        <option disabled selected>Select subcategory</option>
+                                    </select>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" name="btnadd" class="btn btn-primary">Add Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            document.getElementById('p_category').addEventListener('change', function () {
+                var categoryId = this.value;
+                var subcategorySelect = document.getElementById('p_subcategory');
+                
+                subcategorySelect.disabled = false;
+                subcategorySelect.innerHTML = '<option disabled selected>Select subcategory</option>';
+                
+                fetch(`/admin/get_subcategories/${categoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.subcategories.forEach(subcategory => {
+                            var option = document.createElement('option');
+                            option.value = subcategory.categoryID;
+                            option.text = subcategory.name;
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching subcategories:', error);
+                    });
+            });
+        </script>
     </body>
+    
 </html>

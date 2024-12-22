@@ -1,81 +1,93 @@
 <html>
     <head>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin - Order</title>
     </head>
     <body>
-        <div>
-            <ul>  
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li><a href="/admin/product">Products</a></li>
-                <li><a href="/admin/order">Orders</a></li>
-                <li><a href="/admin/customer">Customers</a></li>
-                <li><a href="/admin/review">Reviews</a></li>
-                <li><a href="/admin/transaction">Transactions</a></li>
-            </ul>
-        </div>
-        <h1>
-            <form action="/admin/order" method="get">
-                Orders
-                <input type="text" name="searchOrder" placeholder="Search an order" value="{{ request.args.get('searchOrder', '') }}">
-                <button type="submit" name="btnSearch">
-                    <i class="fa fa-search"></i>
-                </button>
-            </form>
-        </h1>
-        {% for order in order %}  
-        <div style="padding: 30;"> 
-            <h2>Order ID : {{order.orderID}}</h2>
-            <table>
-                <tr>
-                    <td>Customer ID : </td>
-                    <td>{{order.customerID}}</td>
-                </tr>
-                <tr>
-                    <td>Name :</td>
-                    <td> {{order.user.firstName}} {{order.user.lastName}}</td>
-                </tr>
-                <tr>
-                    <td>Shipping Address : </td>
-                    <td>{{order.shippingAddress}}</td>
-                </tr>
-                <tr>
-                    <td>Date of Order : </td>
-                    <td>{{order.orderDate}}</td>
-                </tr>
-            </table>
-            <hr>
-            <table style="width: 80%;" border="1">
-                <tr>
-                    <td>Order Item ID</td>
-                    <td>Product ID</td>
-                    <td>Product Name</td>
-                    <td>Quantity</td>
-                    <td>Price</td>
-                    <td>Status</td>
-                </tr>
-                {% for item in order.order_items %}
-                <tr>
-                    <td>{{item.orderItemID}}</td>
-                    <td>{{item.productID}}</td>
-                    <td>{{item.product.productName}}</td>
-                    <td>{{item.quantity}}</td>
-                    <td>{{item.price}}</td>
-                    {% if loop.first %}
-                        <td rowspan="{{ order.order_items|length +1 }}">{{ order.status }}</td>
-                    {% endif %}
-                </tr>
+        {% include "/admin/index.html" %}
+        <div class="container my-5">
+            <h1 class="text-primary">Orders</h1>
+        
+            <!-- Search Form -->
+            <div class="d-flex align-items-center my-3">
+                <form class="d-flex w-100 align-items-center" action="/admin/order" method="get">
+                    <div class="flex-grow-1 me-2">
+                        <input type="text" class="form-control" name="searchOrder" placeholder="Search an order" value="{{ request.args.get('searchOrder', '') }}">
+                    </div>
+                    <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
+                        <i class="fa fa-search"></i>Search
+                    </button>
+                </form>
+            </div>
+        
+            <div class="row">
+                {% for order in order %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Order ID: {{ order.orderID }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>Customer ID:</td>
+                                        <td>{{ order.userID }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td>{{ order.user.firstName }} {{ order.user.lastName }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Shipping Address:</td>
+                                        <td>{{ order.shippingAddress }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Order:</td>
+                                        <td>{{ order.orderDate }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Item ID</th>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.order_items %}
+                                    <tr>
+                                        <td>{{ item.orderItemID }}</td>
+                                        <td>{{ item.productID }}</td>
+                                        <td>{{ item.product.productName }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.price }}</td>
+                                        {% if loop.first %}
+                                            <td rowspan="{{ order.order_items|length }}" class="align-middle">{{ order.status }}</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <th colspan="4">Total Amount:</th>
+                                        <td>{{ order.totalAmount }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-muted">
+                            Created At: {{ order.createdAt }} | Updated At: {{ order.updatedAt }}
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-                <tr>
-                    <th colspan="4">Total Amount :</th>
-                    <td>{{order.totalAmount}}</td>
-                </tr>
-            </table>
-            <hr>
-            <p>
-                Created At : {{order.createdAt}} | Updated At : {{order.updatedAt}}
-            </p>
-        </div>
-        {% endfor %}
+            </div>  
+        </div>      
     </body>
 </html>

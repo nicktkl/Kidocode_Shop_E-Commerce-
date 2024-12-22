@@ -1,63 +1,51 @@
 <html>
     <head>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin - Customer</title>
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            td, th {
-                border: none;
-                padding: 8px;
-            }
-            tr {
-                border-bottom: 1px solid #ccc;
-            }
-
-        </style>
     </head>
     <body>
-        <div>
-            <ul>  
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li><a href="/admin/product">Products</a></li>
-                <li><a href="/admin/order">Orders</a></li>
-                <li><a href="/admin/customer">Customers</a></li>
-                <li><a href="/admin/review">Reviews</a></li>
-                <li><a href="/admin/transaction">Transactions</a></li>
-            </ul>
-        </div>
-        <div>
-            <h1>
-                <form action="/admin/customer" method="get">
-                    Customers
-                    <input type="text" name="searchCust" placeholder="Search" value="{{ request.args.get('searchCust', '') }}">
-                    <button type="submit" name="btnSearch">
-                        <i class="fa fa-search"></i>
+        {% include "/admin/index.html" %}
+        <div class="container my-5">
+            <h1 class="text-primary">Customers</h1>
+        
+            <!-- Search Form -->
+            <div class="d-flex align-items-center my-3">
+                <form class="d-flex w-100 align-items-center" action="/admin/customer" method="get">
+                    <div class="flex-grow-1 me-2">
+                        <input type="text" class="form-control" name="searchCust" placeholder="Search" value="{{ request.args.get('searchCust', '') }}">
+                    </div>
+                    <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
+                        <i class="fa fa-search me-2"></i>Search
                     </button>
                 </form>
-            </h1>
-            <table>
-                 <tr>
-                    <th>Customer ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                </tr>
-                {% for user in user %}
+            </div>
+        
+            <!-- Customers Table -->
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in user %}
                         <tr>
-                            <td>{{ user.customerID }}</td>
+                            <td>{{ user.userID }}</td>
                             <td>{{ user.firstName }}</td>
                             <td>{{ user.lastName }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.phone }}</td>
                             <td>{{ user.address }}</td>
                         </tr>
-                {% endfor %}
+                    {% endfor %}
+                </tbody>
             </table>
-        </div>
+        </div>        
     </body>
 </html>

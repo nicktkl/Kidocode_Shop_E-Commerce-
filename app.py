@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from models import Product, User, Order, OrderItem, Payment, Review, Category, db
+from models import Product, User, Category, db
 from sqlalchemy.sql import func, desc
 from flask_bcrypt import Bcrypt
 
@@ -11,7 +11,7 @@ from admin import admin_blueprint
 app = Flask(__name__)
 app.secret_key = 'kidocodeverysecretkey'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@127.0.0.1:3306/ecommerce'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerce'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
