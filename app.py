@@ -28,7 +28,7 @@ def home():
     email = session.get('email', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product=random_products, p=products, review=reviews, email=email)
+    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
 
 @app.route('/allproducts')
 def all_products():
@@ -56,7 +56,7 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        if user and bcrypt.check_password_hash(user.pwd, password_candidate):
+        if user and bcrypt.check_password_hash(user.password, password_candidate):
             session['loggedin'] = True
             session['email'] = user.email
             flash('Login successful!', 'success')

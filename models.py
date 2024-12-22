@@ -67,7 +67,7 @@ class User(db.Model):
     firstName = db.Column(db.String(100), nullable=False)
     lastName = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
-    pwd = db.Column(db.String(255), nullable=False)  # Store hashed password here
+    password = db.Column(db.String(255), nullable=False)  # Store hashed password here
     phone = db.Column(db.String(15), nullable=True)
     address = db.Column(db.Text, nullable=True)
     secondaryAddress = db.Column(db.Text, nullable=True)
