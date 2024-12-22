@@ -71,10 +71,10 @@ VALUES
 
 CREATE TABLE user (
   userID int NOT NULL AUTO_INCREMENT,
-  firstName varchar(100) NOT NULL,
-  lastName varchar(100) NOT NULL,
+  firstName varchar(100) DEFAULT NULL,
+  lastName varchar(100) DEFAULT NULL,
   email varchar(255) NOT NULL,
-  pwd varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
   phone varchar(15) DEFAULT NULL,
   address text,
   secondaryAddress text,
@@ -176,4 +176,3 @@ VALUES
 (3, '2024-12-20', 34.98, 'Debit Card', 'Shipped'),
 (4, '2024-12-19', 45.99, 'Credit Card', 'Cancelled'),
 (5, '2024-12-18', 21.98, 'Cash on Delivery', 'Processing');
-
