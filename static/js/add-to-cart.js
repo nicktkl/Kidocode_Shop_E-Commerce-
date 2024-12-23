@@ -17,56 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             const name = button.dataset.name; // Get the product name
             const price = parseFloat(button.dataset.price); // Get the product price
-            const image_url = button.dataset.image; // Get the product's image
+            const image = button.dataset.img; // Get the product's image
 
             // Call the addToCart function with the product details
-            addToCart({ name, price, image_url });
+            addToCart({ name, price, image });
         });
     });
-
-    // const deliveryInputs = document.querySelectorAll('input[name="delivery-method"]');
-    // const shippingAddressSection = document.getElementById('shipping-address-section');
-    // const toggleShippingAddressSection = () => {
-    //     const selectedMethod = document.querySelector('input[name="delivery-method"]:checked').value;
-    //     console.log('Selected delivery method:', selectedMethod);
-    //     if(selectedMethod === 'pickup'){
-    //         shippingAddressSection.style.display = 'none';
-    //     } else if(selectedMethod === 'ship'){
-    //         shippingAddressSection.style.display = 'block';
-    //     }
-    // };
-
-    // deliveryInputs.forEach((radio) => {
-    //     radio.addEventListener('change', toggleShippingAddressSection);
-    // });
-
-    // toggleShippingAddressSection();
 });
-
-// document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-//     button.addEventListener('click', () => {
-//         const name = button.dataset.name; // Get the product name
-//         addToCart({ name }); // Send only the name
-//     });
-// });
-
-// document.querySelectorAll('input[name="delivery-method"]').forEach(input => {
-//     input.addEventListener('change', () => {
-//         const deliveryMethod = document.getElementById('shipping-address-section');
-//         if(input.value == 'pickup'){
-//             deliveryMethod.style.display = 'none';
-//         } else {
-//             deliveryMethod.style.display = 'block';
-//         }
-//     });
-// });
 
 // Function to handle adding to the cart
 function addToCart(product){
-    console.log(`Adding ${product.name} to cart at $${product.price}`);
+    console.log(`Adding ${product.name} to cart at RM${product.price}`);
 
     // Send the product to the server using Fetch API
-    fetch('/user/add-to-cart', {
+    fetch('/add-to-cart', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product }),
     })
         .then(response => response.json())
@@ -83,36 +47,6 @@ function addToCart(product){
             console.error('Error adding product to cart:', error);
         });
 }
-
-// // Function handle delivery method changes
-// function updateDeliveryMethod(method){
-//     console.log('Selectd delivery method: ${method}');
-
-//     fetch('/user/update-delivery-method', {
-//         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryMethod: method }),
-//     })
-//         .then(response => response.json())
-//         .then(data => {
-//             if(data.success){
-//                 console.log('Delivery method updated successfully.');
-//                 updateCartCount(data.cart);
-//                 updateCartItems(data.cart);
-//             } else {
-//                 alert('Failed to update delivery method.');
-//             }
-//         })
-//         .catch(error => {
-//             console.log('Error updating delivery method:', error);
-//         });
-// }
-
-// toggleDeliveryMethod.forEach(input => {
-//     input.addEventListener('change', () => {
-//         const deliveryMethod = input.value;
-//         updateDeliveryMethod(deliveryMethod);
-//         shippingAddressSection.style.display = deliveryMethod === 'pickup' ? 'none' : 'block';
-//     });
-// });
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
@@ -179,6 +113,7 @@ function updateCartItems(cart){
         cartItemsTable.innerHTML = ''; // Clear existing content
         if(Object.keys(cart).length === 0) {
             cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
+            // checkoutButton.classList.add('d-none');
         } else {
             for(const [name, { price, quantity }] of Object.entries(cart)) {
                 const row = document.createElement('tr');
@@ -199,6 +134,8 @@ function updateCartItems(cart){
 
                 totalPrice += price * quantity;
             }
+
+            // checkoutButton.classList.add('d-none');
         }
     }
 
@@ -217,12 +154,12 @@ function updateCheckoutCart(cart){
     if(Object.keys(cart).length === 0){
         cartItemsElement.innerHTML = '<li class="list-group-item">Your cart is empty!</li>';
     } else {
-        for (const [name, { price, quantity, image_url }] of Object.entries(cart)) {
+        for (const [name, { price, quantity, image }] of Object.entries(cart)) {
             const listItem = document.createElement('div');
             listItem.className = 'd-flex justify-content-between mb-2';
             listItem.innerHTML = `
                 <div>
-                    <img src="${image_url}" alt="${name}" class="img-thumbnail"
+                    <img src="${image}" alt="${name}" class="img-thumbnail"
                          style="width: 60px; height: 60px; object-fit: cover;">
                     <span>${name} (x${quantity})</span>
                 </div>
@@ -237,16 +174,16 @@ function updateCheckoutCart(cart){
     totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
 }
 
-function removeFromCart(productName){
-    console.log(`Removing ${productName} from cart`);
+function removeFromCart(name){
+    console.log(`Removing ${name} from cart`);
 
-    fetch('/user/remove-from-cart', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: productName }),
+    fetch('/remove-from-cart', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name }),
     })
         .then(response => response.json())
         .then(data => {
             if(data.success){
-                console.log('${productName} removed from cart.');
+                console.log(`${name} removed from cart.`);
                 updateCartCount(data.cart);
                 updateCartItems(data.cart);
             } else{
@@ -254,6 +191,6 @@ function removeFromCart(productName){
             }
         })
         .catch(error => {
-            console.error('Error removing produt from cart:', error);
+            console.error('Error removing product from cart:', error);
         });
 }
