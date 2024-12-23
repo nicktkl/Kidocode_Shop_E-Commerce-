@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch the cart from the server on page load
-    fetch('/user/get-cart')
+    fetch('/get-cart')
         .then(response => response.json())
         .then(cart => {
             // Sync the client-side cart with the server cart
