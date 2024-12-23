@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from flask_bcrypt import Bcrypt
 
@@ -36,6 +36,11 @@ def all_products():
     category = Category.query.all()
     return render_template('all_product.html', product=products, category=category)
 
+@app.route('/get-cart', methods = ['GET'])
+def get_cart():
+    cart = session.get('cart', {})
+    return jsonify(session.get('cart', {}))
+
 @app.route('/cart')
 def cart():
     cart_items = session.get('cart', {})
@@ -46,6 +51,48 @@ def cart():
         for name, details in cart_items.items()
     ]
     return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
+
+@app.route('/add-to-cart', methods = ['POST'])
+def add_to_cart():
+    try:
+        product_data = request.get_json()
+        if not product_data or 'product' not in product_data:
+            return jsonify({'success': False, 'message': 'Invalid payload.'}), 400
+
+        product = product_data['product']
+        product_name = product.get('name')
+        
+        if not product_name:
+            return jsonify({'success': False, 'message': 'Invalid product name.'}), 400
+        
+        product_record = Product.query.filter_by(productName=product_name).first()
+        if not product_record:
+            return jsonify({'success': False, 'message': 'Product not found.'}), 404
+
+        if 'cart' not in session:
+            session['cart'] = {}
+
+        if product_name in session['cart']:
+            session['cart'][product_name]['quantity'] += 1
+        else:
+            session['cart'][product_name] = {
+                'price': float(product_record.price),
+                'image': product_record.img,
+                'quantity': 1
+            }
+
+        session.modified = True
+        return jsonify({'success': True, 'cart': session['cart']})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f"Error: {str(e)}"}), 500
+
+@app.route('/remove-from-cart', methods = ['POST'])
+def remove_from_cart():
+    product_name = request.get_json().get('name')
+    if 'cart' in session and product_name in session['cart']:
+        del session['cart'][product_name]
+        session.modified = True
+    return jsonify({'success': True, 'cart': session.get('cart', {})})
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
