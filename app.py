@@ -47,6 +47,29 @@ def cart():
     ]
     return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
 
+@app.route('/checkout', methods=['GET', 'POST'])
+def checkout():
+    if request.method == 'POST':
+        shipping_address = request.form.get('shipping_address')
+        city = request.form.get('city')
+        state = request.form.get('state')
+        postcode = request.form.get('postcode')
+        phone = request.form.get('phone')
+        cart = session.get('cart', {})
+        total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+
+        # Save order details in the database if needed
+
+        session['cart'] = {}
+        session.modified = True
+
+        flash('Order placed successfully!', 'success')
+        return redirect(url_for('home'))
+    
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
