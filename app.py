@@ -130,7 +130,7 @@ def login():
             session['loggedin'] = True
             session['email'] = user.email
             flash('Login successful!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('user.homepage'))
         else:
             flash('Incorrect e-mail or password.', 'danger')
             
