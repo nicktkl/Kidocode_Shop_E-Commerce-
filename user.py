@@ -1,13 +1,34 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
+from functools import wraps
+
+import random
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
-@user_blueprint.route('/')
-def homepage():
-    return render_template("/user/homepage.html")
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('loggedin'):
+            flash('You need to log in first.', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-@user_blueprint.route('/user/add-to-cart', methods=['POST'])
+@user_blueprint.route('/')
+@login_required
+def homepage():
+    products = Product.query.all()
+    random_products = random.sample(products, min(len(products), 8))
+    reviews = Review.query.filter_by(rating=5).all()
+
+    email = session.get('email', None)
+    if 'cart' not in session:
+        session['cart'] = {}
+    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
+
+@user_blueprint.route('/add-to-cart', methods=['POST'])
+@login_required
 def add_to_cart():
     product_data = request.get_json().get('product')
     product_name = product_data.get('name')
@@ -35,12 +56,23 @@ def add_to_cart():
     session.modified = True
     return jsonify({'success': True, 'cart': session['cart']})
 
-@user_blueprint.route('/user/get-cart', methods=['GET'])
+@user_blueprint.route('/cart')
+def cart():
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    total_price = round(total_price, 2)
+    cart_list = [
+        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        for name, details in cart_items.items()
+    ]
+    return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
+
+@user_blueprint.route('/get-cart', methods=['GET'])
 def get_cart():
     cart = session.get('cart', {})
     return jsonify(cart)
 
-@user_blueprint.route('/user/remove-from-cart', methods=['POST'])
+@user_blueprint.route('/remove-from-cart', methods=['POST'])
 def remove_from_cart():
     product_name = request.get_json().get('name')
     if 'cart' in session and product_name in session['cart']:
@@ -48,7 +80,7 @@ def remove_from_cart():
         session.modified = True
     return jsonify({'success': True, 'cart': session.get('cart', {})})
 
-@user_blueprint.route('/user/checkout', methods=['GET', 'POST'])
+@user_blueprint.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     if request.method == 'POST':
         shipping_address = request.form.get('shipping_address')
