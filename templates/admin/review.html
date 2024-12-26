@@ -35,9 +35,11 @@
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Review ID: {{ review.reviewID }} | Product ID: {{ review.productID }}</h5>
-                            <p class="card-text"><strong>Customer ID:</strong> {{ review.customerID }}</p>
-        
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/50" class="rounded-circle mb-3 me-3" alt="User Image">
+                                <h5 class="card-title"><strong>{{ review.user.firstName }} {{ review.user.lastName }}</strong></h5>
+                            </div>
+                            
                             <!-- Display star rating -->
                             <p class="card-text">
                                 {% for i in range(review.rating) %}
@@ -49,6 +51,7 @@
                             </p>
         
                             <!-- Review comment -->
+                            <p class="card-text">Product: {{ review.product.productName }}</p>
                             <p class="card-text">{{ review.comment }}</p>
                         </div>
                     </div>

@@ -10,6 +10,7 @@
             <h1 class="text-primary">Orders</h1>
         
             <!-- Search Form -->
+             
             <div class="d-flex align-items-center my-3">
                 <form class="d-flex w-100 align-items-center" action="/admin/order" method="get">
                     <div class="flex-grow-1 me-2">
@@ -20,21 +21,33 @@
                     </button>
                 </form>
             </div>
+
+            <div class="d-flex align-items-center my-3">
+                <form class="d-flex w-100 align-items-center" action="/admin/order" method="get" class="mb-4">
+                    <!-- Buttons for Order Status -->
+                    <button type="submit" name="statusOrder" class="btn btn-primary text-light me-1">All</button>
+                    <button type="submit" name="statusOrder" value="completed" class="btn btn-success text-light me-1">Completed</button>
+                    <button type="submit" name="statusOrder" value="processing" class="btn btn-warning text-dark me-1">Processing</button>
+                    <button type="submit" name="statusOrder" value="pending" class="btn btn-secondary text-light me-1">Pending</button>
+                    <button type="submit" name="statusOrder" value="shipped" class="btn btn-info text-light me-1">Shipped</button>
+                    <button type="submit" name="statusOrder" value="cancelled" class="btn btn-danger text-light me-1">Cancelled</button>
+                </form>
+            </div>
         
             <div class="row">
                 {% for order in order %}
-                <div class="col-md-4 mb-4">
+                <div class="col-md-6 col-12 mb-3">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title">Order ID: {{ order.orderID }}</h5>
+                            <h6 class="card-title" style="display: flex; justify-content: space-between;">
+                                <span>Order ID</span>
+                                <span>{{ order.orderID }}</span>
+                            </h6>
                         </div>
+                        
                         <div class="card-body">
                             <table class="table">
                                 <tbody>
-                                    <tr>
-                                        <td>Customer ID:</td>
-                                        <td>{{ order.userID }}</td>
-                                    </tr>
                                     <tr>
                                         <td>Name:</td>
                                         <td>{{ order.user.firstName }} {{ order.user.lastName }}</td>
@@ -53,8 +66,6 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Order Item ID</th>
-                                        <th>Product ID</th>
                                         <th>Product Name</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
@@ -64,26 +75,25 @@
                                 <tbody>
                                     {% for item in order.order_items %}
                                     <tr>
-                                        <td>{{ item.orderItemID }}</td>
-                                        <td>{{ item.productID }}</td>
                                         <td>{{ item.product.productName }}</td>
                                         <td>{{ item.quantity }}</td>
                                         <td>{{ item.price }}</td>
                                         {% if loop.first %}
-                                            <td rowspan="{{ order.order_items|length }}" class="align-middle">{{ order.status }}</td>
+                                            <td rowspan="{{ order.order_items|length+1 }}" class="align-middle">{{ order.status }}</td>
                                         {% endif %}
                                     </tr>
                                     {% endfor %}
                                     <tr>
-                                        <th colspan="4">Total Amount:</th>
+                                        <th colspan="2">Total Amount:</th>
                                         <td>{{ order.totalAmount }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="card-footer text-muted">
-                            Created At: {{ order.createdAt }} | Updated At: {{ order.updatedAt }}
-                        </div>
+                        <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
+                            <span>Created At: {{ order.createdAt }}</span>
+                            <span>Updated At: {{ order.updatedAt }}</span>
+                        </div>                        
                     </div>
                 </div>
                 {% endfor %}

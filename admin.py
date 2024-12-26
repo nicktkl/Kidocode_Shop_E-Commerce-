@@ -100,14 +100,14 @@ def category():
             name = request.form['sc_name']
             if saveID:
                 category = Category.query.get_or_404(saveID)
-                child = Category.query.filter_by(parentID=saveID).all()
                 
                 try:
-                    if category.parentID:  
+                    if category.parentID is None:  
                         category.name = name
-                        category.categoryID = f"{saveID[:6]}{name[0].upper()}"
+                        category.categoryID = f"{saveID[:4]}{name.strip()[:3].upper()}"
                     else:
                         category.name = name
+                        category.categoryID = f"{saveID[:6]}{name[0].upper()}"
                     db.session.commit()
                     return redirect(url_for('admin.category'))
                 except Exception as e:
@@ -130,8 +130,23 @@ def category():
                         db.session.rollback()
                         return f"An error occurred while deleting the category: {e}", 500
             return "Category ID not provided", 400
-        
-    main_categories = Category.query.filter_by(parentID=None).all()
+
+    search_query = request.args.get('searchCategory', '').strip()
+
+    if search_query:
+        subquery = Category.query.with_entities(Category.parentID).filter(
+            Category.categoryID.ilike(f'%{search_query}%') |
+            Category.name.ilike(f'%{search_query}%'),
+            Category.parentID.isnot(None)
+        ).distinct()
+
+        main_categories = Category.query.filter(
+            (Category.name.ilike(f'%{search_query}%') &
+            Category.parentID.is_(None)) | 
+            (Category.categoryID.in_(subquery)) 
+        ).all()
+    else:
+        main_categories = Category.query.filter_by(parentID=None).all()
 
     return render_template("/admin/category.html", main_categories=main_categories)
 
@@ -225,15 +240,17 @@ def customer():
 @admin_blueprint.route('/order')
 def order():
     search_query = request.args.get('searchOrder', '')  
-    if search_query:
+    search_filter = request.args.get('statusOrder', '')  
+    if search_query or search_filter:
         orders = Order.query.filter(
-            Order.orderID.ilike(f'%{search_query}%')
+            Order.orderID.ilike(f'%{search_query}%') &
+            Order.status.ilike(f'%{search_filter}%')
         ).all()  
         order_ids = [order.orderID for order in orders]
         orderItems = OrderItem.query.filter(OrderItem.orderID.in_(order_ids)).all()
     else:
         orders = Order.query.all()
-        orderItems = OrderItem.query.all()
+        orderItems = OrderItem.query.all() 
    
     return render_template("/admin/order.html", order=orders, order_items=orderItems)
 
@@ -245,9 +262,11 @@ def review():
         review = Review.query.filter(
             Review.rating.ilike(f'%{search_query}%')
         ).all()  
+        product = Product.query.all()
     else:
         review = Review.query.all()
-    return render_template("/admin/review.html", review=review)
+        product = Product.query.all()
+    return render_template("/admin/review.html", review=review, product=product)
 
 #SALE
 @admin_blueprint.route('/transaction')

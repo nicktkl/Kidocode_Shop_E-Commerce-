@@ -25,55 +25,87 @@
             </div>
             
     
-            <table class="table table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Image</th>
-                        <th>Details</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in product %}
-                    <form action="/admin/product" method="post">
-                        <tr>
-                            <td>{{ product.productID }}</td>
-                            <td>
-                                {% if product.img is none %}
-                                <img src="https://via.placeholder.com/100" class="img-thumbnail">
-                                {% else %}
-                                <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" class="img-thumbnail"
-                                    width="100">
-                                {% endif %}
-                            </td>
-                            <td>
-                                <input type="text" class="form-control my-1" name="p_name" required value="{{ product.productName }}">
-                                <textarea class="form-control my-1" name="p_desc" rows="3" required>{{ product.description }}</textarea>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control text-center" name="p_price" min="0.01" step="0.01" value="{{ product.price }}" required>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control text-center" name="p_stock" min="0" value="{{ product.stock }}" required>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-column justify-content-start my-1">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm mb-2" name="btndelete" value="{{product.productID}}">
-                                        <i class="bi bi-trash"></i> Remove
-                                    </button>
-                                    <button type="submit" class="btn btn-outline-success btn-sm" name="btnedit" value="{{product.productID}}">
-                                        <i class="bi bi-save"></i> Update
-                                    </button>
-                                </div>                                
-                            </td>
-                        </tr>
-                    </form>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="row">
+                {% for product in product %}
+                <div class="col-md-6 col-12 mb-3">
+                    <div class="card">
+                        <!-- Card Header with Product ID and Category -->
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong><i class="bi bi-tag mx-2"></i></strong>{{ product.productID }}
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-folder mx-2"></i></strong>{{ product.category.name }}
+                            </div>
+                        </div>
+            
+                        <!-- Form to Edit Product Details -->
+                        <form action="/admin/product" method="post">
+                            <div class="card-body">
+                                <div class="d-flex mb-3">
+                                    <!-- Product Image (Larger with 30% width) -->
+                                    <div class="me-3" style="width: 50%; height: 100%;">
+                                        {% if product.img is none %}
+                                        <img src="https://via.placeholder.com/100" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
+                                        {% else %}
+                                        <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
+                                        {% endif %}
+                                    </div>
+            
+                                    <!-- Product Details: Name, Description, Price, Stock, and Status -->
+                                    <div class="flex-grow-1">
+                                        <!-- Product Name with Icon inside Input Group -->
+                                        <div class="mb-2 input-group">
+                                            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                            <input type="text" class="form-control" name="p_name" required value="{{ product.productName }}">
+                                        </div>
+            
+                                        <!-- Product Description with Icon inside Input Group -->
+                                        <div class="mb-2 input-group">
+                                            <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                                            <textarea class="form-control" name="p_desc" rows="2" required>{{ product.description }}</textarea>
+                                        </div>
+            
+                                        <!-- Price and Stock with Icon inside Input Group -->
+                                        <div class="d-flex mb-3">
+                                            <!-- Price with Icon inside Input Group -->
+                                            <div class="me-3" style="width: 45%;">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                                    <input type="number" class="form-control" name="p_price" min="0.01" step="0.01" value="{{ product.price }}" required>
+                                                </div>
+                                            </div>
+            
+                                            <!-- Stock with Icon inside Input Group -->
+                                            <div style="width: 45%;">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="bi bi-archive"></i></span>
+                                                    <input type="number" class="form-control" name="p_stock" min="0" value="{{ product.stock }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                        <!-- Status Toggle with Icon inside Input Group -->
+                                        <div class="mb-3 input-group">
+                                            <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Card Footer with Action Buttons -->
+
+                            <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
+                                <span>Created At: {{ product.createdAt }}</span>
+                                <span>Updated At: {{ product.updatedAt }}</span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
         </div>
     
         <!-- Add Product Modal -->

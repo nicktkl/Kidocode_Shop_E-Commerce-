@@ -7,7 +7,7 @@
     <body>
         {% include "/admin/index.html" %}
         <div class="container my-5">
-            <h1 class="text-primary">Transactions</h1>
+            <h1 class="text-primary">Sale</h1>
         
             <!-- Search Form -->
             <div class="d-flex align-items-center my-3">
@@ -41,7 +41,24 @@
                             <td>{{ payment.paymentDate }}</td>
                             <td>{{ payment.amount }}</td>
                             <td>{{ payment.paymentMethod }}</td>
-                            <td>{{ payment.status }}</td>
+                            <td class="p-2">
+                                <span style="display: inline-block; padding: 5px 20px; width: 120px; text-align: center;" 
+                                    class="
+                                    {% if payment.status == 'Completed' %}
+                                        bg-success text-light rounded-pill
+                                    {% elif payment.status == 'Cancelled' %}
+                                        bg-danger text-light rounded-pill
+                                    {% elif payment.status == 'Processing' %}
+                                        bg-warning text-dark rounded-pill
+                                    {% elif payment.status == 'Shipped' %}
+                                        bg-info text-light rounded-pill
+                                    {% elif payment.status == 'Pending' %}
+                                        bg-secondary text-light rounded-pill
+                                    {% endif %}
+                                " style="padding: 5px 15px;">
+                                    {{ payment.status }}
+                                </span>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
