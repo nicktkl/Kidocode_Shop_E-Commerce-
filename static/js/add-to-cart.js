@@ -82,10 +82,11 @@ function updateCartItems(cart){
             checkoutButton.classList.add('d-none');
             viewCartButton.classList.add('d-none');
         } else {
-            for(const [name, { price, quantity }] of Object.entries(cart)) {
+            for(const [name, { price, quantity, image }] of Object.entries(cart)) {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
                 listItem.innerHTML = `
+                    <img src="${image}" alt="${name}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
                     <span>${name} (x${quantity})</span>
                     <span>RM${(price * quantity).toFixed(2)}</span>
                 `;
