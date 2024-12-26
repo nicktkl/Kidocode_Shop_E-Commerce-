@@ -1,13 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-# from flask_bcrypt import Bcrypt
+# from app import bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from functools import wraps
 
 import random
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
-
-# bcrypt = Bcrypt(User)
 
 def login_required(f):
     @wraps(f)
@@ -26,9 +24,18 @@ def homepage():
     reviews = Review.query.filter_by(rating=5).all()
 
     email = session.get('email', None)
+    first_name = session.get('first_name', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
+    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email, first_name=first_name)
+
+@user_blueprint.route('/logout')
+def logout():
+    session.pop('loggedin', None)
+    session.pop('email', None)
+    session.pop('first_name', None)
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('home'))
 
 @user_blueprint.route('/add-to-cart', methods=['POST'])
 @login_required
@@ -86,27 +93,66 @@ def remove_from_cart():
 @user_blueprint.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
+    cart_items = session.get('cart', {})
+    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+
     if request.method == 'POST':
+        if not session.get('loggedin'):  # Process login inside the modal
+            email = request.form.get('email')
+            password = request.form.get('password')
+            user = User.query.filter_by(email=email).first()
+
+            if user and bcrypt.check_password_hash(user.password, password):
+                session['loggedin'] = True
+                session['email'] = user.email
+                flash('Login successful! You can now proceed with checkout.', 'success')
+                return jsonify({'success': True})  # Response for AJAX login
+
+            flash('Invalid email or password. Please try again.', 'danger')
+            return jsonify({'success': False, 'message': 'Invalid credentials'})
+
+        # Process checkout form if user is logged in
         shipping_address = request.form.get('shipping_address')
         city = request.form.get('city')
         state = request.form.get('state')
         postcode = request.form.get('postcode')
         phone = request.form.get('phone')
-        cart = session.get('cart', {})
-        total_price = sum(item['price'] * item['quantity'] for item in cart.values())
 
-        # Save order details in the database if needed
-
+        # Save order details in the database (if necessary)
         session['cart'] = {}
         session.modified = True
 
         flash('Order placed successfully!', 'success')
         return redirect(url_for('home'))
+
+    return render_template(
+        '/homepage/Checkout.html',
+        is_logged_in=session.get('loggedin', False),
+        cart_items=cart_items,
+        total_price=total_price
+    )
+
+    # if request.method == 'POST':
+    #     shipping_address = request.form.get('shipping_address')
+    #     city = request.form.get('city')
+    #     state = request.form.get('state')
+    #     postcode = request.form.get('postcode')
+    #     phone = request.form.get('phone')
+    #     cart = session.get('cart', {})
+    #     total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+
+    #     # Save order details in the database if needed
+
+    #     session['cart'] = {}
+    #     session.modified = True
+
+    #     flash('Order placed successfully!', 'success')
+    #     return redirect(url_for('home'))
     
-    cart_items = session.get('cart', {})
-    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
-    total_price = round(total_price, 2)
-    return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
+    # cart_items = session.get('cart', {})
+    # total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
+    # total_price = round(total_price, 2)
+    # return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
 
 # def checkout():
 #     if not session.get('loggedin'):
