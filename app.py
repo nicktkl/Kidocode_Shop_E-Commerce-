@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from flask_bcrypt import Bcrypt
+from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 
 import random
 
@@ -96,6 +96,25 @@ def remove_from_cart():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    if not session.get('loggedin'):
+        if request.method == 'POST':
+            email = request.form['email']
+            password = request.form['password']
+            user = User.query.filter_by(email=email).first()
+            if user and bcrypt.check_password_hash(user.password, password):
+                session['loggedin'] = True
+                session['email'] = user.email
+                flash('Login successful! You can now proceed with checkout.', 'success')
+                return redirect(url_for('checkout'))
+            flash('Invalid email or password. Please try again.', 'danger')
+
+        return render_template(
+            '/homepage/Checkout.html',
+            cart_items = session.get('cart', {}),
+            total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+            is_logged_in = False
+        )
+    
     if request.method == 'POST':
         shipping_address = request.form.get('shipping_address')
         city = request.form.get('city')
@@ -105,7 +124,7 @@ def checkout():
         cart = session.get('cart', {})
         total_price = sum(item['price'] * item['quantity'] for item in cart.values())
 
-        # Save order details in the database if needed
+        # Add functions to save order details in the database if needed
 
         session['cart'] = {}
         session.modified = True
@@ -113,10 +132,12 @@ def checkout():
         flash('Order placed successfully!', 'success')
         return redirect(url_for('home'))
     
-    cart_items = session.get('cart', {})
-    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
-    total_price = round(total_price, 2)
-    return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
+    return render_template(
+        '/homepage/Checkout.html',
+        cart_items = session.get('cart', {}),
+        total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+        is_logged_in = True
+    )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -129,6 +150,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password_candidate):
             session['loggedin'] = True
             session['email'] = user.email
+            next_url = request.args.get('next') or url_for('home')
             flash('Login successful!', 'success')
             return redirect(url_for('user.homepage'))
         else:
