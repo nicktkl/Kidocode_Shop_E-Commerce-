@@ -32,7 +32,7 @@ CREATE TABLE product (
   productID int NOT NULL AUTO_INCREMENT,
   productName varchar(30) NOT NULL,
   description text,
-  img varchar(255) DEFAULT NULL,
+  img varchar(255) DEFAULT 'defult.png',
   price double NOT NULL,
   stock int NOT NULL,
   categoryID varchar(7) DEFAULT NULL,
@@ -58,21 +58,20 @@ VALUES
 
 INSERT INTO product (productName, description, price, stock, categoryID, img, status)
 VALUES
-    ('Testing 01', 'This product is just a testing due to the current situation is testing.', 9.99, 1, '3DP001A', 'static/images/dummy.png', 'active'),
-    ('Testing 02', 'This product is just a testing due to the current situation is testing.', 19.99, 2, '3DP002V', 'static/images/dummy2.png', 'active'),
-    ('Testing 03', 'This product is just a testing due to the current situation is testing.', 29.99, 3, '3DP003O', 'static/images/dummy3.png', 'active'),
-    ('Testing 04', 'This product is just a testing due to the current situation is testing.', 39.99, 4, 'ELE001K', 'static/images/dummy4.png', 'active'),
-    ('Testing 05', 'This product is just a testing due to the current situation is testing.', 49.99, 5, 'ELE002B', 'static/images/dummy5.png', 'active'),
-    ('Testing 06', 'This product is just a testing due to the current situation is testing.', 59.99, 6, 'ELE003C', 'static/images/dummy6.png', 'active'),
-    ('Testing 07', 'This product is just a testing due to the current situation is testing.', 69.99, 7, 'ELE004W', 'static/images/dummy7.png', 'active'),
-    ('Testing 08', 'This product is just a testing due to the current situation is testing.', 79.99, 8, 'ELE004W', 'static/images/dummy8.png', 'active'),
-    ('Testing 09', 'This product is just a testing due to the current situation is testing.', 89.99, 9, 'ELE003C', 'static/images/dummy9.png', 'active'),
-    ('Testing 10', 'This product is just a testing due to the current situation is testing.', 99.99, 10, 'ELE002B', 'static/images/dummy10.png', 'active'),
-    ('Testing 11', 'This product is just a testing due to the current situation is testing.', 109.99, 11, 'ELE001K', 'static/images/dummy11.png', 'active'),
-    ('Testing 12', 'This product is just a testing due to the current situation is testing.', 119.99, 12, '3DP003O', 'static/images/dummy12.png', 'active'),
-    ('Testing 13', 'This product is just a testing due to the current situation is testing.', 129.99, 13, '3DP002V', 'static/images/dummy13.png', 'active'),
-    ('Testing 14', 'This product is just a testing due to the current situation is testing.', 139.99, 14, '3DP001A', 'static/images/dummy14.png', 'active');
-
+    ('Testing 01', 'This product is just a testing due to the current situation is testing.', 9.99, 1, '3DP001A', 'dummy.png', 'active'),
+    ('Testing 02', 'This product is just a testing due to the current situation is testing.', 19.99, 2, '3DP002V', 'dummy2.png', 'active'),
+    ('Testing 03', 'This product is just a testing due to the current situation is testing.', 29.99, 3, '3DP003O', 'dummy3.png', 'active'),
+    ('Testing 04', 'This product is just a testing due to the current situation is testing.', 39.99, 4, 'ELE001K', 'dummy4.png', 'active'),
+    ('Testing 05', 'This product is just a testing due to the current situation is testing.', 49.99, 5, 'ELE002B', 'dummy5.png', 'active'),
+    ('Testing 06', 'This product is just a testing due to the current situation is testing.', 59.99, 6, 'ELE003C', 'dummy6.png', 'active'),
+    ('Testing 07', 'This product is just a testing due to the current situation is testing.', 69.99, 7, 'ELE004W', 'dummy7.png', 'active'),
+    ('Testing 08', 'This product is just a testing due to the current situation is testing.', 79.99, 8, 'ELE004W', 'dummy8.png', 'active'),
+    ('Testing 09', 'This product is just a testing due to the current situation is testing.', 89.99, 9, 'ELE003C', 'dummy9.png', 'active'),
+    ('Testing 10', 'This product is just a testing due to the current situation is testing.', 99.99, 10, 'ELE002B', 'dummy10.png', 'active'),
+    ('Testing 11', 'This product is just a testing due to the current situation is testing.', 109.99, 11, 'ELE001K', 'dummy11.png', 'active'),
+    ('Testing 12', 'This product is just a testing due to the current situation is testing.', 119.99, 12, '3DP003O', 'dummy12.png', 'active'),
+    ('Testing 13', 'This product is just a testing due to the current situation is testing.', 129.99, 13, '3DP002V', 'dummy13.png', 'active'),
+    ('Testing 14', 'This product is just a testing due to the current situation is testing.', 139.99, 14, '3DP001A', 'dummy14.png', 'active');
 
 CREATE TABLE user (
   userID int NOT NULL AUTO_INCREMENT,
