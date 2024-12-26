@@ -7,13 +7,17 @@ import random
 from user import user_blueprint
 from admin import admin_blueprint
 
+# bcrypt = Bcrypt()
+
 app = Flask(__name__)
+
 app.secret_key = 'kidocodeverysecretkey'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@127.0.0.1:3306/ecommerceNEW'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+# bcrypt.init_app(app)
 bcrypt = Bcrypt(app)
 
 app.register_blueprint(user_blueprint)
@@ -150,6 +154,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password_candidate):
             session['loggedin'] = True
             session['email'] = user.email
+            session['first_name'] = user.firstName
             next_url = request.args.get('next') or url_for('home')
             flash('Login successful!', 'success')
             return redirect(url_for('user.homepage'))
@@ -189,13 +194,6 @@ def register():
 @app.route('/forgotpwd', methods = ['GET', 'POST'])
 def forgotpass():
     return render_template('/forgot-pass.html')
-
-@app.route('/logout')
-def logout():
-    session.pop('loggedin', None)
-    session.pop('email', None)
-    flash('You have been loged out.', 'info')
-    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)
