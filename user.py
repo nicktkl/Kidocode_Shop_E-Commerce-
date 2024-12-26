@@ -1,10 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+# from flask_bcrypt import Bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from functools import wraps
 
 import random
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
+
+# bcrypt = Bcrypt(User)
 
 def login_required(f):
     @wraps(f)
@@ -81,6 +84,7 @@ def remove_from_cart():
     return jsonify({'success': True, 'cart': session.get('cart', {})})
 
 @user_blueprint.route('/checkout', methods=['GET', 'POST'])
+@login_required
 def checkout():
     if request.method == 'POST':
         shipping_address = request.form.get('shipping_address')
@@ -103,3 +107,47 @@ def checkout():
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
     total_price = round(total_price, 2)
     return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
+
+# def checkout():
+#     if not session.get('loggedin'):
+#         if request.method == 'POST':
+#             email = request.form['email']
+#             password = request.form['password']
+#             user = User.query.filter_by(email=email).first()
+#             if user and bcrypt.check_password_hash(user.password, password):
+#                 session['loggedin'] = True
+#                 session['email'] = user.email
+#                 flash('Login successful! You can now proceed with checkout.', 'success')
+#                 return redirect(url_for('checkout'))
+#             flash('Invalid email or password. Please try again.', 'danger')
+
+#         return render_template(
+#             '/homepage/Checkout.html',
+#             cart_items = session.get('cart', {}),
+#             total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+#             is_logged_in = False
+#         )
+    
+#     if request.method == 'POST':
+#         shipping_address = request.form.get('shipping_address')
+#         city = request.form.get('city')
+#         state = request.form.get('state')
+#         postcode = request.form.get('postcode')
+#         phone = request.form.get('phone')
+#         cart = session.get('cart', {})
+#         total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+
+#         # Add functions to save order details in the database if needed
+
+#         session['cart'] = {}
+#         session.modified = True
+
+#         flash('Order placed successfully!', 'success')
+#         return redirect(url_for('home'))
+    
+#     return render_template(
+#         '/homepage/Checkout.html',
+#         cart_items = session.get('cart', {}),
+#         total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+#         is_logged_in = True
+#     )
