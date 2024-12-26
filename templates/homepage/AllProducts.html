@@ -8,14 +8,15 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
             <link rel="stylesheet" href="../css/main.css">
             <link rel="stylesheet" href="../css/product.css">
-            <script src="/static/script/script.js"></script>
+            <script src="{{ url_for('static', filename='js/add-to-cart.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/script.js') }}"></script>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-xxl">
-                <a href="{{ url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
-                    <img src="./static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
+                <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
+                    <img src="../static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
                     Shop
                 </a>
 
