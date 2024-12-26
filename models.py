@@ -11,8 +11,6 @@ class Category(db.Model):
     parentID = db.Column(db.String(7), db.ForeignKey('category.categoryID'), nullable=True)
     createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-
-    # Self-referential relationship to handle subcategories
     parent_category = db.relationship('Category', backref=db.backref('subcategories', lazy=True), remote_side=[categoryID])
     
     def __init__(self, categoryID, name, parentID=None):
@@ -38,13 +36,8 @@ class Product(db.Model):
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
     status = db.Column(db.Enum('active', 'inactive', name='status_enum'), default='active', nullable=False)
 
-    # Relationship with Category model
     category = db.relationship('Category', backref='products')
-
-    # Relationship with OrderItem (through OrderItem model)
     order_items = db.relationship('OrderItem', back_populates='product')
-
-    # Relationship with Review model
     reviews = db.relationship('Review', back_populates='product')
 
     def __init__(self, productName, description, price, stock, categoryID, img=None, status='active'):
@@ -74,7 +67,6 @@ class User(db.Model):
     createdAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     updatedAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
-    # Relationships with Order and Review
     orders = db.relationship('Order', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')  # Relationship for reviews
 
