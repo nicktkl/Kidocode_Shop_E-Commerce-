@@ -11,7 +11,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('loggedin'):
-            flash('You need to log in first.', 'warning')
+            flash('You need to sign in first.', 'warning')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -27,14 +27,18 @@ def homepage():
     first_name = session.get('first_name', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email, first_name=first_name)
+    return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email, first_name = first_name)
+
+@user_blueprint.route('/session-check', methods=['GET'])
+def session_check():
+    return jsonify({'logged_in': session.get('loggedin', False)})
 
 @user_blueprint.route('/logout')
 def logout():
     session.pop('loggedin', None)
     session.pop('email', None)
     session.pop('first_name', None)
-    flash('You have been logged out.', 'info')
+    flash('You have been signed out.', 'info')
     return redirect(url_for('home'))
 
 @user_blueprint.route('/add-to-cart', methods=['POST'])
@@ -75,7 +79,7 @@ def cart():
         {'name': name, 'price': details['price'], 'quantity': details['quantity']}
         for name, details in cart_items.items()
     ]
-    return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
+    return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
 
 @user_blueprint.route('/get-cart', methods=['GET'])
 def get_cart():
