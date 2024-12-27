@@ -12,7 +12,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-xxl">
                 <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
-                    <img src="../static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
+                    <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
                     Shop
                 </a>
         </nav>
