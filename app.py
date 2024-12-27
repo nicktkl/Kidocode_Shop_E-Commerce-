@@ -2,13 +2,17 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_bcrypt import Bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from flask_bcrypt import Bcrypt
+from datetime import datetime
+import pytz
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 import random
 
 from user import user_blueprint
 from admin import admin_blueprint
 
-# bcrypt = Bcrypt()
+bcrypt = Bcrypt()
 
 app = Flask(__name__)
 
@@ -29,7 +33,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 mail = Mail(app)
 db.init_app(app)
-# bcrypt.init_app(app)
+bcrypt.init_app(app)
 bcrypt = Bcrypt(app)
 
 app.register_blueprint(user_blueprint)
@@ -231,6 +235,44 @@ def forgotpass():
             return redirect(url_for('forgotpass'))
         
     return render_template('/forgot-pass.html')
+
+@app.route('/resetpwd/<token>', methods=['GET', 'POST'])
+def resetpwd(token):
+    try:
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+
+        if request.method == 'POST':
+            password = request.form['password']
+            confirm_password = request.form['confirm_password']
+            
+            if password != confirm_password:
+                flash('Passwords do not match, please try again.', 'danger')
+                return redirect(url_for('resetpwd', token=token))
+            
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            user = db.session.query(User).filter_by(email=email).first()
+
+            if user:
+                user.password = hashed_password
+                try:
+                    db.session.commit()
+                    flash('Your password has been updated successfully!', 'success')
+                    return redirect(url_for('login'))
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f'An error occurred: {str(e)}', 'danger')
+                    return redirect(url_for('resetpwd', token=token))
+            else:
+                flash('User not found.', 'danger')
+                return redirect(url_for('resetpwd', token=token))
+
+    except Exception as e:
+        flash('The reset link is invalid or has expired.', 'danger')
+        return redirect(url_for('forgotpass'))
+
+    return render_template('reset-pass.html', token=token)
+
 
 @app.route('/logout')
 def logout():
