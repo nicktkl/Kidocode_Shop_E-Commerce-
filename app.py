@@ -1,18 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask_bcrypt import Bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from flask_bcrypt import Bcrypt
-from flask_mail import Mail, Message
-from itsdangerous import URLSafeTimedSerializer
-from datetime import datetime
-import pytz
-
 
 import random
 
 from user import user_blueprint
 from admin import admin_blueprint
 
+# bcrypt = Bcrypt()
+
 app = Flask(__name__)
+
 app.secret_key = 'kidocodeverysecretkey'
 
 app.config.update({
@@ -30,6 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 mail = Mail(app)
 db.init_app(app)
+# bcrypt.init_app(app)
 bcrypt = Bcrypt(app)
 
 app.register_blueprint(user_blueprint)
@@ -112,6 +112,25 @@ def remove_from_cart():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    if not session.get('loggedin'):
+        if request.method == 'POST':
+            email = request.form['email']
+            password = request.form['password']
+            user = User.query.filter_by(email=email).first()
+            if user and bcrypt.check_password_hash(user.password, password):
+                session['loggedin'] = True
+                session['email'] = user.email
+                flash('Login successful! You can now proceed with checkout.', 'success')
+                return redirect(url_for('checkout'))
+            flash('Invalid email or password. Please try again.', 'danger')
+
+        return render_template(
+            '/homepage/Checkout.html',
+            cart_items = session.get('cart', {}),
+            total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+            is_logged_in = False
+        )
+    
     if request.method == 'POST':
         shipping_address = request.form.get('shipping_address')
         city = request.form.get('city')
@@ -121,7 +140,7 @@ def checkout():
         cart = session.get('cart', {})
         total_price = sum(item['price'] * item['quantity'] for item in cart.values())
 
-        # Save order details in the database if needed
+        # Add functions to save order details in the database if needed
 
         session['cart'] = {}
         session.modified = True
@@ -129,10 +148,12 @@ def checkout():
         flash('Order placed successfully!', 'success')
         return redirect(url_for('home'))
     
-    cart_items = session.get('cart', {})
-    total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
-    total_price = round(total_price, 2)
-    return render_template('/homepage/Checkout.html', cart_items=cart_items, total_price=total_price)
+    return render_template(
+        '/homepage/Checkout.html',
+        cart_items = session.get('cart', {}),
+        total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+        is_logged_in = True
+    )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -145,6 +166,8 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password_candidate):
             session['loggedin'] = True
             session['email'] = user.email
+            session['first_name'] = user.firstName
+            next_url = request.args.get('next') or url_for('home')
             flash('Login successful!', 'success')
             return redirect(url_for('user.homepage'))
         else:
@@ -208,45 +231,6 @@ def forgotpass():
             return redirect(url_for('forgotpass'))
         
     return render_template('/forgot-pass.html')
-
-@app.route('/resetpwd/<token>', methods=['GET', 'POST'])
-def resetpwd(token):
-    try:
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
-
-        if request.method == 'POST':
-            password = request.form['password']
-            confirm_password = request.form['confirm_password']
-            
-            if password != confirm_password:
-                flash('Passwords do not match, please try again.', 'danger')
-                return redirect(url_for('resetpwd', token=token))
-            
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            
-            user = db.session.query(User).filter_by(email=email).first()
-            
-            if user:
-                user.password = hashed_password
-
-                try:
-                    db.session.commit()
-                    flash('Your password has been updated successfully!', 'success')
-                    return redirect(url_for('login'))
-                except Exception as e:
-                    db.session.rollback()
-                    flash(f'An error occurred: {str(e)}', 'danger')
-                    return redirect(url_for('resetpwd', token=token))
-            else:
-                flash('User not found.', 'danger')
-                return redirect(url_for('resetpwd', token=token))
-
-    except Exception as e:
-        flash('The reset link is invalid or has expired.', 'danger')
-        return redirect(url_for('forgotpass'))
-
-    return render_template('reset-pass.html', token=token)
 
 @app.route('/logout')
 def logout():

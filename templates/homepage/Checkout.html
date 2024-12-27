@@ -2,10 +2,11 @@
 <html>
     <head>
         <title>Shop Checkout - Kidocode</title>
-        <link rel="icon" type="image/x-icon" href="/static/images/kidocode_symbol_logo.png">
+        <link rel="icon" type="image/x-icon" href="../static/images/kidocode_symbol_logo.png">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="{{ url_for('static', filename='js/add-to-cart.js') }}"></script>
     </head>
     <body>
         <div class="container my-5">
@@ -13,11 +14,12 @@
                 <!-- Left Section: User Input -->
                 <div class="col-md-6">
                     <header class="d-flex justify-content-center py-3">
-                        <a href="{{ url_for('home')}}">
-                            <img src="/static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375">
+                        <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}">
+                            <img src="../static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375">
                         </a>
                     </header>
-                    <form>
+                    {% if is_logged_in %}
+                    <form method="POST">
                         <!-- Contact Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Contact</label>
@@ -121,6 +123,9 @@
                             <button type="submit" class="btn btn-primary">Place Order</button>
                         </div>
                     </form>
+                    {% else %}
+                    <p class="text-center text-danger">You must log in to proceed with checkout.</p>
+                    {% endif %}
                 </div>
                 <!-- Right Section: Cart Summary -->
                 <div class="col-md-6">
@@ -136,7 +141,7 @@
                                 <!-- Example of cart item -->
                                 <div class="d-flex justify-content-between mb-2">
                                     <div>
-                                        <img src="{{ item.image }}" alt="{{ item_name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item_name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
                                         <span>{{ item_name }} (x{{item.quantity }})</span>
                                     </div>
                                     <span>RM{{ "%.2f"|format(item.price * item.quantity) }}</span>
@@ -147,7 +152,7 @@
                             <!-- Subtotal -->
                             <div class="d-flex justify-content-between">
                                 <span>Subtotal:</span>
-                                <span id="subtotal">RM{{ total_price }}</span>
+                                <span id="subtotal">RM{{ "%.2f"|format(total_price) }}</span>
                             </div>
                             <!-- Shipping Fee -->
                             <div class="d-flex justify-content-between">
@@ -167,8 +172,60 @@
                 </div>
             </div>
         </div>
+        <!-- Login -->
+        <div class="modal fade" id="loginModal" tabindex="1" aria-labelledby="loginModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLabel">Sign In</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                        </form>
+                        <p class="text-center mt-3">
+                            Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
         <script>
+            // Show login modal if the user is not logged in
+            {% if not is_logged_in %}
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            {% endif %}
+
+            // Handle login form submission via AJAX
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                fetch('/user/checkout', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload(); // Reload the page to show the checkout form
+                        } else {
+                            alert(data.message || 'Login failed. Please try again.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
             // Example: Toggle shipping address section based on delivery method
             document.querySelectorAll('input[name="delivery-method"]').forEach(input => {
                 input.addEventListener('change', () => {
