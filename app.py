@@ -56,8 +56,8 @@ def session_check():
 @app.route('/allproducts')
 def all_products():
     products = Product.query.all()
-    category = Category.query.all()
-    return render_template('all_product.html', product = products, category = category)
+    categories = Category.query.all()
+    return render_template('/homepage/AllProducts.html', products = products, category = categories)
 
 @app.route('/get-cart', methods = ['GET'])
 def get_cart():
@@ -119,47 +119,32 @@ def remove_from_cart():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    if not session.get('loggedin'):
-        if request.method == 'POST':
-            email = request.form['email']
-            password = request.form['password']
-            user = User.query.filter_by(email = email).first()
-            if user and bcrypt.check_password_hash(user.password, password):
-                session['loggedin'] = True
-                session['email'] = user.email
-                flash('Login successful! You can now proceed with checkout.', 'success')
-                return redirect(url_for('checkout'))
-            flash('Invalid email or password. Please try again.', 'danger')
+    # Check if the user is logged in
+    if session.get('loggedin'):
+        return redirect(url_for('user.checkout'))  # Redirect to user.py's checkout
 
-        return render_template(
-            '/homepage/Checkout.html',
-            cart_items = session.get('cart', {}),
-            total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
-            is_logged_in = False
-        )
-    
     if request.method == 'POST':
-        shipping_address = request.form.get('shipping_address')
-        city = request.form.get('city')
-        state = request.form.get('state')
-        postcode = request.form.get('postcode')
-        phone = request.form.get('phone')
-        cart = session.get('cart', {})
-        total_price = sum(item['price'] * item['quantity'] for item in cart.values())
+        # Process login form
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
 
-        # Add functions to save order details in the database if needed
+        if user and bcrypt.check_password_hash(user.password, password):
+            # Set user session
+            session['loggedin'] = True
+            session['email'] = user.email
+            session['first_name'] = user.firstName
+            flash('Login successful! Redirecting to checkout.', 'success')
+            return redirect(url_for('user.checkout'))  # Redirect after login
 
-        session['cart'] = {}
-        session.modified = True
+        flash('Invalid email or password. Please try again.', 'danger')
 
-        flash('Order placed successfully!', 'success')
-        return redirect(url_for('home'))
-    
+    # Render login form on checkout.html for guests
     return render_template(
         '/homepage/Checkout.html',
-        cart_items = session.get('cart', {}),
-        total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
-        is_logged_in = True
+        cart_items=session.get('cart', {}),
+        total_price=sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
+        is_logged_in=False
     )
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -174,12 +159,13 @@ def login():
             session['loggedin'] = True
             session['email'] = user.email
             session['first_name'] = user.firstName
+            
             next_url = request.args.get('next') or url_for('home')
             flash('Login successful!', 'success')
-            return redirect(url_for('user.homepage'))
+            return redirect(next_url)
         else:
-            flash('Incorrect e-mail or password.', 'danger')
-            
+            flash('Incorrect email or password.', 'danger')
+    
     return render_template('login.html')
 
 @app.route('/register', methods = ['GET', 'POST'])
