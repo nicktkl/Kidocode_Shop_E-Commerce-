@@ -15,21 +15,13 @@
         <div class="login-container">
             <h2 class="login-title">Forgot Password</h2>
             <div class="mb-3">
-                <p class="text-center">Enter your email below to reset your password</p>
+                <p class="text-center">An email has been sent with instructions to reset your password.</p>
             </div>
-            <form action="/forgotpwd" method="post">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Email" name="getemail" required>
-                
+            <div class="row justify-content-center"> 
+                <div class="col-5 gap-3">
+                    <button type="button" onclick="window.location.href='/login'" class="btn btn-light w-100">OKAY</button>
                 </div>
-                <div class="row justify-content-center"> 
-                    <div class="col-5 d-flex justify-content-between gap-3">
-                        <button type="button" onclick="window.location.href='/login'" class="btn btn-light w-100">Cancel</button>
-                        <button type="submit" name="getpwd" class="btn btn-primary w-100">Submit</button> 
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>        
     </body>
 </html>

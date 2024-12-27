@@ -24,6 +24,72 @@
                 </form>
             </div>
             
+            <div class="row">
+                {% for product in product %}
+                <div class="col-md-6 col-12 mb-3">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong><i class="bi bi-tag mx-2"></i></strong>{{ product.productID }}
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-folder mx-2"></i></strong>{{ product.category.name }}
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td>{{ order.user.firstName }} {{ order.user.lastName }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Shipping Address:</td>
+                                        <td>{{ order.shippingAddress }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Order:</td>
+                                        <td>{{ order.orderDate }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <hr>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.order_items %}
+                                    <tr>
+                                        <td>{{ item.product.productName }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.price }}</td>
+                                        {% if loop.first %}
+                                            <td rowspan="{{ order.order_items|length+1 }}" class="align-middle">{{ order.status }}</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <th colspan="2">Total Amount:</th>
+                                        <td>{{ order.totalAmount }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
+                            <span>Created At: {{ order.createdAt }}</span>
+                            <span>Updated At: {{ order.updatedAt }}</span>
+                        </div>                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
     
             <div class="row">
                 {% for product in product %}
@@ -62,7 +128,7 @@
             
                                         <!-- Product Description with Icon inside Input Group -->
                                         <div class="mb-2 input-group">
-                                            <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                                              <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                                             <textarea class="form-control" name="p_desc" rows="2" required>{{ product.description }}</textarea>
                                         </div>
             
