@@ -32,13 +32,17 @@ def home():
     email = session.get('email', None)
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product=random_products, review=reviews, email=email)
+    return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email)
+
+@app.route('/session-check', methods=['GET'])
+def session_check():
+    return jsonify({'logged_in': session.get('loggedin', False)})
 
 @app.route('/allproducts')
 def all_products():
     products = Product.query.all()
     category = Category.query.all()
-    return render_template('all_product.html', product=products, category=category)
+    return render_template('all_product.html', product = products, category = category)
 
 @app.route('/get-cart', methods = ['GET'])
 def get_cart():
@@ -54,7 +58,7 @@ def cart():
         {'name': name, 'price': details['price'], 'quantity': details['quantity']}
         for name, details in cart_items.items()
     ]
-    return render_template('/homepage/Cart.html', cart_items=cart_list, total_price=total_price)
+    return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
 
 @app.route('/add-to-cart', methods = ['POST'])
 def add_to_cart():
@@ -104,7 +108,7 @@ def checkout():
         if request.method == 'POST':
             email = request.form['email']
             password = request.form['password']
-            user = User.query.filter_by(email=email).first()
+            user = User.query.filter_by(email = email).first()
             if user and bcrypt.check_password_hash(user.password, password):
                 session['loggedin'] = True
                 session['email'] = user.email
@@ -176,7 +180,7 @@ def register():
         
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
-        new_user = User(email=email, password=hashed_password)
+        new_user = User(email = email, password = hashed_password)
 
         try:
             db.session.add(new_user)
