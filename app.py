@@ -1,12 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask_mail import Mail, Message
 from flask_bcrypt import Bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
-from flask_bcrypt import Bcrypt
-from datetime import datetime
-import pytz
-from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+from datetime import datetime
 
+import pytz
 import random
 
 from user import user_blueprint
