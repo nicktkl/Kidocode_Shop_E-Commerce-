@@ -9,8 +9,9 @@
     
         <div class="container my-5">
             <h1 class="text-primary">Products</h1>
-            <div class="d-flex align-items-center my-3">
-                <form class="d-flex w-100 align-items-center" action="/admin/product" method="get">
+            <form action="/admin/product" method="get">
+                <div class="d-flex w-100 align-items-center my-3">
+                    <!-- Search and Add New Form -->
                     <div class="flex-grow-1 me-2">
                         <input type="text" class="form-control" name="searchProduct" placeholder="Search a product"
                             value="{{ request.args.get('searchProduct', '') }}">
@@ -21,158 +22,159 @@
                     <button class="btn btn-outline-primary d-flex align-items-center px-3" type="button" data-bs-toggle="modal" data-bs-target="#addProduct">
                         <i class="bi bi-plus-circle me-2"></i>Add New
                     </button>
-                </form>
-            </div>
-            
-            <div class="row">
-                {% for product in product %}
-                <div class="col-md-6 col-12 mb-3">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong><i class="bi bi-tag mx-2"></i></strong>{{ product.productID }}
-                            </div>
-                            <div>
-                                <strong><i class="bi bi-folder mx-2"></i></strong>{{ product.category.name }}
-                            </div>
-                        </div>
-                        
-                        <div class="card-body">
-                            <table class="table">
-                                <tbody>
-                                    <tr>
-                                        <td>Name:</td>
-                                        <td>{{ order.user.firstName }} {{ order.user.lastName }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Shipping Address:</td>
-                                        <td>{{ order.shippingAddress }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Date of Order:</td>
-                                        <td>{{ order.orderDate }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <hr>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in order.order_items %}
-                                    <tr>
-                                        <td>{{ item.product.productName }}</td>
-                                        <td>{{ item.quantity }}</td>
-                                        <td>{{ item.price }}</td>
-                                        {% if loop.first %}
-                                            <td rowspan="{{ order.order_items|length+1 }}" class="align-middle">{{ order.status }}</td>
-                                        {% endif %}
-                                    </tr>
-                                    {% endfor %}
-                                    <tr>
-                                        <th colspan="2">Total Amount:</th>
-                                        <td>{{ order.totalAmount }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
-                            <span>Created At: {{ order.createdAt }}</span>
-                            <span>Updated At: {{ order.updatedAt }}</span>
-                        </div>                        
-                    </div>
                 </div>
-                {% endfor %}
-            </div>
-    
+                
+                <!-- Filter Buttons Row -->
+                <div class="row my-3">
+                    <div class="col-3">
+                        <form action="/admin/product" method="get" class="d-inline">
+                            <div class="me-2">
+                                <select name="categoryFilter" class="form-select" aria-label="Category Filter" onchange="this.form.submit()">
+                                    <option value="all">All Categories</option>
+                                    {% for category in category %}
+                                        <option value="{{ category.categoryID }}" {% if request.args.get('categoryFilter') == category.categoryID %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col text-end">
+                        <form class="d-inline" action="/admin/product" method="get">
+                            <button type="submit" name="filter" class="btn btn-primary">All</button>
+                            <button type="submit" name="filter" value="active" class="btn btn-success text-light">Active</button>
+                            <button type="submit" name="filter" value="inactive" class="btn btn-danger text-light">Inactive</button>
+                        </form>
+                    </div>
+                </div>                
+            </form>
+            
+            
             <div class="row">
                 {% for product in product %}
-                <div class="col-md-6 col-12 mb-3">
+                <form action="/admin/product" method="post" class="col-md-6 col-12 mb-3">
                     <div class="card">
-                        <!-- Card Header with Product ID and Category -->
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header d-flex justify-content-between align-items-center 
+                        {% if product.status == 'active' %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
                             <div>
                                 <strong><i class="bi bi-tag mx-2"></i></strong>{{ product.productID }}
                             </div>
-                            <div>
-                                <strong><i class="bi bi-folder mx-2"></i></strong>{{ product.category.name }}
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <strong><i class="bi bi-folder mx-2"></i></strong>
+                                    {% if product.category.parent_category %}
+                                        {{ product.category.parent_category.name }} - {{ product.category.name }}
+                                    {% else %}
+                                        {{ product.category.name }}
+                                    {% endif %}
+                                </div>                                
+                                <!-- Status Toggle -->
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="status-{{ product.productID }}" name="p_status" 
+                                        value="active" {% if product.status == 'active' %}checked{% endif %}>
+                                    <label class="form-check-label" for="status-{{ product.productID }}">
+                                        {% if product.status == 'active' %}Active{% else %}Inactive{% endif %}
+                                    </label>
+                                </div>
                             </div>
                         </div>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <!-- Product Image -->
+                                <div class="me-3" style="width: 45%; height: 100%;">
+                                    {% if product.img is none %}
+                                    <img src="https://via.placeholder.com/100" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
+                                    {% endif %}
+                                </div>
             
-                        <!-- Form to Edit Product Details -->
-                        <form action="/admin/product" method="post">
-                            <div class="card-body">
-                                <div class="d-flex mb-3">
-                                    <!-- Product Image (Larger with 30% width) -->
-                                    <div class="me-3" style="width: 50%; height: 100%;">
-                                        {% if product.img is none %}
-                                        <img src="https://via.placeholder.com/100" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
-                                        {% else %}
-                                        <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" class="img-thumbnail w-100 h-100" style="object-fit: cover;">
-                                        {% endif %}
+                                <!-- Product Details -->
+                                <div class="flex-grow-1">
+                                    <!-- Product Name -->
+                                    <div class="mb-2 input-group">
+                                        <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                        <input type="text" class="form-control" name="p_name" required value="{{ product.productName }}">
                                     </div>
             
-                                    <!-- Product Details: Name, Description, Price, Stock, and Status -->
-                                    <div class="flex-grow-1">
-                                        <!-- Product Name with Icon inside Input Group -->
-                                        <div class="mb-2 input-group">
-                                            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                            <input type="text" class="form-control" name="p_name" required value="{{ product.productName }}">
-                                        </div>
+                                    <!-- Product Description -->
+                                    <div class="mb-2 input-group">
+                                        <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                                        <textarea class="form-control" name="p_desc" rows="2" required>{{ product.description }}</textarea>
+                                    </div>
             
-                                        <!-- Product Description with Icon inside Input Group -->
-                                        <div class="mb-2 input-group">
-                                              <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
-                                            <textarea class="form-control" name="p_desc" rows="2" required>{{ product.description }}</textarea>
-                                        </div>
-            
-                                        <!-- Price and Stock with Icon inside Input Group -->
-                                        <div class="d-flex mb-3">
-                                            <!-- Price with Icon inside Input Group -->
-                                            <div class="me-3" style="width: 45%;">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                                                    <input type="number" class="form-control" name="p_price" min="0.01" step="0.01" value="{{ product.price }}" required>
-                                                </div>
-                                            </div>
-            
-                                            <!-- Stock with Icon inside Input Group -->
-                                            <div style="width: 45%;">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="bi bi-archive"></i></span>
-                                                    <input type="number" class="form-control" name="p_stock" min="0" value="{{ product.stock }}" required>
-                                                </div>
+                                    <!-- Price and Stock -->
+                                    <div class="d-flex">
+                                        <div class="me-3" style="width: 50%;">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                                <input type="number" class="form-control" name="p_price" min="0.01" step="0.01" value="{{ product.price }}" required>
                                             </div>
                                         </div>
-            
-                                        <!-- Status Toggle with Icon inside Input Group -->
-                                        <div class="mb-3 input-group">
-                                            <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
-                                            
+                                        <div style="width: 50%;">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-archive"></i></span>
+                                                <input type="number" class="form-control" name="p_stock" min="0" value="{{ product.stock }}" required>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-            
-                            <!-- Card Footer with Action Buttons -->
-
-                            <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
-                                <span>Created At: {{ product.createdAt }}</span>
-                                <span>Updated At: {{ product.updatedAt }}</span>
+                        </div>
+                        <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+                            <span>Last Update: {{ product.updatedAt }}</span>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" name="btndelete" value="{{ product.productID }}">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                                <button type="submit" class="btn btn-outline-success btn-sm" name="btnedit" value="{{ product.productID }}">
+                                    <i class="bi bi-save"></i> Update
+                                </button>
                             </div>
-                        </form>
+                        </div>                        
                     </div>
-                </div>
+                </form>
                 {% endfor %}
             </div>
+            <div class="d-flex justify-content-center my-4">
+                <nav aria-label="Product pagination">
+                    <ul class="pagination">
+                        {% if product.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.product', page=product.prev_num, searchProduct=request.args.get('searchProduct', ''), filter=request.args.get('filter', 'all')) }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                            </li>
+                        {% endif %}
             
-        </div>
+                        {% for page_num in range(1, product.pages + 1) %}
+                            <li class="page-item {% if page_num == product.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('admin.product', page=page_num, searchProduct=request.args.get('searchProduct', ''), filter=request.args.get('filter', 'all')) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                        {% endfor %}
+            
+                        {% if product.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.product', page=product.next_num, searchProduct=request.args.get('searchProduct', ''), filter=request.args.get('filter', 'all')) }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>            
+        </div>            
     
         <!-- Add Product Modal -->
         <div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
@@ -184,45 +186,60 @@
                     </div>
                     <form name="addproductform" action="/admin/product" method="post" enctype="multipart/form-data">
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="productImage" class="form-label">Image</label>
-                                <input class="form-control" type="file" id="productImage" name="p_img" accept="image/*">
+                            <div class="mb-3 row">
+                                <div class="col-sm-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-image"></i></span>
+                                        <input class="form-control form-control-sm" type="file" id="productImage" name="p_img" accept="image/*">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="productName" class="form-label">Product Name</label>
-                                <input type="text" class="form-control" id="productName" name="p_name" required>
+                            <div class="mb-3 row">
+                                <div class="col-sm-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-box"></i></span>
+                                        <input type="text" class="form-control form-control-sm" id="productName" name="p_name" required placeholder="Product Name">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="productDescription" class="form-label">Description</label>
-                                <textarea id="productDescription" name="p_desc" class="form-control" required></textarea>
+                            <div class="mb-3 row">
+                                <div class="col-sm-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-pencil-square"></i></span>
+                                        <textarea id="productDescription" name="p_desc" class="form-control form-control-sm" required placeholder="Description"></textarea>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="productPrice" class="form-label">Price</label>
-                                    <input type="number" class="form-control" id="productPrice" name="p_price" min="0.01" step="0.01" required>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                        <input type="number" class="form-control form-control-sm" id="productPrice" name="p_price" min="0.01" step="0.01" required placeholder="Price">
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="productStock" class="form-label">Stock</label>
-                                    <input type="number" class="form-control" id="productStock" name="p_stock" min="0" required>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-boxes"></i></span>
+                                        <input type="number" class="form-control form-control-sm" id="productStock" name="p_stock" min="0" required placeholder="Stock">
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="p_category" class="form-label">Category</label>
-                                    <select id="p_category" name="p_category" class="form-select" aria-label="Category" required>
-                                        <option disabled selected>Select category</option>
-                                        {% for category in category %}
-                                        <option value="{{ category.categoryID }}">{{ category.name }}</option>
-                                        {% endfor %}
-                                    </select>
+                                <div class="col-md-12 mb-3">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
+                                        <select id="p_category" name="p_category" class="form-select form-select-sm" aria-label="Category" required>
+                                            <option disabled selected>Select category</option>
+                                            {% for category in category %}
+                                                <option value="{{ category.categoryID }}">{{ category.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <select id="p_subcategory" name="p_subcategory" class="form-select form-select-sm" aria-label="Subcategory" disabled>
+                                            <option disabled selected>Select Subcategory</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="p_subcategory" class="form-label">Subcategory</label>
-                                    <select id="p_subcategory" name="p_subcategory" class="form-select" aria-label="Subcategory" disabled>
-                                        <option disabled selected>Select subcategory</option>
-                                    </select>
-                                </div>
-                            </div> 
+                            </div>   
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -232,30 +249,58 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
+                    <select id="p_category" name="p_category" class="form-select form-select-sm" aria-label="Category" required>
+                        <option disabled selected>Select Category</option>
+                        {% for category in categories %}
+                            <option value="{{ category.categoryID }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        
+            <div class="col-md-6 mb-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text"><i class="bi bi-gear"></i></span>
+                    <select id="p_subcategory" name="p_subcategory" class="form-select form-select-sm" aria-label="Subcategory" disabled>
+                        <option disabled selected>Select Subcategory</option>
+                        {% for category in categories %}
+                            <optgroup label="{{ category.name }}" id="category_{{ category.categoryID }}" style="display:none;">
+                                {% for subcategory in category.subcategories %}
+                                    <option value="{{ subcategory.categoryID }}">{{ subcategory.name }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
         
         <script>
             document.getElementById('p_category').addEventListener('change', function () {
                 var categoryId = this.value;
                 var subcategorySelect = document.getElementById('p_subcategory');
                 
+                // Disable subcategory select and reset options
                 subcategorySelect.disabled = false;
-                subcategorySelect.innerHTML = '<option disabled selected>Select subcategory</option>';
+                subcategorySelect.innerHTML = '<option disabled selected>Select Subcategory</option>';
                 
-                fetch(`/admin/get_subcategories/${categoryId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.subcategories.forEach(subcategory => {
-                            var option = document.createElement('option');
-                            option.value = subcategory.categoryID;
-                            option.text = subcategory.name;
-                            subcategorySelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching subcategories:', error);
-                    });
+                // Show the appropriate subcategories based on the selected category
+                {% for category in categories %}
+                    var categoryOptGroup = document.getElementById('category_{{ category.categoryID }}');
+                    if (categoryId == '{{ category.categoryID }}') {
+                        categoryOptGroup.style.display = 'block';
+                    } else {
+                        categoryOptGroup.style.display = 'none';
+                    }
+                {% endfor %}
             });
         </script>
+        
     </body>
     
 </html>

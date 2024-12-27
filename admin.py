@@ -154,13 +154,29 @@ def category():
 @admin_blueprint.route('/product', methods=["GET", "POST"])
 def product():
     search_query = request.args.get('searchProduct', '')  
+    filter_status = request.args.get('filter', 'all')
+    category_filter = request.args.get('categoryFilter', 'all')
+
+    per_page = 10
+    page = request.args.get('page', 1, type=int)
+
+    query = Product.query
+
     if search_query:
-        products = Product.query.filter(
+        query = query.filter(
             Product.productName.ilike(f'%{search_query}%') | 
             Product.productID.ilike(f'%{search_query}%')
-        ).all()  
-    else:
-        products = Product.query.all()
+        )
+
+    if filter_status == 'active':
+        query = query.filter(Product.status == 'active')
+    elif filter_status == 'inactive':
+        query = query.filter(Product.status == 'inactive')
+
+    if category_filter != 'all':
+        query = query.join(Category).filter(Category.parentID == category_filter)
+
+    products = query.paginate(page=page, per_page=per_page, error_out=False)
 
     if request.method == 'POST':
         if 'btnadd' in request.form:
@@ -193,7 +209,6 @@ def product():
             
         if 'btndelete' in request.form:
             deleteID = request.form.get('btndelete')
-            print(f"Trying to delete product with ID: {deleteID}")
             product = Product.query.get_or_404(deleteID)
             try:
                 db.session.delete(product)
@@ -201,7 +216,6 @@ def product():
                 return redirect(url_for('admin.product'))
             except Exception as e:
                 db.session.rollback()
-                print(f"Error while deleting product: {e}")
                 return f"An error occurred while deleting the product: {e}", 500
 
         if 'btnedit' in request.form:
@@ -212,6 +226,7 @@ def product():
                 product.description = request.form['p_desc']
                 product.price = float(request.form['p_price'])
                 product.stock = int(request.form['p_stock'])
+                product.status = 'active' if request.form.get('p_status') == 'active' else 'inactive'
                 db.session.commit()
                 return redirect(url_for('admin.product'))
             except Exception as e:
