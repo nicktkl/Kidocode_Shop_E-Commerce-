@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/get-cart')
         .then(response => response.json())
         .then(cart => {
+            const cartCountElement = document.getElementById('cart-count');
+            console.log('Cart count element:', cartCountElement);
+            if (!cartCountElement) {
+                console.warn('Cart count element not found in the DOM.');
+                return;
+            }
             // Sync the client-side cart with the server cart
             updateCartCount(cart);
             updateCartItems(cart);
@@ -23,7 +29,76 @@ document.addEventListener('DOMContentLoaded', () => {
             addToCart({ name, price, image });
         });
     });
+
+    // Attach event listener for the checkout button
+    const checkoutButton = document.getElementById('btn-checkout');
+    if(checkoutButton){
+        checkoutButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent navigation
+            fetch('/session-check')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Session check response:', data);
+                    if(!data.logged_in){
+                        console.log('User not logged in, showing login modal.');
+                        event.preventDefault();
+                        showLoginModal();
+                    } else {
+                        window.location.href = checkoutButton.href;
+                    }
+                })
+                .catch(error => console.error('Error checking session:', error));
+        });
+    }
+
+    // Handle login form submission in the modal at checkout page
+    const loginForm = document.getElementById('loginForm');
+    if(loginForm){
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+            const formData = new FormData(loginForm);
+            fetch('login', {
+                method: 'POST', body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success){
+                        closeLoginModal();
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Sign in failed, please try again.');
+                    }
+                })
+                .catch(error => console.error('Error logging in:', error));
+        });
+    }
 });
+
+// Function to show the login modal at checkout page
+function showLoginModal(){
+    console.log('Triggering login modal.');
+    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    loginModal.show();
+}
+
+// Function to close the login modal at checkout page
+function closeLoginModal(){
+    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+    if(loginModal){
+        loginModal.hide();
+    }
+}
+
+function showLoginModal() {
+    const modalElement = document.getElementById('loginModal');
+    console.log('Modal element:', modalElement);
+    if (!modalElement) {
+        console.error('Login modal not found in the DOM.');
+        return;
+    }
+    const loginModal = new bootstrap.Modal(modalElement);
+    loginModal.show();
+}
 
 // Function to handle adding to the cart
 function addToCart(product){
@@ -50,17 +125,19 @@ function addToCart(product){
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
+    console.log('Updating cart count...');
     const cartCountElement = document.getElementById('cart-count');
     if(!cartCountElement){
         console.warn(`Cart count element not found in the DOM.`);
         return;
     }
 
+    console.log('Cart element found, updating count.');
     if(!cart || Object.keys(cart).length === 0) {
         cartCountElement.textContent = 0;
         return;
     }
-    const count = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
+    const count = cart ? Object.values(cart).reduce((total, item) => total + item.quantity, 0) : 0;
     cartCountElement.textContent = count;
 }
 
