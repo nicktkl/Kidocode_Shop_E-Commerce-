@@ -1,23 +1,39 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_bcrypt import Bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
+from flask_bcrypt import Bcrypt
+from datetime import datetime
+import pytz
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 import random
 
 from user import user_blueprint
 from admin import admin_blueprint
 
-# bcrypt = Bcrypt()
+bcrypt = Bcrypt()
 
 app = Flask(__name__)
 
 app.secret_key = 'kidocodeverysecretkey'
 
+app.config.update({
+    'MAIL_SERVER': 'smtp.gmail.com',
+    'MAIL_PORT': 587,
+    'MAIL_USE_TLS': True,
+    'MAIL_USE_SSL': False,
+    'MAIL_USERNAME': 'nurulizzatihayat@gmail.com',
+    'MAIL_PASSWORD': 'tmcn fehq fttp smym',
+    'MAIL_DEFAULT_SENDER': ('Kidocode', 'nurulizzatihayat@gmail.com')
+})
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@127.0.0.1:3306/ecommerceNEW'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+mail = Mail(app)
 db.init_app(app)
-# bcrypt.init_app(app)
+bcrypt.init_app(app)
 bcrypt = Bcrypt(app)
 
 app.register_blueprint(user_blueprint)
@@ -197,7 +213,77 @@ def register():
 
 @app.route('/forgotpwd', methods = ['GET', 'POST'])
 def forgotpass():
+    if request.method == 'POST':
+        email = request.form['getemail']
+
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        token = serializer.dumps(email, salt='password-reset-salt')
+
+        reset_url = f"http://127.0.0.1:5000/resetpwd/{token}"
+        malaysia_tz = pytz.timezone('Asia/Kuala_Lumpur')
+        timestamp = datetime.now(pytz.utc).astimezone(malaysia_tz).strftime('%Y/%m/%d %H:%M GMT')
+        try:
+            with open("templates/reset-pwd.txt", "r") as file:
+                email_body = file.read()
+                email_body = email_body.replace("{{ url }}", reset_url)
+                email_body = email_body.replace("{{ timestamp }}", timestamp)
+
+            subject = "Password Reset Request"
+            msg = Message(subject=subject, recipients=[email], body=email_body)
+            mail.send(msg)
+
+            return render_template('/forgot-pass-submitted.html')
+
+        except Exception as e:
+            flash(f"An error occurred while sending the email: {e}", 'danger')
+            return redirect(url_for('forgotpass'))
+        
     return render_template('/forgot-pass.html')
+
+@app.route('/resetpwd/<token>', methods=['GET', 'POST'])
+def resetpwd(token):
+    try:
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+
+        if request.method == 'POST':
+            password = request.form['password']
+            confirm_password = request.form['confirm_password']
+            
+            if password != confirm_password:
+                flash('Passwords do not match, please try again.', 'danger')
+                return redirect(url_for('resetpwd', token=token))
+            
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            user = db.session.query(User).filter_by(email=email).first()
+
+            if user:
+                user.password = hashed_password
+                try:
+                    db.session.commit()
+                    flash('Your password has been updated successfully!', 'success')
+                    return redirect(url_for('login'))
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f'An error occurred: {str(e)}', 'danger')
+                    return redirect(url_for('resetpwd', token=token))
+            else:
+                flash('User not found.', 'danger')
+                return redirect(url_for('resetpwd', token=token))
+
+    except Exception as e:
+        flash('The reset link is invalid or has expired.', 'danger')
+        return redirect(url_for('forgotpass'))
+
+    return render_template('reset-pass.html', token=token)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('loggedin', None)
+    session.pop('email', None)
+    flash('You have been loged out.', 'info')
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)
