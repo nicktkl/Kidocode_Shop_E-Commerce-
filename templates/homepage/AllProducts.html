@@ -94,13 +94,16 @@
                 <div class="col-md-9">
                     <div class="row g-3" id="product-container">
                         {% for product in products %}
-                        <div class="col-md-3 card-wrapper" data-category="{{ product.categoryID }}">
-                            <a href="product{{ product.productID }}.html" class="text-decoration-none text-dark">
+                        <div class="col-md-3 card-wrapper" data-category="{{ product.productID }}">
+                            <a href="#" class="text-decoration-none text-dark product-link">
                                 <div class="card card-hover">
                                     <img src="{{ url_for('static', filename='images/' + product.img) }}" alt="{{ product.productName }}" class="card-img-top">
                                     <div class="card-body text-center">
-                                        <h6 class="card-title">{{ product.productName }}</h6>
-                                        <p class="text-primary fw-bold">RM{{ product.price }}</p>
+                                        <h5 class="card-title">{{ product.productName }}</h5>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5><strong>RM{{ product.price }}</strong></h5>
+                                            <button class="btn btn-primary add-to-cart-btn" data-name="{{ product.productName }}" data-price="{{ product.price }}" data-img="{{ url_for('static', filename='images/' + product.img) }}">Add to cart</button>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
@@ -114,7 +117,6 @@
         <footer class="footer-container">
             <!-- Single top line -->
             <div class="footer-top-line text-center"></div>
-
             <!-- Logo and description -->
             <div class="container text-center text-md-start">
                 <div class="row">
@@ -124,7 +126,6 @@
                             Kidocode is a school of technology and entrepreneurship for K-12 students. Our community is driven to rebuild the education system for the modern era with a combination of AI-empowered tools, top-notch educators, and in-demand campus facilities.
                         </p>
                     </div>
-
                     <!-- Discovery column -->
                     <div class="col-md-2 footer-section mx-auto mb-3">
                         <h6>Discovery</h6>
@@ -132,7 +133,6 @@
                         <p><a href="#!" class="text-reset">Community</a></p>
                         <p><a href="#!" class="text-reset">Internship</a></p>
                     </div>
-
                     <!-- About column -->
                     <div class="col-md-2 footer-section mx-auto mb-3">
                         <h6>About</h6>
@@ -140,7 +140,6 @@
                         <p><a href="#!" class="text-reset">Shipping</a></p>
                         <p><a href="#!" class="text-reset">Gallery</a></p>
                     </div>
-
                     <!-- Info column -->
                     <div class="col-md-2 footer-section mx-auto mb-3">
                         <h6>Info</h6>
@@ -150,10 +149,8 @@
                     </div>
                 </div>
             </div>
-
             <!-- Bottom line above copyright -->
             <div class="footer-bottom-line text-center"></div>
-
             <!-- Copyright -->
             <div class="footer-bottom text-center">
                 <div class="copyright-container">
