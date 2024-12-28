@@ -38,6 +38,10 @@ bcrypt = Bcrypt(app)
 app.register_blueprint(user_blueprint)
 app.register_blueprint(admin_blueprint)
 
+@app.route('/session-check', methods=['GET'])
+def session_check():
+    return jsonify({'logged_in': session.get('loggedin', False)})
+
 @app.route('/')
 def home():
     products = Product.query.all()
@@ -49,15 +53,21 @@ def home():
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email)
 
-@app.route('/session-check', methods=['GET'])
-def session_check():
-    return jsonify({'logged_in': session.get('loggedin', False)})
-
 @app.route('/allproducts')
 def all_products():
     products = Product.query.all()
     categories = Category.query.all()
     return render_template('/homepage/AllProducts.html', products = products, category = categories)
+
+@app.route('/product/<int:product_id>', methods = ['GET'])
+def get_product_details(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'success': False, 'message': 'Product not found'}), 404
+    product_details = {
+        'id': product.productID, 'name': product.productName, 'price': float(product.price), 'image': url_for('static', filename='images/' + product.img), 'description': product.description, 'quantity': product.quantity, 'category': product.categoryID
+    }
+    return jsonify({'success': True, 'product': product_details})
 
 @app.route('/get-cart', methods = ['GET'])
 def get_cart():
