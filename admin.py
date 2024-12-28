@@ -3,6 +3,10 @@ from models import Category, Product, User, Order, OrderItem, Review, Payment, d
 import os
 from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
+from datetime import datetime
+import pytz
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -191,8 +195,11 @@ def product():
                     img.save(os.path.join(img_folder, img_filename))
                 else:
                     img_path = None
-                    
+                
+                total_product_count = Product.query.count()
+                new_product_id = f"KP{total_product_count + 1:03d}"
                 new_product = Product(
+                    productID = new_product_id,
                     productName= request.form['p_name'],
                     description= request.form['p_desc'],
                     img = img_path,
@@ -234,11 +241,21 @@ def product():
                 return f"An error occurred while updating the product: {e}", 500
     
     category = Category.query.filter_by(parentID=None).all()
+    all_categories = Category.query.all()
+    category_data = {
+        "main_categories": [{"id": cat.categoryID, "name": cat.name} for cat in category],
+        "all_categories": [{"id": cat.categoryID, "name": cat.name, "parentID": cat.parentID} for cat in all_categories]
+    }
 
-    return render_template("/admin/product.html", product=products, category=category)
+    return render_template(
+        "/admin/product.html",
+        product=products,
+        category=category,
+        category_data=category_data
+    )
 
 #CUSTOMER
-@admin_blueprint.route('/customer')
+@admin_blueprint.route('/customer', methods=["GET", "POST"])
 def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
@@ -249,6 +266,11 @@ def customer():
         ).all()  
     else:
         user = User.query.all()
+
+    if request.method == 'POST':
+        email = request.form['btnmail']
+        return redirect('resetpwd/')  
+        
     return render_template("/admin/customer.html", user=user)
 
 #ORDER

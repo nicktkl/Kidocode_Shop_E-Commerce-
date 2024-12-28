@@ -25,7 +25,7 @@ class Category(db.Model):
 class Product(db.Model):
     __tablename__ = 'product'
 
-    productID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    productID = db.Column(db.String(5), primary_key=True)
     productName = db.Column(db.String(30), nullable=False)
     description = db.Column(db.Text)
     img = db.Column(db.String(255), default=None)
@@ -40,7 +40,8 @@ class Product(db.Model):
     order_items = db.relationship('OrderItem', back_populates='product')
     reviews = db.relationship('Review', back_populates='product')
 
-    def __init__(self, productName, description, price, stock, categoryID, img=None, status='active'):
+    def __init__(self, productID, productName, description, price, stock, categoryID, img=None, status='active'):
+        self.productID = productID
         self.productName = productName
         self.description = description
         self.price = price
