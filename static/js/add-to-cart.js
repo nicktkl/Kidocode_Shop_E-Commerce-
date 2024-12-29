@@ -20,13 +20,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attach event listeners to all "Add to cart" buttons
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
     cartButtons.forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
             const name = button.dataset.name; // Get the product name
             const price = parseFloat(button.dataset.price); // Get the product price
             const image = button.dataset.img; // Get the product's image
 
             // Call the addToCart function with the product details
             addToCart({ name, price, image });
+        });
+    });
+
+    const productCards = document.querySelectorAll('.card-wrapper');
+    productCards.forEach(card => {
+        card.addEventListener('click', (event) => {
+            event.preventDefault();
+            const productId = card.dataset.productId;
+            const context = card.dataset.context || 'main';
+            const endpoint = context === 'user' ? `user/product/${productId}` : `/product/${productId}`;
+            if (!productId) {
+                console.error('Product ID is undefined. Check the data-product-id attribute in your HTML.');
+                return;
+            }
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success){
+                        console.log('Product details fetched:', data.product);
+                        showProductModal(data.product);
+                    } else {
+                        alert(data.message || 'Failed to fetch product details.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetch product details:', error);
+                });
         });
     });
 
@@ -191,14 +219,37 @@ function updateCheckoutCart(cart){
     totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
 }
 
+// Function to show the product modal with detailed information
+function showProductModal(product) {
+    const modalElement = document.getElementById('productModal'); // Your modal container
+    if (!modalElement) {
+        console.error('Product modal not found in the DOM.');
+        return;
+    }
+
+    // Populate modal content dynamically
+    modalElement.querySelector('.modal-title').textContent = product.name;
+    modalElement.querySelector('.modal-body').innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="img-fluid mb-3">
+        <p>${product.description}</p>
+        <p>Price: RM${product.price}</p>
+        <p>Quantity available: ${product.quantity}</p>
+        <button class="btn btn-primary" onclick="addToCart({ name: '${product.name}', price: ${product.price}, img: '${product.image}' })">Add to Cart</button>
+    `;
+
+    // Show the modal using Bootstrap
+    const productModal = new bootstrap.Modal(modalElement);
+    productModal.show();
+}
+
 function filterProductsByCategory(category){
     const allProducts = document.querySelectorAll('.card-wrapper');
     allProducts.forEach(product => {
         const productCategory = product.getAttribute('data-category');
         if(category === 'all' || category === productCategory){
-            product.computedStyleMap.display = 'block';
+            product.style.display = 'block';
         } else {
-            product.computedStyleMap.display = 'none';
+            product.style.display = 'none';
         }
     });
 }
