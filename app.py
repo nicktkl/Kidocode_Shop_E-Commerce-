@@ -180,8 +180,14 @@ def register():
             return redirect(url_for('register'))
         
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        
-        new_user = User(email = email, password = hashed_password)
+
+
+        userCount = User.query.count()
+        newID = f"C{userCount + 1:03d}"
+        new_user = User(
+            userID = newID,
+            email = email, 
+            password = hashed_password)
 
         try:
             db.session.add(new_user)

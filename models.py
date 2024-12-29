@@ -8,16 +8,11 @@ class Category(db.Model):
     
     categoryID = db.Column(db.String(7), primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
-    parentID = db.Column(db.String(7), db.ForeignKey('category.categoryID'), nullable=True)
+    parentID = db.Column(db.String(7), db.ForeignKey('category.categoryID', ondelete='CASCADE', onupdate='CASCADE'), nullable=True)
     createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     parent_category = db.relationship('Category', backref=db.backref('subcategories', lazy=True), remote_side=[categoryID])
-    
-    def __init__(self, categoryID, name, parentID=None):
-        self.categoryID = categoryID
-        self.name = name
-        self.parentID = parentID
-    
+
     def __repr__(self):
         return f"<Category {self.name}>"
 
@@ -28,7 +23,7 @@ class Product(db.Model):
     productID = db.Column(db.String(5), primary_key=True)
     productName = db.Column(db.String(30), nullable=False)
     description = db.Column(db.Text)
-    img = db.Column(db.String(255), default=None)
+    img = db.Column(db.String(255), nullable=True)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
     categoryID = db.Column(db.String(7), db.ForeignKey('category.categoryID', ondelete='SET NULL'))
@@ -40,16 +35,6 @@ class Product(db.Model):
     order_items = db.relationship('OrderItem', back_populates='product')
     reviews = db.relationship('Review', back_populates='product')
 
-    def __init__(self, productID, productName, description, price, stock, categoryID, img=None, status='active'):
-        self.productID = productID
-        self.productName = productName
-        self.description = description
-        self.price = price
-        self.stock = stock
-        self.categoryID = categoryID
-        self.img = img
-        self.status = status
-
     def __repr__(self):
         return f"<Product {self.productName}, Status: {self.status}>"
 
@@ -57,11 +42,11 @@ class Product(db.Model):
 class User(db.Model):
     __tablename__ = 'user'
 
-    userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    userID = db.Column(db.String(4), primary_key=True)
     firstName = db.Column(db.String(100), nullable=False)
     lastName = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
-    password = db.Column(db.String(255), nullable=False)  # Store hashed password here
+    password = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(15), nullable=True)
     address = db.Column(db.Text, nullable=True)
     secondaryAddress = db.Column(db.Text, nullable=True)
@@ -69,7 +54,7 @@ class User(db.Model):
     updatedAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
     orders = db.relationship('Order', back_populates='user')
-    reviews = db.relationship('Review', back_populates='user')  # Relationship for reviews
+    reviews = db.relationship('Review', back_populates='user')
 
     def __repr__(self):
         return f"<User {self.firstName} {self.lastName}>"
@@ -79,11 +64,12 @@ class Order(db.Model):
     __tablename__ = 'orders'
 
     orderID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    userID = db.Column(db.Integer, db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
+    userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
     orderDate = db.Column(db.Date, nullable=False)
     totalAmount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(15), nullable=False)
     shippingAddress = db.Column(db.Text, nullable=False)
+    shippingMethod = db.Column(db.String(50), nullable=False)
     createdAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     updatedAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
@@ -100,7 +86,7 @@ class OrderItem(db.Model):
 
     orderItemID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     orderID = db.Column(db.Integer, db.ForeignKey('orders.orderID', ondelete='CASCADE'), nullable=False)
-    productID = db.Column(db.Integer, db.ForeignKey('product.productID', ondelete='CASCADE'), nullable=False)
+    productID = db.Column(db.String(5), db.ForeignKey('product.productID', ondelete='CASCADE'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
@@ -111,18 +97,19 @@ class OrderItem(db.Model):
         return f"<OrderItem {self.orderItemID} for Order {self.orderID}, Product {self.productID}>"
 
 # Review model
+# Review model
 class Review(db.Model):
     __tablename__ = 'review'
 
     reviewID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    productID = db.Column(db.Integer, db.ForeignKey('product.productID', ondelete='CASCADE'), nullable=False)
-    userID = db.Column(db.Integer, db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
-    rating = db.Column(db.Integer, default=None)
+    productID = db.Column(db.String(5), db.ForeignKey('product.productID', ondelete='CASCADE'), nullable=False)
+    userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
     createdAt = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    product = db.relationship('Product', back_populates='reviews') 
-    user = db.relationship('User', back_populates='reviews') 
+    product = db.relationship('Product', back_populates='reviews')
+    user = db.relationship('User', back_populates='reviews')
 
     def __repr__(self):
         return f"<Review {self.reviewID} for Product {self.productID}, User {self.userID}>"

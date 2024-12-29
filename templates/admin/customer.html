@@ -16,7 +16,7 @@
                         <input type="text" class="form-control" name="searchCust" placeholder="Search" value="{{ request.args.get('searchCust', '') }}">
                     </div>
                     <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
-                        <i class="fa fa-search me-2"></i>Search
+                        <i class="bi bi-search me-2"></i> Search
                     </button>
                 </form>
             </div>
@@ -27,8 +27,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Customer ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
+                            <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Address</th>
@@ -40,8 +39,7 @@
                             <tr>
                                 <form action="customer" method="post">
                                     <td>{{ user.userID }}</td>
-                                    <td>{{ user.firstName }}</td>
-                                    <td>{{ user.lastName }}</td>
+                                    <td>{{ user.firstName }} {{ user.lastName }}</td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.phone }}</td>
                                     <td>{{ user.address }}</td>
