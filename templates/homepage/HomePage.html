@@ -83,8 +83,10 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ product.productName }}</h5>
                         <p class="card-text">{{ product.description }}</p>
-                        <p><strong>RM{{ product.price }}</strong></p>
-                        <button class="btn btn-primary add-to-cart-btn" data-name="{{ product.productName }}" data-price="{{ product.price }}" data-img="{{ url_for('static', filename='images/' + product.img) }}">Add to cart</button>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5><strong>RM{{ product.price }}</strong></h5>
+                            <button class="btn btn-primary add-to-cart-btn" data-name="{{ product.productName }}" data-price="{{ product.price }}" data-img="{{ url_for('static', filename='images/' + product.img) }}">Add to cart</button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}

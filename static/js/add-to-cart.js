@@ -40,11 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Function to handle adding to the cart
-function addToCart(product){
+function addToCart(product, endpoint = '/add-to-cart'){
     console.log(`Adding ${product.name} to cart at RM${product.price}`);
 
     // Send the product to the server using Fetch API
-    fetch('/add-to-cart', {
+    fetch(endpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product }),
     })
         .then(response => response.json())
