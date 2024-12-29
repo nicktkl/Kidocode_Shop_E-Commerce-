@@ -3,11 +3,10 @@
     <head>
         <title>All Products - Kidocode</title>
             <link rel="icon" type="image/x-icon" href="./static/images/kidocode_symbol_logo.png">
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            <link rel="stylesheet" href="../css/main.css">
-            <link rel="stylesheet" href="../css/product.css">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+            <!-- <link rel="stylesheet" href="../css/main.css">
+            <link rel="stylesheet" href="../css/product.css"> -->
             <script src="{{ url_for('static', filename='js/add-to-cart.js') }}"></script>
             <script src="{{ url_for('static', filename='js/script.js') }}"></script>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,25 +15,22 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-xxl">
                 <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
-                    <img src="../static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
+                    <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top">
                     Shop
                 </a>
-
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav mx-auto">
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="discoveryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Discovery
+                                Products
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="discoveryDropdown">
-                                <li><a class="dropdown-item" href="index.html">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="all_product.html">Product</a></li>
-                                <li><a class="dropdown-item" href="gallery.html">Gallery</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('all_products')}}">All Product</a></li>
+                                <li><a class="dropdown-item" href="all_product.html">3D Print</a></li>
+                                <li><a class="dropdown-item" href="gallery.html">Electronics</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -44,107 +40,76 @@
                             <a class="nav-link" href="contact.html">Contact Us</a>
                         </li>
                     </ul>
-
-                    <div class="icon-links d-lg-none">
-                        <a href="profile.html" class="nav-link icon-size d-block">
-                            <i class="bi bi-person"></i>
-                        </a>
-                        <a href="cart.html" class="nav-link icon-size d-block">
-                            <i class="bi bi-cart"></i> 
-                        </a>
+                <div class="d-flex ms-auto align-items-center">
+                    <div class="dropdown pe-3">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            {% if not first_name %}
+                            <li><a href="{{ url_for('login') }}" class="dropdown-item">Sign In</a></li>
+                            <li><a href="{{ url_for('register') }}" class="dropdown-item">Sign Up</a></li>
+                            {% else %}
+                            <li><span class="dropdown-item-text">Welcome, {{ first_name }}</span></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">Sign Out</a></li>
+                            {% endif %}
+                        </ul>
                     </div>
                 </div>
-
-                <div class="d-none d-lg-flex icon-links">
-                    <a href="profile.html" class="nav-link icon-size">
-                        <i class="bi bi-person"></i> 
-                    <a href="cart.html" class="nav-link icon-size">
-                        <i class="bi bi-cart"></i> 
-                    </a>
-                </div>
+                <a href="#" id="cart-icon" class="btn btn-outline-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
             </div>
         </nav>
+        <div class="offcanvas offcanvas-end" id="cartOffcanvas" tabindex="-1" aria-labelledby="cartOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="cartOffcanvasLabel">Shopping Cart</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul id="cart-items" class="list-group"></ul>
+                <div class="mt-3">
+                    <a href="{{ url_for('checkout') }}" id="btn-checkout" class="btn btn-success w-100">Checkout</a>
+                    <a href="{{ url_for('cart') }}" id="btn-viewCart" class="btn btn-link w-100">View Cart</a>
+                </div>
+            </div>
+        </div>
         <div class="container my-4">
-            <!-- Page Title -->
             <h1 class="text-center mb-4">Products</h1>
             <div class="row">
             <!-- Sidebar -->
                 <div class="col-md-3 p-3">
                     <h5 class="mb-3"><i class="bi bi-filter-left"></i>Category</h5>
                     <ul class="list-group">
-                    <li class="list-group-item list-group-item-action" data-category="all">All Products</li>
-                    <li class="list-group-item list-group-item-action" data-category="category_1">Category 1</li>
-                    <li class="list-group-item list-group-item-action" data-category="category_2">Category 2</li>
-                    <li class="list-group-item list-group-item-action" data-category="category_3">Category 3</li>
+                        <li class="list-group-item list-group-item-action" data-category="all">All Products</li>
+                        {% for category in categories %}
+                        <li class="list-group-item list-group-item-action" data-category="{{ category.categoryID }}">"{{ category.categoryName }}"</li>
+                        {% endfor %}
                     </ul>
                 </div>
-
+                <!-- Product View -->
                 <div class="col-md-9">
                     <div class="row g-3" id="product-container">
-                        <div class="col-md-3 card-wrapper" data-category="category_1">
-                            <a href="product1.html" class="text-decoration-none text-dark">
+                        {% for product in products %}
+                        <div class="col-md-3 card-wrapper" data-category="{{ product.categoryID }}">
+                            <a href="product{{ product.productID }}.html" class="text-decoration-none text-dark">
                                 <div class="card card-hover">
-                                    <img src="../images/cubie_kidocode.png" alt="Cubie Product 1" class="card-img-top">
+                                    <img src="{{ url_for('static', filename='images/' + product.img) }}" alt="{{ product.productName }}" class="card-img-top">
                                     <div class="card-body text-center">
-                                        <h6 class="card-title">Product 1</h6>
-                                        <p class="text-primary fw-bold">$9.99</p>
+                                        <h6 class="card-title">{{ product.productName }}</h6>
+                                        <p class="text-primary fw-bold">RM{{ product.price }}</p>
                                     </div>
                                 </div>
                             </a>
                         </div>
-
-                        <div class="col-md-3 card-wrapper" data-category="category_1">
-                            <a href="product2.html" class="text-decoration-none text-dark">
-                                <div class="card card-hover">
-                                    <img src="../images/cubie_kidocode.png" alt="Cubie Product 2" class="card-img-top">
-                                    <div class="card-body text-center">
-                                        <h6 class="card-title">Product 2</h6>
-                                        <p class="text-primary fw-bold">$9.99</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 card-wrapper" data-category="category_1">
-                            <a href="product3.html" class="text-decoration-none text-dark">
-                                <div class="card card-hover">
-                                    <img src="images/placeholder.png" alt="Cubie Product 3" class="card-img-top">
-                                    <div class="card-body text-center">
-                                        <h6 class="card-title">Product 3</h6>
-                                        <p class="text-primary fw-bold">$9.99</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 card-wrapper" data-category="category_2">
-                            <a href="product4.html" class="text-decoration-none text-dark">
-                                <div class="card card-hover">
-                                    <img src="images/placeholder.png" alt="Cubie Product 3" class="card-img-top" >
-                                    <div class="card-body text-center">
-                                        <h6 class="card-title">Product 4</h6>
-                                        <p class="text-primary fw-bold">$9.99</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-3 card-wrapper" data-category="category_3">
-                            <a href="product5.html" class="text-decoration-none text-dark">
-                                <div class="card card-hover">
-                                    <img src="images/placeholder.png" alt="Cubie Product 3" class="card-img-top">
-                                    <div class="card-body text-center">
-                                        <h6 class="card-title">Product 5</h6>
-                                        <p class="text-primary fw-bold">$9.99</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
-                
         <!-- Footer -->
         <footer class="footer-container">
             <!-- Single top line -->
@@ -154,7 +119,7 @@
             <div class="container text-center text-md-start">
                 <div class="row">
                     <div class="col-md-3 footer-logo mb-4">
-                        <img src="../images/kidocode_logo.png" alt="Kidocode Logo">
+                        <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="Kidocode Logo">
                         <p class="footer-description">
                             Kidocode is a school of technology and entrepreneurship for K-12 students. Our community is driven to rebuild the education system for the modern era with a combination of AI-empowered tools, top-notch educators, and in-demand campus facilities.
                         </p>
@@ -197,6 +162,26 @@
                 </div>
             </div>
         </footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const filterItems = document.querySelectorAll('.list-group-item');
+                const productCards = document.querySelectorAll('.card-wrapper');
+        
+                filterItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const category = this.getAttribute('data-category');
+                        
+                        productCards.forEach(card => {
+                            if (category === 'all' || card.getAttribute('data-category') === category) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

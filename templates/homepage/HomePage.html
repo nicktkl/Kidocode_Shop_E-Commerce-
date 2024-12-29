@@ -12,24 +12,48 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-xxl">
                 <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
-                    <img src="../static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
+                    <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
                     Shop
                 </a>
-                <div class="dropdown position-absolute top-0 end-0 pe-5 m-3">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        {% if not first_name %}
-                        <li><a href="{{ url_for('login') }}" class="dropdown-item">Sign In</a></li>
-                        <li><a href="{{ url_for('register') }}" class="dropdown-item">Sign Up</a></li>
-                        {% else %}
-                        <li><span class="dropdown-item-text">Welcome, {{ first_name }}</span></li>
-                        <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">Sign Out</a></li>
-                        {% endif %}
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="discoveryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Products
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="discoveryDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('all_products')}}">All Product</a></li>
+                                <li><a class="dropdown-item" href="all_product.html">3D Print</a></li>
+                                <li><a class="dropdown-item" href="gallery.html">Electronics</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.html">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="contact.html">Contact Us</a>
+                        </li>
                     </ul>
+                <div class="d-flex ms-auto align-items-center">
+                    <div class="dropdown pe-3">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            {% if not first_name %}
+                            <li><a href="{{ url_for('login') }}" class="dropdown-item">Sign In</a></li>
+                            <li><a href="{{ url_for('register') }}" class="dropdown-item">Sign Up</a></li>
+                            {% else %}
+                            <li><span class="dropdown-item-text">Welcome, {{ first_name }}</span></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">Sign Out</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-                <a href="#" id="cart-icon" class="btn btn-outline-primary position-absolute top-0 end-0 m-3" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                <a href="#" id="cart-icon" class="btn btn-outline-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         0

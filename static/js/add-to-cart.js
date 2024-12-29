@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/get-cart')
         .then(response => response.json())
         .then(cart => {
+            const cartCountElement = document.getElementById('cart-count');
+            console.log('Cart count element:', cartCountElement);
+            if (!cartCountElement) {
+                console.warn('Cart count element not found in the DOM.');
+                return;
+            }
             // Sync the client-side cart with the server cart
             updateCartCount(cart);
             updateCartItems(cart);
@@ -21,6 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Call the addToCart function with the product details
             addToCart({ name, price, image });
+        });
+    });
+
+    const categoryFilterItems = document.querySelectorAll('.list-group-item');
+    categoryFilterItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const category = item.getAttribute('data-category');
+            filterProductsByCategory(category);
         });
     });
 });
@@ -50,17 +64,19 @@ function addToCart(product){
 
 // Function to update the cart count in the UI
 function updateCartCount(cart){
+    console.log('Updating cart count...');
     const cartCountElement = document.getElementById('cart-count');
     if(!cartCountElement){
         console.warn(`Cart count element not found in the DOM.`);
         return;
     }
 
+    console.log('Cart element found, updating count.');
     if(!cart || Object.keys(cart).length === 0) {
         cartCountElement.textContent = 0;
         return;
     }
-    const count = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
+    const count = cart ? Object.values(cart).reduce((total, item) => total + item.quantity, 0) : 0;
     cartCountElement.textContent = count;
 }
 
@@ -173,6 +189,18 @@ function updateCheckoutCart(cart){
     }
 
     totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
+}
+
+function filterProductsByCategory(category){
+    const allProducts = document.querySelectorAll('.card-wrapper');
+    allProducts.forEach(product => {
+        const productCategory = product.getAttribute('data-category');
+        if(category === 'all' || category === productCategory){
+            product.computedStyleMap.display = 'block';
+        } else {
+            product.computedStyleMap.display = 'none';
+        }
+    });
 }
 
 function removeFromCart(name){
