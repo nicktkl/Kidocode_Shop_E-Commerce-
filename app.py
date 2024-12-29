@@ -38,6 +38,10 @@ bcrypt = Bcrypt(app)
 app.register_blueprint(user_blueprint)
 app.register_blueprint(admin_blueprint)
 
+@app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({'success': False, 'message': 'Resource not found'}), 404
+
 @app.route('/session-check', methods=['GET'])
 def session_check():
     return jsonify({'logged_in': session.get('loggedin', False)})
@@ -61,11 +65,9 @@ def all_products():
 
 @app.route('/product/<int:product_id>', methods = ['GET'])
 def get_product_details(product_id):
-    product = Product.query.get(product_id)
-    if not product:
-        return jsonify({'success': False, 'message': 'Product not found'}), 404
+    product = Product.query.get_or_404(product_id)
     product_details = {
-        'id': product.productID, 'name': product.productName, 'price': float(product.price), 'image': url_for('static', filename='images/' + product.img), 'description': product.description, 'quantity': product.quantity, 'category': product.categoryID
+        'id': product.productID, 'name': product.productName, 'price': float(product.price), 'image': url_for('static', filename='images/' + product.img), 'description': product.description, 'quantity': product.stock, 'category': product.categoryID
     }
     return jsonify({'success': True, 'product': product_details})
 
