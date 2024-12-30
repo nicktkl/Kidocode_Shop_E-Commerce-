@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Fetch and render categories dynamically
+    fetchAndRenderCategories();
+
     // Fetch the cart from the server on page load
     fetch('/get-cart')
         .then(response => response.json())
@@ -57,14 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         });
     });
-
-    const categoryFilterItems = document.querySelectorAll('.list-group-item');
-    categoryFilterItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const category = item.getAttribute('data-category');
-            filterProductsByCategory(category);
-        });
-    });
 });
 
 // Function to handle adding to the cart
@@ -100,7 +96,7 @@ function updateCartCount(cart){
     }
 
     console.log('Cart element found, updating count.');
-    if(!cart || Object.keys(cart).length === 0) {
+    if(!cart || Object.keys(cart).length === 0){
         cartCountElement.textContent = 0;
         return;
     }
@@ -121,12 +117,12 @@ function updateCartItems(cart){
 
     if(cartItems){
         cartItems.innerHTML = ''; // Clear existing content
-        if(Object.keys(cart).length === 0) {
+        if(Object.keys(cart).length === 0){
             cartItems.innerHTML = '<li class="list-group-item text-center">Your cart is empty!</li>';
             checkoutButton.classList.add('d-none');
             viewCartButton.classList.add('d-none');
         } else {
-            for(const [name, { price, quantity, image }] of Object.entries(cart)) {
+            for(const [name, { price, quantity, image }] of Object.entries(cart)){
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
                 listItem.innerHTML = `
@@ -156,11 +152,11 @@ function updateCartItems(cart){
 
     if(cartItemsTable){
         cartItemsTable.innerHTML = ''; // Clear existing content
-        if(Object.keys(cart).length === 0) {
+        if(Object.keys(cart).length === 0){
             cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
             // checkoutButton.classList.add('d-none');
         } else {
-            for(const [name, { price, quantity }] of Object.entries(cart)) {
+            for(const [name, { price, quantity }] of Object.entries(cart)){
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${name}</td>
@@ -220,9 +216,9 @@ function updateCheckoutCart(cart){
 }
 
 // Function to show the product modal with detailed information
-function showProductModal(product) {
+function showProductModal(product){
     const modalElement = document.getElementById('productModal'); // Your modal container
-    if (!modalElement) {
+    if(!modalElement){
         console.error('Product modal not found in the DOM.');
         return;
     }
@@ -242,17 +238,93 @@ function showProductModal(product) {
     productModal.show();
 }
 
-function filterProductsByCategory(category){
+// Function to fetch categories and render the list dynamically
+function fetchAndRenderCategories() {
+    const categoryAccordion = document.getElementById('categoryAccordion'); // Target the updated HTML
+    if (!categoryAccordion) {
+        console.error('Category accordion not found.');
+        return;
+    }
+
+    fetch('/categories') // Backend endpoint to fetch categories
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.categories) {
+                categoryAccordion.innerHTML = ''; // Clear the existing list
+
+                // Add "All Products" button at the top
+                const allProductsItem = document.createElement('div');
+                allProductsItem.className = 'accordion-item';
+                allProductsItem.innerHTML = `
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-category="all">All Products</button>
+                    </h2>
+                `;
+                categoryAccordion.appendChild(allProductsItem);
+
+                // Render main categories with subcategories
+                data.categories.forEach(category => {
+                    const categoryItem = document.createElement('div');
+                    categoryItem.className = 'accordion-item';
+                    categoryItem.innerHTML = `
+                        <h2 class="accordion-header" id="heading-${category.id}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${category.id}" aria-expanded="false" aria-controls="collapse-${category.id}" data-category="${category.id}">
+                                ${category.name}
+                            </button>
+                        </h2>
+                        <div id="collapse-${category.id}" class="accordion-collapse collapse" aria-labelledby="heading-${category.id}" data-bs-parent="#categoryAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-group subcategory-list" data-parent="${category.id}">
+                                    ${category.subcategories.map(sub => `
+                                        <li class="list-group-item list-group-item-action" data-category="${sub.id}" data-parent="${category.id}">
+                                            ${sub.name}
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    categoryAccordion.appendChild(categoryItem);
+                });
+
+                // Add event listeners to main categories and subcategories
+                categoryAccordion.addEventListener('click', (event) => {
+                    const target = event.target;
+                    if (target.tagName === 'BUTTON' || target.tagName === 'LI') {
+                        const categoryID = target.getAttribute('data-category');
+                        const parentCategoryID = target.closest('.subcategory-list')?.getAttribute('data-parent');
+                
+                        if (categoryID) {
+                            filterProductsByCategory(categoryID, parentCategoryID);
+                        }
+                    }
+                });
+            } else {
+                console.error('Failed to fetch categories:', data.message);
+            }
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+// Function to filter products by category or subcategory
+function filterProductsByCategory(categoryID, parentCategoryID = null) {
     const allProducts = document.querySelectorAll('.card-wrapper');
+
     allProducts.forEach(product => {
         const productCategory = product.getAttribute('data-category');
-        if(category === 'all' || category === productCategory){
-            product.style.display = 'block';
+        const productParentCategory = product.getAttribute('data-parent-category');
+
+        if (categoryID === 'all') {
+            product.style.display = 'block'; // Show all products
+        } else if (productCategory === categoryID || (parentCategoryID && productParentCategory === parentCategoryID)) {
+            product.style.display = 'block'; // Match category or subcategory
         } else {
-            product.style.display = 'none';
+            product.style.display = 'none'; // Hide non-matching products
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', fetchAndRenderCategories);
 
 function removeFromCart(name){
     console.log(`Removing ${name} from cart`);
@@ -266,7 +338,7 @@ function removeFromCart(name){
                 console.log(`${name} removed from cart.`);
                 updateCartCount(data.cart);
                 updateCartItems(data.cart);
-            } else{
+            } else {
                 alert('Failed to remove the product from the cart.');
             }
         })
