@@ -63,6 +63,88 @@ def all_products():
     categories = Category.query.all()
     return render_template('/homepage/AllProducts.html', products = products, category = categories)
 
+@app.route('/categories', methods=['GET'])
+def get_categories():
+    # Fetch all categories from the database
+    categories = Category.query.all()
+
+    # Debug log to ensure categories are fetched
+    print(f"Categories fetched: {categories}")
+
+    # Initialize a dictionary to organize categories
+    category_dict = {}
+
+    for category in categories:
+        if category.parentID:  # Subcategory
+            # Add the subcategory under its parent in the dictionary
+            if category.parentID not in category_dict:
+                # If the parent category doesn't exist, create a placeholder
+                category_dict[category.parentID] = {'name': 'Unknown', 'subcategories': []}
+            # Append the subcategory to the parent's list
+            category_dict[category.parentID]['subcategories'].append({
+                'id': category.categoryID,
+                'name': category.name
+            })
+        else:  # Main category
+            # Initialize the main category in the dictionary
+            if category.categoryID not in category_dict:
+                category_dict[category.categoryID] = {'name': category.name, 'subcategories': []}
+            else:
+                category_dict[category.categoryID]['name'] = category.name
+
+    # Build a structured list for response
+    category_list = []
+    for categoryID, cat_data in category_dict.items():
+        # Only include main categories in the top-level list
+        if not any(cat['id'] == categoryID for cat in category_dict.get(categoryID, {}).get('subcategories', [])):
+            category_list.append({
+                'id': categoryID,
+                'name': cat_data['name'],
+                'subcategories': cat_data['subcategories']
+            })
+
+    # Debug log to verify the response structure
+    print(f"Returning categories: {category_list}")
+
+    return jsonify({'success': True, 'categories': category_list})
+
+@app.route('/products', methods=['GET'])
+def get_products():
+    categoryID = request.args.get('category_id')
+    subcategoryID = request.args.get('subcategory_id')
+
+    # Start building the query
+    query = Product.query
+
+    # Filter by category ID (if provided)
+    if categoryID and categoryID != 'all':
+        query = query.filter(Product.categoryID == categoryID)
+
+    # Filter by subcategory ID (if provided)
+    if subcategoryID:
+        query = query.filter(Product.categoryID == subcategoryID)
+
+    # Filter out inactive products
+    query = query.filter(Product.status == 'active')
+
+    # Fetch products
+    products = query.all()
+
+    # Serialize product data
+    product_list = [{
+        'id': product.productID,
+        'name': product.productName,
+        'description': product.description,
+        'price': product.price,
+        'stock': product.stock,
+        'image': url_for('static', filename=f'images/{product.img}') if product.img else None,
+        'category_id': product.categoryID,
+        'status': product.status
+    } for product in products]
+
+    return jsonify({'success': True, 'products': product_list})
+
+
 @app.route('/product/<int:product_id>', methods = ['GET'])
 def get_product_details(product_id):
     product = Product.query.get_or_404(product_id)
@@ -172,13 +254,13 @@ def login():
             session['email'] = user.email
             session['first_name'] = user.firstName
             
-            next_url = request.args.get('next') or url_for('home')
+            next_url = request.args.get('next') or url_for('user.homepage')
             flash('Login successful!', 'success')
             return redirect(next_url)
         else:
             flash('Incorrect email or password.', 'danger')
     
-    return render_template('login.html')
+    return render_template('signIn.html')
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
@@ -206,7 +288,7 @@ def register():
             flash(f'An error occurred: {str(e)}', 'danger')
             return redirect(url_for('register'))
 
-    return render_template('/sign-in.html')
+    return render_template('signUp.html')
 
 @app.route('/forgotpwd', methods = ['GET', 'POST'])
 def forgotpass():
@@ -235,7 +317,7 @@ def forgotpass():
             flash(f"An error occurred while sending the email: {e}", 'danger')
             return redirect(url_for('forgotpass'))
         
-    return render_template('/forgot-pass.html')
+    return render_template('forgot-pass.html')
 
 @app.route('/resetpwd/<token>', methods=['GET', 'POST'])
 def resetpwd(token):
