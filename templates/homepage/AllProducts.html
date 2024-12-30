@@ -5,8 +5,8 @@
             <link rel="icon" type="image/x-icon" href="./static/images/kidocode_symbol_logo.png">
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-            <!-- <link rel="stylesheet" href="../css/main.css">
-            <link rel="stylesheet" href="../css/product.css"> -->
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}">
+            <!-- <link rel="stylesheet" href="../css/product.css"> -->
             <script src="{{ url_for('static', filename='js/add-to-cart.js') }}"></script>
             <script src="{{ url_for('static', filename='js/script.js') }}"></script>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,15 +23,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav mx-auto">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="discoveryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Products
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="discoveryDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('all_products')}}">All Product</a></li>
-                                <li><a class="dropdown-item" href="all_product.html">3D Print</a></li>
-                                <li><a class="dropdown-item" href="gallery.html">Electronics</a></li>
-                            </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('all_products')}}">Products</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="about.html">About</a>
@@ -83,18 +76,14 @@
             <!-- Sidebar -->
                 <div class="col-md-3 p-3">
                     <h5 class="mb-3"><i class="bi bi-filter-left"></i>Category</h5>
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-action" data-category="all">All Products</li>
-                        {% for category in categories %}
-                        <li class="list-group-item list-group-item-action" data-category="{{ category.categoryID }}">"{{ category.categoryName }}"</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="accordion accordion-flush" id="categoryAccordion">
+                    </div>
                 </div>
                 <!-- Product View -->
                 <div class="col-md-9">
                     <div class="row g-3" id="product-container">
                         {% for product in products %}
-                        <div class="col-md-3 card-wrapper" data-category="{{ product.productID }}" data-product-id="{{ product.productID }}" data-context="main">
+                        <div class="col-md-3 card-wrapper" data-category="{{ product.categoryID }}" data-parent-category="{{ product.parentCategoryID }}" data-product-id="{{ product.productID }}" data-context="main">
                             <div class="card card-hover">
                                 <img src="{{ url_for('static', filename='images/' + product.img) }}" alt="{{ product.productName }}" class="card-img-top">
                                 <div class="card-body text-center">
