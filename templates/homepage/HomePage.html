@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Shop Homepage - Kidocode</title>
-        <link rel="icon" type="image/x-icon" href="/static/images/kidocode_symbol_logo.png">
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/kidocode_symbol_logo.png') }}">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}">
@@ -31,29 +31,29 @@
                             <a class="nav-link" href="contact.html">Contact Us</a>
                         </li>
                     </ul>
-                <div class="d-flex ms-auto align-items-center pe-3">
+                <div class="d-flex ms-auto align-items-center">
                     {% if not first_name %}
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary me-3">
                         <i class="fas fa-user"></i>
                     </a>
                     {% else %}
-                    <div class="dropdown">
+                    <div class="dropdown me-3">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><span class="dropdown-item-text">Welcome, {{ first_name }}</span></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.homepage') }}">Welcome, {{ first_name }}</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">Sign Out</a></li>
                         </ul>
                     </div>
                     {% endif %}
+                    <a href="#" id="cart-icon" class="btn btn-outline-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                        </span>
+                    </a>
                 </div>
-                <a href="#" id="cart-icon" class="btn btn-outline-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        0
-                    </span>
-                </a>
             </div>
         </nav>
         <div class="offcanvas offcanvas-end" id="cartOffcanvas" tabindex="-1" aria-labelledby="cartOffcanvasLabel">
@@ -69,7 +69,13 @@
                 </div>
             </div>
         </div>
-        <h1 class="text-center my-4">Welcome to Kidocode Shop</h1>
+        <div class="hero-section">
+            <div class="hero-card">
+                <h1 class="text-center my-4">Welcome to Kidocode Shop</h1>
+                <p>All items for your child’s learning and development, hand-picked by the Kido Team.</p>
+                <a href="{{ url_for('all_products')}}" class="btn btn-primary hero-btn">Look at all the cool new stuff!</a>
+            </div>
+        </div>
         <div class="container">
             <div class="row justify-content-center">
                 {% for product in product %}
@@ -87,6 +93,39 @@
                 {% endfor %}
             </div>
         </div>
+        <!-- Testimonials Section -->
+        <section class="testimonials-section bg-light py-5">
+            <div class="container">
+                <h2 class="text-center mb-4">Reviews</h2>
+                <p class="text-center mb-5">Some quotes from our happy Users</p>
+                <div class="row g-4">
+                    <!-- First Testimonial -->
+                    {% for review in review %}
+                    {% if loop.index <= 3 %}
+                    <div class="col-md-4">
+                        <div class="card border-0 text-center">
+                            <div class="card-body">
+                                <!-- User Image -->
+                                <img src="https://via.placeholder.com/50" class="rounded-circle mb-3" >
+                                <p>“{{ review.comment }}”</p>
+                                <h5 class="card-title">{{review.user.firstName}}</h5>
+                                <!-- Star Ratings -->
+                                <div>
+                                    {% for i in range(review.rating) %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    {% endfor %}
+                                    {% for i in range(5 - review.rating) %}
+                                    <i class="bi bi-star text-warning"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
         <!-- Footer -->
         <footer class="footer-container">
             <!-- Single top line -->

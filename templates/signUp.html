@@ -11,8 +11,14 @@
         <link rel="stylesheet" href="/static/css/main.css">
     </head>
     <body>
-        <div class="signin-container">
-            <h2 class="signin-title">Sign Up</h2>
+        <div class="container">
+            <div class="mx-auto p-3">
+                <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="fs-4 text-decoration-none">
+                  <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
+                  Shop
+                </a>
+            </div>
+            <h2 class="title">Sign Up</h2>
             <div class="mb-3">
                 <form action="/register" method = "post">
                     <label for="email" class="form-label">Enter your Email</label>
@@ -45,7 +51,7 @@
             </div>
             <div class="text-center mt-3">
                 <p>
-                    Already have an account? <a href="/login">Login and Shop!</a>
+                    Already have an account? <a href="{{ url_for('login') }}">Login and Shop!</a>
                 </p>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}

@@ -12,8 +12,14 @@
       <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css')}}">
   </head>
 <body>
-    <div class="login-container">
-      <h2 class="login-title">Sign In</h2>
+    <div class="container">
+      <div class="mx-auto p-3">
+        <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="fs-4 text-decoration-none">
+          <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
+          Shop
+        </a>
+      </div>
+      <h2 class="title">Sign In</h2>
         <form action="/login" method = "post">
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -32,7 +38,7 @@
             <button type="submit" class="btn btn-primary">Sign In</button>
           </div>
           <div class="text-end mt-2">
-            <a href="/forgotpwd" class="text-decoration-none">Forgot password?</a>
+            <a href="{{ url_for('forgotpass') }}" class="text-decoration-none">Forgot password?</a>
           </div>
         </form>
         <div class="text-center my-3">
@@ -43,7 +49,7 @@
         </div>
         <div class="text-center mt-3">
           <p>
-            Don't have an account? <a href="/register" class="text-decoration-none">Sign Up and Shop!</a>
+            Don't have an account? <a href="{{ url_for('register') }}" class="text-decoration-none">Sign Up and Shop!</a>
           </p>
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
