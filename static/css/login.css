@@ -6,35 +6,23 @@ body {
   background-color: #f8f9fa;
   margin: 0;
 }
-.login-container {
+
+.container {
   max-width: 500px;
   width: 100%;
   background: white;
   padding: 3rem;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.login-title {
-  text-align: center;
-  color: #1d4ed8; 
-  font-weight: bold;
-  margin-bottom: 2rem;
-}
-.eye-icon {
-  cursor: pointer;
 }
 
-.signin-container {
-  max-width: 500px;
-  width: 100%;
-  background: white;
-  padding: 3rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.signin-title {
+.title {
   text-align: center;
   color: #1d4ed8; 
   font-weight: bold;
   margin-bottom: 2rem;
+}
+
+.eye-icon {
+  cursor: pointer;
 }
