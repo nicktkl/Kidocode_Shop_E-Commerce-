@@ -190,14 +190,23 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script>
-            document.querySelectorAll('input[name="delivery-method"]').forEach(input => {
-                input.addEventListener('change', () => {
-                    const addressSection = document.getElementById('shipping-address-section');
-                    if (input.value === 'pickup') {
-                        addressSection.style.display = 'none';
-                    } else {
-                        addressSection.style.display = 'block';
-                    }
+            document.addEventListener('DOMContentLoaded', () => {
+                const pickupRadio = document.getElementById('delivery-pickup');
+                const shipRadio = document.getElementById('delivery-ship');
+                const addressSection = document.getElementById('shipping-address-section');
+
+                pickupRadio.checked = true;
+
+                addressSection.style.display = 'none';
+
+                document.querySelectorAll('input[name="delivery-method"]').forEach(input => {
+                    input.addEventListener('change', () => {
+                        if(pickupRadio.checked){
+                            addressSection.style.display = 'none';
+                        } else if (shipRadio.checked) {
+                            addressSection.style.display = 'block';
+                        }
+                    });
                 });
             });
         </script>
