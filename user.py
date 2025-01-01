@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from extensions import bcrypt
+from imports import bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from functools import wraps
 
