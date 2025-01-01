@@ -3,7 +3,7 @@ class Config:
     SECRET_KEY = 'kidocodeverysecretkey'
     
     # Database Configuration
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerceNEW'
+    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root@127.0.0.1:3306/ecommerceNEW'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Email Configuration
