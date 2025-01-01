@@ -6,9 +6,7 @@
     width: 200px; 
 }
 
-.icon-size {
-    font-size: 1.5rem; 
-}
+
 
 /* Additional styling for dropdown icons on smaller screens */
 /* .navbar-nav .nav-item .icon-links {
@@ -16,6 +14,10 @@
     flex-direction: column;
     gap: 0.5rem;
 } */
+
+.bi {
+    font-size: 1.2rem; 
+}
 
 /* Hero Section Styles */
 .hero-section {
