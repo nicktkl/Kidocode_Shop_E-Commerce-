@@ -22,7 +22,7 @@ app.config.update({
     'MAIL_DEFAULT_SENDER': ('Kidocode', 'nurulizzatihayat@gmail.com')
 })
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@127.0.0.1:3306/ecommerceNEW'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerceNEW'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 from user import user_blueprint
@@ -272,8 +272,14 @@ def register():
             return redirect(url_for('register'))
         
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        
-        new_user = User(email = email, password = hashed_password)
+
+
+        userCount = User.query.count()
+        newID = f"C{userCount + 1:03d}"
+        new_user = User(
+            userID = newID,
+            email = email, 
+            password = hashed_password)
 
         try:
             db.session.add(new_user)

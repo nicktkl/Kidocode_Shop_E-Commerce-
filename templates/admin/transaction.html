@@ -9,60 +9,69 @@
         <div class="container my-5">
             <h1 class="text-primary">Sale</h1>
         
-            <!-- Search Form -->
-            <div class="d-flex align-items-center my-3">
-                <form class="d-flex w-100 align-items-center" action="/admin/transaction" method="get">
+            <form action="/admin/transaction" method="get">
+                <div class="d-flex w-100 align-items-center my-3">
+                    <!-- Search Form -->
                     <div class="flex-grow-1 me-2">
-                        <input type="text" class="form-control" name="searchPayment" placeholder="Search" value="{{ request.args.get('searchPayment', '') }}">
+                        <input type="text" class="form-control" name="searchPayment" placeholder="Search a payment"
+                            value="{{ request.args.get('searchPayment', '') }}">
                     </div>
                     <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
-                        <i class="fa fa-search me-2"></i>Search
+                        <i class="bi bi-search me-2"></i> Search
                     </button>
-                </form>
-            </div>
+                </div>
+            
+                <!-- Filter buttons (All, 1-5 Rating) -->
+                <div class="my-3 text-start">
+                    <button type="submit" name="status" value="" class="btn btn-outline-primary">All</button>
+                    <button type="submit" name="status" value="completed" class="btn btn-outline-primary">Completed</button>
+                    <button type="submit" name="status" value="refunded" class="btn btn-outline-primary">Refunded</button>
+                    <button type="submit" name="status" value="pending" class="btn btn-outline-primary">Pending</button>
+                    <button type="submit" name="status" value="received" class="btn btn-outline-primary">Received</button>
+                </div>
+            </form>
         
             <!-- Transactions Table -->
-            <table class="table table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Payment ID</th>
-                        <th>Order ID</th>
-                        <th>Date of Payment</th>
-                        <th>Amount</th>
-                        <th>Method of Payment</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for payment in payment %}
+            <div class="table-responsive">
+                <table class="table table-border table-hover">
+                    <thead class="table-light">
                         <tr>
-                            <td>{{ payment.paymentID }}</td>
-                            <td>{{ payment.orderID }}</td>
-                            <td>{{ payment.paymentDate }}</td>
-                            <td>{{ payment.amount }}</td>
-                            <td>{{ payment.paymentMethod }}</td>
-                            <td class="p-2">
-                                <span style="display: inline-block; padding: 5px 20px; width: 120px; text-align: center;" 
-                                    class="
-                                    {% if payment.status == 'Completed' %}
-                                        bg-success text-light rounded-pill
-                                    {% elif payment.status == 'Cancelled' %}
-                                        bg-danger text-light rounded-pill
-                                    {% elif payment.status == 'Processing' %}
-                                        bg-warning text-dark rounded-pill
-                                    {% elif payment.status == 'Shipped' %}
-                                        bg-info text-light rounded-pill
-                                    {% elif payment.status == 'Pending' %}
-                                        bg-secondary text-light rounded-pill
-                                    {% endif %}
-                                " style="padding: 5px 15px;">
-                                    {{ payment.status }}
-                                </span>
-                            </td>
+                            <th>Payment ID</th>
+                            <th>Order ID</th>
+                            <th>Date of Payment</th>
+                            <th>Amount</th>
+                            <th>Method of Payment</th>
+                            <th>Status</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for payment in payment %}
+                        <form method="POST" action="/admin/transaction">
+                            <tr>
+                                <td>{{ payment.paymentID }}</td>
+                                <td>{{ payment.orderID }}</td>
+                                <td>{{ payment.paymentDate }}</td>
+                                <td>{{ payment.amount }}</td>
+                                <td>{{ payment.paymentMethod }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <select name="status" class="form-select form-select-sm rounded-pill w-auto me-2">
+                                            <option value="Completed" {% if payment.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                            <option value="Cancelled" {% if payment.status == 'Refunded' %}selected{% endif %}>Refunded</option>
+                                            <option value="Received" {% if payment.status == 'Received' %}selected{% endif %}>Received</option>
+                                            <option value="Pending" {% if payment.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-outline-success hover-effect" name="btnsave" value="{{payment.paymentID}}">
+                                            <i class="bi bi-save"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </form>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>            
         </div>                  
     </body>
 </html>

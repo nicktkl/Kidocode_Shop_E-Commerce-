@@ -3,6 +3,10 @@ from models import Category, Product, User, Order, OrderItem, Review, Payment, d
 import os
 from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
+from datetime import datetime
+import pytz
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -191,8 +195,11 @@ def product():
                     img.save(os.path.join(img_folder, img_filename))
                 else:
                     img_path = None
-                    
+                
+                total_product_count = Product.query.count()
+                new_product_id = f"KP{total_product_count + 1:03d}"
                 new_product = Product(
+                    productID = new_product_id,
                     productName= request.form['p_name'],
                     description= request.form['p_desc'],
                     img = img_path,
@@ -234,11 +241,21 @@ def product():
                 return f"An error occurred while updating the product: {e}", 500
     
     category = Category.query.filter_by(parentID=None).all()
+    all_categories = Category.query.all()
+    category_data = {
+        "main_categories": [{"id": cat.categoryID, "name": cat.name} for cat in category],
+        "all_categories": [{"id": cat.categoryID, "name": cat.name, "parentID": cat.parentID} for cat in all_categories]
+    }
 
-    return render_template("/admin/product.html", product=products, category=category)
+    return render_template(
+        "/admin/product.html",
+        product=products,
+        category=category,
+        category_data=category_data
+    )
 
 #CUSTOMER
-@admin_blueprint.route('/customer')
+@admin_blueprint.route('/customer', methods=["GET", "POST"])
 def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
@@ -249,6 +266,31 @@ def customer():
         ).all()  
     else:
         user = User.query.all()
+
+    if request.method == 'POST':
+        email = request.form['btnmail']
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        token = serializer.dumps(email, salt='password-reset-salt')
+
+        reset_url = f"http://127.0.0.1:5000/resetpwd/{token}"
+        malaysia_tz = pytz.timezone('Asia/Kuala_Lumpur')
+        timestamp = datetime.now(pytz.utc).astimezone(malaysia_tz).strftime('%Y/%m/%d %H:%M GMT')
+        try:
+            with open("templates/reset-pwd.txt", "r") as file:
+                email_body = file.read()
+                email_body = email_body.replace("{{ url }}", reset_url)
+                email_body = email_body.replace("{{ timestamp }}", timestamp)
+
+            subject = "Password Reset Request"
+            msg = Message(subject=subject, recipients=[email], body=email_body)
+            mail.send(msg)
+
+            return redirect(url_for('admin.customer'))
+
+        except Exception as e:
+            print(f"An error occurred while sending the email: {e}", 'danger')
+            return redirect(url_for('admin.customer'))
+        
     return render_template("/admin/customer.html", user=user)
 
 #ORDER
@@ -256,41 +298,79 @@ def customer():
 def order():
     search_query = request.args.get('searchOrder', '')  
     search_filter = request.args.get('statusOrder', '')  
-    if search_query or search_filter:
-        orders = Order.query.filter(
-            Order.orderID.ilike(f'%{search_query}%') &
-            Order.status.ilike(f'%{search_filter}%')
-        ).all()  
-        order_ids = [order.orderID for order in orders]
-        orderItems = OrderItem.query.filter(OrderItem.orderID.in_(order_ids)).all()
-    else:
-        orders = Order.query.all()
-        orderItems = OrderItem.query.all() 
-   
+    method_filter = request.args.get('method', '')  
+
+    query = Order.query
+
+    if search_query:
+        query = query.filter(Order.orderID.ilike(f'%{search_query}%'))
+
+    if search_filter:
+        query = query.filter(Order.status.ilike(f'%{search_filter}%'))
+
+    if method_filter and method_filter != 'all':
+        query = query.filter(Order.shippingMethod.ilike(f'%{method_filter}%'))
+
+    orders = query.all()
+
+    order_ids = [order.orderID for order in orders]
+    orderItems = OrderItem.query.filter(OrderItem.orderID.in_(order_ids)).all()
+
     return render_template("/admin/order.html", order=orders, order_items=orderItems)
 
 #REVIEW
 @admin_blueprint.route('/review')
 def review():
-    search_query = request.args.get('rating', '')  
+    search_query = request.args.get('searchReview', '')
+    rating_filter = request.args.get('rating', '')     
+   
+    query = Review.query
+
     if search_query:
-        review = Review.query.filter(
-            Review.rating.ilike(f'%{search_query}%')
-        ).all()  
-        product = Product.query.all()
-    else:
-        review = Review.query.all()
-        product = Product.query.all()
-    return render_template("/admin/review.html", review=review, product=product)
+        query = query.filter(
+            db.or_(
+                Review.productID.ilike(f'%{search_query}%'),
+                Review.comment.ilike(f'%{search_query}%')
+            )
+        )
+
+    if rating_filter:
+        query = query.filter(Review.rating == rating_filter)
+
+    reviews = query.all()
+    products = Product.query.all()
+
+    return render_template("/admin/review.html", review=reviews, product=products)
 
 #SALE
-@admin_blueprint.route('/transaction')
+@admin_blueprint.route('/transaction', methods=["GET", "POST"])
 def transaction():
     search_query = request.args.get('searchPayment', '')  
     if search_query:
         payment = Payment.query.filter(
-            Payment.paymentID.ilike(f'%{search_query}%')
+            Payment.paymentID.ilike(f'%{search_query}%'),
+            Payment.orderID.ilike(f'%{search_query}%'),
+            Payment.paymentMethod.ilike(f'%{search_query}%')
         ).all()  
     else:
         payment = Payment.query.all()
+
+    if request.method == 'POST':
+        paymentID = request.form.get('btnsave')
+        paymentStatus = request.form.get('status')
+
+        try:
+            payment = Payment.query.get(paymentID)
+
+            if payment:
+                payment.status = paymentStatus
+                db.session.commit()
+                return redirect(url_for('admin.transaction'))
+            else:
+                return "Payment not found", 404
+
+        except Exception as e:
+            db.session.rollback()
+            return f"An error occurred while saving the transaction: {e}", 500
+        
     return render_template("/admin/transaction.html", payment=payment)

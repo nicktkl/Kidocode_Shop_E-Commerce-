@@ -16,36 +16,44 @@
                         <input type="text" class="form-control" name="searchCust" placeholder="Search" value="{{ request.args.get('searchCust', '') }}">
                     </div>
                     <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
-                        <i class="fa fa-search me-2"></i>Search
+                        <i class="bi bi-search me-2"></i> Search
                     </button>
                 </form>
             </div>
         
             <!-- Customers Table -->
-            <table class="table table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Customer ID</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in user %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-light">
                         <tr>
-                            <td>{{ user.userID }}</td>
-                            <td>{{ user.firstName }}</td>
-                            <td>{{ user.lastName }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.phone }}</td>
-                            <td>{{ user.address }}</td>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Action</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for user in user %}
+                            <tr>
+                                <form action="customer" method="post">
+                                    <td>{{ user.userID }}</td>
+                                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.phone }}</td>
+                                    <td>{{ user.address }}</td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary hover-effect" name="btnmail" value="{{ user.email }}">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </td>
+                                </form>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>        
     </body>
 </html>

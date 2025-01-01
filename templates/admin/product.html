@@ -17,7 +17,8 @@
                             value="{{ request.args.get('searchProduct', '') }}">
                     </div>
                     <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
-                        <i class="fa fa-search me-2"></i>Search
+                        <i class="bi bi-search me-2"></i> Search
+
                     </button>
                     <button class="btn btn-outline-primary d-flex align-items-center px-3" type="button" data-bs-toggle="modal" data-bs-target="#addProduct">
                         <i class="bi bi-plus-circle me-2"></i>Add New
@@ -26,7 +27,7 @@
                 
                 <!-- Filter Buttons Row -->
                 <div class="row my-3">
-                    <div class="col-3">
+                    <div class="col-sm-5">
                         <form action="/admin/product" method="get" class="d-inline">
                             <div class="me-2">
                                 <select name="categoryFilter" class="form-select" aria-label="Category Filter" onchange="this.form.submit()">
@@ -188,53 +189,50 @@
                         <div class="modal-body">
                             <div class="mb-3 row">
                                 <div class="col-sm-12">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group">
                                         <span class="input-group-text"><i class="bi bi-image"></i></span>
-                                        <input class="form-control form-control-sm" type="file" id="productImage" name="p_img" accept="image/*">
+                                        <input class="form-control" type="file" id="productImage" name="p_img" accept="image/*">
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <div class="col-sm-12">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group">
                                         <span class="input-group-text"><i class="bi bi-box"></i></span>
-                                        <input type="text" class="form-control form-control-sm" id="productName" name="p_name" required placeholder="Product Name">
+                                        <input type="text" class="form-control" id="productName" name="p_name" required placeholder="Product Name">
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <div class="col-sm-12">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group">
                                         <span class="input-group-text"><i class="bi bi-pencil-square"></i></span>
-                                        <textarea id="productDescription" name="p_desc" class="form-control form-control-sm" required placeholder="Description"></textarea>
+                                        <textarea id="productDescription" name="p_desc" class="form-control" required placeholder="Description"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group">
                                         <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                                        <input type="number" class="form-control form-control-sm" id="productPrice" name="p_price" min="0.01" step="0.01" required placeholder="Price">
+                                        <input type="number" class="form-control" id="productPrice" name="p_price" min="0.01" step="0.01" required placeholder="Price">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group">
                                         <span class="input-group-text"><i class="bi bi-boxes"></i></span>
-                                        <input type="number" class="form-control form-control-sm" id="productStock" name="p_stock" min="0" required placeholder="Stock">
+                                        <input type="number" class="form-control" id="productStock" name="p_stock" min="0" required placeholder="Stock">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-3">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group">
                                         <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
-                                        <select id="p_category" name="p_category" class="form-select form-select-sm" aria-label="Category" required>
+                                        <select id="mainCategory" class="form-select" aria-label="Category" required>
                                             <option disabled selected>Select category</option>
-                                            {% for category in category %}
-                                                <option value="{{ category.categoryID }}">{{ category.name }}</option>
-                                            {% endfor %}
                                         </select>
-                                        <select id="p_subcategory" name="p_subcategory" class="form-select form-select-sm" aria-label="Subcategory" disabled>
+                                        <select id="subCategory" name="p_category" class="form-select" aria-label="Subcategory" required>
                                             <option disabled selected>Select Subcategory</option>
                                         </select>
                                     </div>
@@ -248,59 +246,10 @@
                     </form>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text"><i class="bi bi-list-ul"></i></span>
-                    <select id="p_category" name="p_category" class="form-select form-select-sm" aria-label="Category" required>
-                        <option disabled selected>Select Category</option>
-                        {% for category in categories %}
-                            <option value="{{ category.categoryID }}">{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        
-            <div class="col-md-6 mb-3">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text"><i class="bi bi-gear"></i></span>
-                    <select id="p_subcategory" name="p_subcategory" class="form-select form-select-sm" aria-label="Subcategory" disabled>
-                        <option disabled selected>Select Subcategory</option>
-                        {% for category in categories %}
-                            <optgroup label="{{ category.name }}" id="category_{{ category.categoryID }}" style="display:none;">
-                                {% for subcategory in category.subcategories %}
-                                    <option value="{{ subcategory.categoryID }}">{{ subcategory.name }}</option>
-                                {% endfor %}
-                            </optgroup>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-        
+        </div> 
         <script>
-            document.getElementById('p_category').addEventListener('change', function () {
-                var categoryId = this.value;
-                var subcategorySelect = document.getElementById('p_subcategory');
-                
-                // Disable subcategory select and reset options
-                subcategorySelect.disabled = false;
-                subcategorySelect.innerHTML = '<option disabled selected>Select Subcategory</option>';
-                
-                // Show the appropriate subcategories based on the selected category
-                {% for category in categories %}
-                    var categoryOptGroup = document.getElementById('category_{{ category.categoryID }}');
-                    if (categoryId == '{{ category.categoryID }}') {
-                        categoryOptGroup.style.display = 'block';
-                    } else {
-                        categoryOptGroup.style.display = 'none';
-                    }
-                {% endfor %}
-            });
+            const categoryData = {{ category_data|tojson }};
         </script>
-        
+        <script src="/static/js/productform.js"></script>           
     </body>
-    
 </html>

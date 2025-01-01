@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-# from app import bcrypt
+from extensions import bcrypt
 from models import Category, Product, User, Order, OrderItem, Review, Payment, db
 from functools import wraps
 
@@ -33,13 +33,49 @@ def homepage():
 def session_check():
     return jsonify({'logged_in': session.get('loggedin', False)})
 
+@user_blueprint.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    email = session.get('email')
+    if not email:
+        flash('No user logged in.', 'danger')
+        return redirect(url_for('login'))
+    
+    user = User.query.filter_by(email=email).first()
+
+    if request.method == 'POST':
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        password = request.form.get('password')  # Optionally allow password change
+        confirm_password = request.form.get('confirm_password')
+
+        if password and password != confirm_password:
+            flash('Passwords do not match!', 'danger')
+            return render_template('profile.html', user=user)
+        
+        try:
+            user.first_name = first_name
+            user.last_name = last_name
+            if password:  # Update password if provided
+                user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('user.homepage'))
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred. Please try again.', 'danger')
+
+    return render_template('/user/profile.html', user=user)
+
 @user_blueprint.route('/logout')
 def logout():
-    session.pop('loggedin', None)
-    session.pop('email', None)
-    session.pop('first_name', None)
-    flash('You have been signed out.', 'info')
-    return redirect(url_for('home'))
+    if session.get('loggedin'):
+        session.pop('loggedin', None)
+        session.pop('email', None)
+        session.pop('first_name', None)
+        flash('You have been signed out.', 'info')
+        return redirect(url_for('home'))
 
 @user_blueprint.route('/add-to-cart', methods=['POST'])
 @login_required
