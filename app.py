@@ -22,7 +22,7 @@ app.config.update({
     'MAIL_DEFAULT_SENDER': ('Kidocode', 'nurulizzatihayat@gmail.com')
 })
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@127.0.0.1:3306/ecommerceNEW'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerceNEW'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 from user import user_blueprint
