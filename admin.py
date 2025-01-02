@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from models import Category, Product, User, Order, OrderItem, Review, Payment, db
+from models import Category, Product, User, Order, OrderItem, Review, Payment, Feedback, db
 import os
 from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
@@ -10,7 +10,7 @@ from itsdangerous import URLSafeTimedSerializer
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
-#DASHBOARD
+#DASHBOARD CAN BE BETTER
 @admin_blueprint.route('/dashboard')
 def dashboard():
     cust_result = db.session.query(
@@ -39,19 +39,18 @@ def dashboard():
     reviewlabels = [str(r.rating) for r in review_result]
     reviewdata = [r.rating_count for r in review_result]
 
-    product_count = Product.query.count()
-    review_count = Review.query.count()
-    customer_count = User.query.count()
-    payment_count = Payment.query.count()
+    product_count = Product.query.count() #total product catalogue
+    review_count = Review.query.count() #total review received
+    customer_count = User.query.filter(User.userID.ilike('C%')).count() #total customer registered
     total_item_sold = db.session.query(func.sum(OrderItem.quantity)).scalar() or 0
-    total_payment_amount = db.session.query(func.sum(Payment.amount)).scalar() or 0
+    total_payment_amount = round(db.session.query(func.sum(Payment.amount)).scalar() or 0, 2)
+
 
     return render_template(
         "/admin/dashboard.html",
         product_count=product_count,
         review_count=review_count,
         customer_count=customer_count,
-        payment_count=payment_count,
         total_payment_amount=total_payment_amount,
         total_item_sold=total_item_sold,
         custlabels=custlabels,
@@ -62,9 +61,26 @@ def dashboard():
         reviewdata=reviewdata
     )
 
-#CATEGORY
+#CATEGORY DONE
 @admin_blueprint.route('/category', methods=["GET","POST"])
 def category():
+    search_query = request.args.get('searchCategory', '')
+
+    if search_query:
+        subquery = Category.query.with_entities(Category.parentID).filter(
+            Category.categoryID.ilike(f'%{search_query}%') |
+            Category.name.ilike(f'%{search_query}%'),
+            Category.parentID.isnot(None)
+        ).distinct()
+
+        categories = Category.query.filter(
+            (Category.name.ilike(f'%{search_query}%') &
+            Category.parentID.is_(None)) | 
+            (Category.categoryID.in_(subquery)) 
+        ).all()
+    else:
+        categories = Category.query.filter_by(parentID=None).all()
+
     if request.method == 'POST':
 
         if 'btnadd' in request.form:
@@ -135,26 +151,9 @@ def category():
                         return f"An error occurred while deleting the category: {e}", 500
             return "Category ID not provided", 400
 
-    search_query = request.args.get('searchCategory', '').strip()
+    return render_template("/admin/category.html", main_categories=categories)
 
-    if search_query:
-        subquery = Category.query.with_entities(Category.parentID).filter(
-            Category.categoryID.ilike(f'%{search_query}%') |
-            Category.name.ilike(f'%{search_query}%'),
-            Category.parentID.isnot(None)
-        ).distinct()
-
-        main_categories = Category.query.filter(
-            (Category.name.ilike(f'%{search_query}%') &
-            Category.parentID.is_(None)) | 
-            (Category.categoryID.in_(subquery)) 
-        ).all()
-    else:
-        main_categories = Category.query.filter_by(parentID=None).all()
-
-    return render_template("/admin/category.html", main_categories=main_categories)
-
-#PRODUCT
+#PRODUCT DONE
 @admin_blueprint.route('/product', methods=["GET", "POST"])
 def product():
     search_query = request.args.get('searchProduct', '')  
@@ -168,8 +167,8 @@ def product():
 
     if search_query:
         query = query.filter(
-            Product.productName.ilike(f'%{search_query}%') | 
-            Product.productID.ilike(f'%{search_query}%')
+            (Product.productName.ilike(f'%{search_query}%')) | 
+            (Product.productID.ilike(f'%{search_query}%'))
         )
 
     if filter_status == 'active':
@@ -247,22 +246,17 @@ def product():
         "all_categories": [{"id": cat.categoryID, "name": cat.name, "parentID": cat.parentID} for cat in all_categories]
     }
 
-    return render_template(
-        "/admin/product.html",
-        product=products,
-        category=category,
-        category_data=category_data
-    )
+    return render_template("/admin/product.html", product=products, category=category, category_data=category_data)
 
-#CUSTOMER
+#CUSTOMER JUSTTHEMAILTHING
 @admin_blueprint.route('/customer', methods=["GET", "POST"])
 def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
         user = User.query.filter(
-            User.userID.ilike(f'%{search_query}%') |
-            User.firstName.ilike(f'%{search_query}%') |
-            User.lastName.ilike(f'%{search_query}%')
+            (User.userID.ilike(f'%{search_query}%')) |
+            (User.firstName.ilike(f'%{search_query}%')) |
+            (User.lastName.ilike(f'%{search_query}%'))
         ).all()  
     else:
         user = User.query.all()
@@ -293,65 +287,89 @@ def customer():
         
     return render_template("/admin/customer.html", user=user)
 
-#ORDER
+#ORDER DONE
 @admin_blueprint.route('/order')
 def order():
     search_query = request.args.get('searchOrder', '')  
-    search_filter = request.args.get('statusOrder', '')  
+    status_filter = request.args.get('statusOrder', '')  
     method_filter = request.args.get('method', '')  
 
-    query = Order.query
-
     if search_query:
-        query = query.filter(Order.orderID.ilike(f'%{search_query}%'))
-
-    if search_filter:
-        query = query.filter(Order.status.ilike(f'%{search_filter}%'))
-
-    if method_filter and method_filter != 'all':
-        query = query.filter(Order.shippingMethod.ilike(f'%{method_filter}%'))
-
-    orders = query.all()
+        orders = Order.query.join(User).filter(
+            (Order.orderID == search_query) |
+            (Order.userID == search_query) |
+            (User.firstName.ilike(f'%{search_query}%')) |
+            (User.lastName.ilike(f'%{search_query}%'))
+        ).all()
+    elif status_filter != "":
+        orders = Order.query.filter(
+            Order.status.ilike(f'%{status_filter}%')
+        ).all()
+    elif method_filter != "":
+        orders = Order.query.filter(
+            Order.shippingMethod.ilike(f'%{method_filter}%')
+        ).all()
+    else:
+        orders = Order.query.all()
 
     order_ids = [order.orderID for order in orders]
     orderItems = OrderItem.query.filter(OrderItem.orderID.in_(order_ids)).all()
 
     return render_template("/admin/order.html", order=orders, order_items=orderItems)
 
-#REVIEW
-@admin_blueprint.route('/review')
+#REVIEW DONE
+@admin_blueprint.route('/review', methods=["GET", "POST"])
 def review():
     search_query = request.args.get('searchReview', '')
-    rating_filter = request.args.get('rating', '')     
-   
-    query = Review.query
+    filter_query = request.args.get('ratingSearch', '') 
 
     if search_query:
-        query = query.filter(
-            db.or_(
-                Review.productID.ilike(f'%{search_query}%'),
-                Review.comment.ilike(f'%{search_query}%')
-            )
-        )
+        reviews = Review.query.join(Product).join(User).filter(
+            (Review.reviewID == search_query) |
+            (Review.productID == search_query) |
+            (Review.userID == search_query) |
+            (Product.productName.ilike(f'%{search_query}%')) |
+            (User.firstName.ilike(f'%{search_query}%')) |
+            (User.lastName.ilike(f'%{search_query}%'))
+        ).all()
+    elif filter_query != "":
+        reviews = Review.query.filter(
+            Review.rating == filter_query
+        ).all()
+    else:
+        reviews = Review.query.all()
 
-    if rating_filter:
-        query = query.filter(Review.rating == rating_filter)
+    if request.method == 'POST':
+        response = request.form['reply']
+        id = request.form['btnsend']
 
-    reviews = query.all()
-    products = Product.query.all()
+        review = Review.query.get_or_404(id)
+                
+        try:
+            review.response = response
+            db.session.commit()
+            return redirect(url_for('admin.review'))
+        except Exception as e:
+            db.session.rollback()
+            return f"An error occurred: {e}", 500
 
-    return render_template("/admin/review.html", review=reviews, product=products)
+    return render_template("/admin/review.html", review=reviews)
 
-#SALE
+#SALE DONE
 @admin_blueprint.route('/transaction', methods=["GET", "POST"])
 def transaction():
-    search_query = request.args.get('searchPayment', '')  
+    search_query = request.args.get('searchPayment', '')
+    filter_query = request.args.get('searchStatus', '')  
     if search_query:
         payment = Payment.query.filter(
-            Payment.paymentID.ilike(f'%{search_query}%'),
-            Payment.orderID.ilike(f'%{search_query}%'),
-            Payment.paymentMethod.ilike(f'%{search_query}%')
-        ).all()  
+            (Payment.paymentID == search_query) |
+            (Payment.orderID == search_query) |
+            (Payment.paymentMethod.ilike(f'%{search_query}%'))
+        ).all()
+    elif filter_query != "":
+        payment = Payment.query.filter(
+            Payment.status.ilike(f'%{filter_query}%')
+        ).all()
     else:
         payment = Payment.query.all()
 
@@ -374,3 +392,23 @@ def transaction():
             return f"An error occurred while saving the transaction: {e}", 500
         
     return render_template("/admin/transaction.html", payment=payment)
+
+@admin_blueprint.route('/feedback', methods=["GET", "POST"])
+def feedback():
+    if request.method == 'POST':
+        response = request.form['reply']
+        id = request.form['btnsend']
+
+        feedback = Feedback.query.get_or_404(id)
+                
+        try:
+            feedback.response = response
+            db.session.commit()
+            return redirect(url_for('admin.feedback'))
+        except Exception as e:
+            db.session.rollback()
+            return f"An error occurred: {e}", 500
+
+    feedback = Feedback.query.all()
+
+    return render_template("/admin/feedback.html", feedback=feedback)

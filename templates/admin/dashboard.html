@@ -13,85 +13,81 @@
 
     <div class="container my-5">
         <h1 class="text-primary">Dashboard</h1>
-        
-    <div class="row">
-        <div class="col-md-3 col-lg-2 mb-3" style="position: fixed; left: 0; top: 0; bottom: 0; overflow-y: auto;">
-            <div class="d-flex flex-column align-items-start p-3">
-                <div class="alert alert-primary mb-3 w-100">
+
+        <div class="row">
+            <div class="col-lg-2 col-12 my-2">
+                <div class="alert alert-primary mb-2 p-2 w-100">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-person" style="font-size: 2rem; margin-right: 10px;"></i>
+                        <i class="bi bi-person-fill mx-3 fs-1"></i>
                         <div>
-                            <div><strong>Customer</strong></div>
-                            <div>{{ customer_count }}</div>
+                            <div class="text-center fw-bold">Customer</div>
+                            <div class="text-center">{{ customer_count }}</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="alert alert-secondary mb-3 w-100">
+                
+                <div class="alert alert-primary mb-2 p-2 w-100">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-box" style="font-size: 2rem; margin-right: 10px;"></i>
+                        <i class="bi bi-boxes mx-3 fs-1"></i>
                         <div>
-                            <div><strong>Product</strong></div>
-                            <div>{{ product_count }}</div>
+                            <div class="text-center fw-bold">Product</div>
+                            <div class="text-center">{{ product_count }}</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="alert alert-success mb-3 w-100">
+                
+                <div class="alert alert-primary mb-2 p-2 w-100">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-cart-check" style="font-size: 2rem; margin-right: 10px;"></i>
+                        <i class="bi bi-check-circle mx-3 fs-1"></i>
                         <div>
-                            <div><strong>Items Sold</strong></div>
-                            <div>{{ total_item_sold }}</div>
+                            <div class="text-center fw-bold">Item sold</div>
+                            <div class="text-center">{{ total_item_sold }}</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="alert alert-warning mb-3 w-100">
+                
+                <div class="alert alert-primary mb-2 p-2 w-100">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-currency-dollar" style="font-size: 2rem; margin-right: 10px;"></i>
+                        <i class="bi bi-cash-stack mx-3 fs-1"></i>
                         <div>
-                            <div><strong>Total Sales</strong></div>
-                            <div>RM {{ total_payment_amount }}</div>
+                            <div class="text-center fw-bold">Total sale</div>
+                            <div class="text-center">RM{{ total_payment_amount }}</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="alert alert-info mb-3 w-100">
+                
+                <div class="alert alert-primary mb-2 p-2 w-100">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-star" style="font-size: 2rem; margin-right: 10px;"></i>
+                        <i class="bi bi-star-fill mx-3 fs-1"></i>
                         <div>
-                            <div><strong>Reviews</strong></div>
-                            <div>{{ review_count }}</div>
+                            <div class="text-center fw-bold">Reviews</div>
+                            <div class="text-center">{{ review_count }}</div>
                         </div>
+                    </div>
+                </div>                      
+            </div>
+            
+            <div class="col-lg-10 col-12">
+                <div class="chart-container overflow-auto" style="max-height: 400px;">
+                    <div class="mb-5">
+                        <h2 class="text-center">Customers Data</h2>
+                        <canvas id="customerdata" height="100px"></canvas>
+                    </div>
+    
+                    <div class="mb-5">
+                        <h2 class="text-center">Sale Data</h2>
+                        <canvas id="saledata" height="100px"></canvas>
+                    </div>
+    
+                    <div class="mb-5">
+                        <h2 class="text-center">Reviews</h2>
+                        <canvas id="reviewdata" height="100px"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-9 col-lg-10 offset-md-3 offset-lg-2">
-            <div class="chart-container" style="overflow-y: auto; height: 100vh;">
-                <div class="mb-5">
-                    <h2 class="text-center">Customers Data</h2>
-                    <canvas id="customerdata"></canvas>
-                </div>
-
-                <div class="mb-5">
-                    <h2 class="text-center">Sale Data</h2>
-                    <canvas id="saledata"></canvas>
-                </div>
-
-                <div class="mb-5">
-                    <h2 class="text-center">Reviews</h2>
-                    <canvas id="reviewdata"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
 
-
-    </div>
 
     <script>
         const custlabels = {{ custlabels|tojson }};
