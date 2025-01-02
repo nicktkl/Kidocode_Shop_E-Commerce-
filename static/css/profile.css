@@ -2,19 +2,22 @@
     max-width: 800px;
     margin: 40px auto;
     padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.profile-photo {
+.btn-container {
+    text-align: right;
+}
+
+/* .profile-photo {
     width: 80px;
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
     margin: 0 auto 20px;
     display: block;
-}
-
-.btn-container {
-    text-align: right;
 }
 
 .card:hover {
@@ -29,4 +32,4 @@
 
 .card:hover .card-img-top {
     opacity: 0.9; 
-}
+} */

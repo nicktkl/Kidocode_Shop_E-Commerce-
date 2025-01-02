@@ -8,14 +8,9 @@ from datetime import datetime
 import pytz
 import random
 
-from user import user_blueprint
-from admin import admin_blueprint
-
-bcrypt = Bcrypt()
-
 app = Flask(__name__)
 
-app.secret_key = 'kidocodeverysecretkey'
+app.config['SECRET_KEY'] = 'kidocodeverysecretkey'
 
 app.config.update({
     'MAIL_SERVER': 'smtp.gmail.com',
@@ -30,13 +25,16 @@ app.config.update({
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerceNEW'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-mail = Mail(app)
-db.init_app(app)
-bcrypt.init_app(app)
-bcrypt = Bcrypt(app)
+from user import user_blueprint
+from admin import admin_blueprint
 
 app.register_blueprint(user_blueprint)
 app.register_blueprint(admin_blueprint)
+
+bcrypt = Bcrypt(app)
+mail = Mail(app)
+db.init_app(app)
+bcrypt.init_app(app)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -254,6 +252,10 @@ def login():
             session['email'] = user.email
             session['first_name'] = user.firstName
             
+            if email == 'a.test@testing.com':
+                flash('Admin logged in.', 'success')
+                return redirect(url_for('admin.dashboard'))
+
             next_url = request.args.get('next') or url_for('user.homepage')
             flash('Login successful!', 'success')
             return redirect(next_url)
