@@ -252,17 +252,22 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password_candidate):
-            session['loggedin'] = True
-            session['email'] = user.email
-            session['first_name'] = user.firstName
             
-            if email == 'a.test@testing.com':
+            if user.userID.startswith('A'):
+                session['loggedin'] = True
+                session['email'] = user.email
+                session['user_id'] = user.userID
+                session['first_name'] = user.firstName
                 flash('Admin logged in.', 'success')
                 return redirect(url_for('admin.dashboard'))
-
-            next_url = request.args.get('next') or url_for('user.homepage')
-            flash('Login successful!', 'success')
-            return redirect(next_url)
+            else:
+                session['loggedin'] = True
+                session['email'] = user.email
+                session['user_id'] = user.userID
+                session['first_name'] = user.firstName
+                next_url = request.args.get('next') or url_for('user.homepage')
+                flash('Login successful!', 'success')
+                return redirect(next_url)
         else:
             flash('Incorrect email or password.', 'danger')
     
@@ -272,6 +277,7 @@ def login():
 def register():
     if request.method == 'POST':
         email = request.form['email']
+        firstName = request.form['first_name']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
@@ -286,15 +292,20 @@ def register():
         newID = f"C{userCount + 1:03d}"
         new_user = User(
             userID = newID,
+            firstName = firstName,
             email = email, 
             password = hashed_password)
 
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Registration successful! Proceed to log in.', 'success')
+            session['loggedin'] = True
+            session['userID'] = new_user.userID
+            session['email'] = new_user.email
+            session['first_name'] = new_user.firstName
+            flash('Registration successful! You are now logged in.', 'success')
             print("Login successful, flashing success message")
-            return redirect(url_for('login'))
+            return redirect(url_for('user.homepage'))
         except Exception as e:
             db.session.rollback()
             flash(f'An error occurred: {str(e)}', 'danger')
