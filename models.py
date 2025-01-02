@@ -97,7 +97,6 @@ class OrderItem(db.Model):
         return f"<OrderItem {self.orderItemID} for Order {self.orderID}, Product {self.productID}>"
 
 # Review model
-# Review model
 class Review(db.Model):
     __tablename__ = 'review'
 
