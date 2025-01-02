@@ -117,6 +117,8 @@
                                         bg-warning text-dark rounded-pill
                                     {% elif order.status == 'Shipped' %}
                                         bg-info text-light rounded-pill
+                                    {% elif order.status == 'Ready' %}
+                                        bg-info text-light rounded-pill
                                     {% elif order.status == 'Pending' %}
                                         bg-secondary text-light rounded-pill
                                     {% endif %}

@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin - Feedback</title>
+    </head>
+    <body>
+        {% include "/admin/index.html" %}
+        <div class="container my-5">
+            <h1 class="text-primary">Feedback</h1>
+
+            <form action="/admin/feedback" method="get" class="mb-4">
+                <div class="d-flex w-100 align-items-center my-3">
+                    <div class="flex-grow-1 me-2">
+                        <input type="text" class="form-control" name="searchFeedback" placeholder="Search" value="{{ request.args.get('searchFeedback', '') }}">
+                    </div>
+                    <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit">
+                        <i class="bi bi-search me-2"></i> Search
+                    </button>
+                </div>
+            
+                <div class="row my-3">
+                    <div class="col-sm-4">
+                        <div class="me-2">
+                            <!-- Feedback Type Dropdown -->
+                            <select name="type" class="form-select" aria-label="Feedback Type" onchange="this.form.submit()">
+                                <option value="all">Feedback Type</option>
+                                {% for feedbackType in ['Bug', 'Suggestion', 'Praise', 'Complaint'] %}
+                                    <option value="{{ feedbackType }}" {% if request.args.get('type') == feedbackType %}selected{% endif %}>
+                                        {{ feedbackType }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                        <div class="me-2">
+                            <!-- Severity Dropdown -->
+                            <select name="severity" class="form-select" aria-label="Feedback Severity" onchange="this.form.submit()">
+                                <option value="all">Severity</option>
+                                {% for severityLevel in ['Low', 'Medium', 'High', 'Critical'] %}
+                                    <option value="{{ severityLevel }}" {% if request.args.get('severity') == severityLevel %}selected{% endif %}>
+                                        {{ severityLevel }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                        <div class="me-2">
+                            <!-- Status Dropdown -->
+                            <select name="status" class="form-select" aria-label="Feedback Status" onchange="this.form.submit()">
+                                <option value="all">Status</option>
+                                {% for status in ['Pending', 'Reviewed', 'Resolved'] %}
+                                    <option value="{{ status }}" {% if request.args.get('status') == status %}selected{% endif %}>
+                                        {{ status }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>          
+            </form>
+            
+        
+            <!-- Display reviews in cards -->
+            <div class="row">
+                {% for feedback in feedback %}
+                <form action="/admin/feedback" method="post">
+                    <div class="col-md-6 col-12 mb-3">
+                        <div class="card">
+                            <div class="card-header justify-content-between d-flex 
+                            {% if feedback.severity == 'Critical' %}bg-danger text-white{% elif feedback.severity == 'High' %}bg-warning text-dark{% elif feedback.severity == 'Medium' %}bg-info text-dark{% else %}bg-light text-dark{% endif %}">
+                                <div>
+                                    <strong><i class="bi bi-exclamation-circle mx-2"></i></strong>{{ feedback.status }}
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <strong><i class="bi bi-bar-chart mx-2"></i></strong>{{feedback.severity}}
+                                    </div>  
+                                </div>
+                            </div>
+
+                            <div class="card-body d-flex">
+                                <div class="d-flex flex-column align-items-center m-3">
+                                    <img src="https://via.placeholder.com/50" class="rounded-circle mb-2" alt="User Image">
+                                    <h5 class="card-title text-center mx-3">
+                                        <strong>{{ feedback.user.firstName }} {{ feedback.user.lastName }}</strong>
+                                    </h5>
+                                </div>
+            
+                                <!-- Feedback and Reply Section -->
+                                <div class="flex-grow-1">
+                                    <p class="card-text">Type: {{ feedback.feedbackType }}</p>
+                                    <p class="card-text">{{ feedback.feedbackText }}</p>
+            
+                                    {% if feedback.response is none %}
+                                    <div class="d-flex align-items-center my-3">
+                                        <div class="flex-grow-1 me-2">
+                                            <input type="text" class="form-control form-control-sm" name="reply" placeholder="Write a reply">
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnsend" value="{{ feedback.feedbackID }}">
+                                            <i class="bi bi-send me-2"></i>Reply
+                                        </button>
+                                    </div>
+                                    {% else %}
+                                    <div class="d-flex flex-column my-3">
+                                        <textarea class="form-control form-control-sm" rows="2" disabled>{{ feedback.response }}</textarea>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
+                                <span>Updated At: {{ feedback.updatedAt }}</span>
+                            </div>                         
+                        </div>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>
