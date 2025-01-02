@@ -1,4 +1,4 @@
--- Active: 1733283387949@@127.0.0.1@3306@ecommercenew
+-- Active: 1733837847961@@127.0.0.1@3306@ecommercenew
 CREATE TABLE category (
     categoryID VARCHAR(7) PRIMARY KEY, 
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -24,11 +24,11 @@ VALUES
     ('ELE004W', 'Wires/Cables','K002ELE');
 
 CREATE TABLE product (
-  productID varchar(5) NOT NULL,
+  productID varchar(10) NOT NULL,
   productName varchar(30) NOT NULL,
   description text,
   img varchar(255) DEFAULT NULL,
-  price double NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
   stock int NOT NULL,
   categoryID varchar(7) DEFAULT NULL,
   createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,7 +46,7 @@ VALUES
     ('KP004', 'K-Box Starter Kit', 'All-in-one K-Box for beginners.', 'images\\kbox-basic.jpg', 50, 20, 'ELE001K'),
     ('KP005', 'LED Lights Pack', 'A pack of assorted LED lights.', 'images\\led.jpg', 5.99, 10, 'ELE003C'),
     ('KP006', 'USB Cable', 'Durable USB-A to USB-B cable', 'images\\wire.jpeg', 3.49, 49, 'ELE004W'),
-    ('KP007', 'Testing', 'Test product', 'images\\dummy.png', 15.99, 50, 'TES001T');
+    ('KP007', 'Testing', 'Test product', 'images\\dummy.png', 15.99, 50, '3DP003O');
 
 CREATE TABLE user (
   userID varchar(4) NOT NULL,
@@ -60,42 +60,44 @@ CREATE TABLE user (
   createdAt datetime DEFAULT CURRENT_TIMESTAMP,
   updatedAt datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (userID),
-  UNIQUE KEY email (email)
+  UNIQUE KEY email(email)
 );
 
-INSERT INTO user
+INSERT INTO user (userID, firstName, lastName, email, password, phone, address)
 VALUES 
     ('A001', 'Nurul', 'Izzati', 'nurulizzatihayat@gmail.com', '$2b$12$//CsxmFxUWWkMU1SWTd3F.5L3O8j2t5LJfke.74C4cVhc7/uoYjju', '01123768906', 'Kuala Lumpur'),
+    ('T001', 'Test', 'Testing', 'test@testing.com', '$2b$12$TODs62ZYFBZKcFD1fF8XLeDMFpFRxnFax39xCcjhESbJFdPi0FzeW', '01234567890', 'Kuala Lumpur'),
     ('C001', 'John', 'Doe', 'john.doe@example.com', '$2b$12$aJYYm73Du78flQxrT7cbu.wufwbfMLhL2UsCb84nQIx4gMRemGoyi', '1234567890', '123 Main St, City, Country'),
     ('C002', 'Jane', 'Smith', 'jane.smith@example.com', '$2b$12$R2uJMT8XPPQUDtSQ4GcZQOOEaoTfGfLjlaQMk1Q68Ngqsqp4QPqhu', '0987654321', '456 Another St, City, Country'),
     ('C003', 'Alice', 'Johnson', 'alice.johnson@example.com', '$2b$12$twCjk04hc6M83brvAr0HfOnw889ZIMGz8m4J1Mzi7UaS9APpETnyi', '1122334455', '789 Third St, City, Country');
 
 CREATE TABLE orders (
-  orderID INT NOT NULL AUTO_INCREMENT,
+  orderID VARCHAR(13) NOT NULL UNIQUE,
   userID varchar(4) NOT NULL,
   orderDate DATE NOT NULL,
-  totalAmount DOUBLE NOT NULL,
+  totalAmount DECIMAL(10, 2) NOT NULL,
   status VARCHAR(15) NOT NULL,
   shippingAddress TEXT NOT NULL,
   shippingMethod VARCHAR(50) NOT NULL,
+  pickupBranch TEXT,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (orderID),
   CONSTRAINT fk_customer FOREIGN KEY (userID) REFERENCES user(userID) ON DELETE CASCADE
 );
 
-INSERT INTO orders (userID, orderDate, totalAmount, status, shippingAddress, shippingMethod)
+INSERT INTO orders (orderID, userID, orderDate, totalAmount, status, shippingAddress, shippingMethod)
 VALUES 
-    ('C001', '2024-12-28', 73.97, 'Pending', '123 Main St, City, Country', 'Pick Up'),            
-    ('C002', '2024-12-28', 81.98, 'Completed', '456 Another St, City, Country', 'Delivery'),  
-    ('C003', '2024-12-28', 31.98, 'Shipped', '789 Third St, City, Country', 'Pick Up'); 
+    ('KSHOP01234567', 'C001', '2024-12-28', 73.97, 'Pending', '123 Main St, City, Country', 'Pick Up'),            
+    ('KSHOP12345678', 'C002', '2024-12-28', 81.98, 'Completed', '456 Another St, City, Country', 'Delivery'),  
+    ('KSHOP23456789', 'C003', '2024-12-28', 31.98, 'Shipped', '789 Third St, City, Country', 'Pick Up'); 
 
 CREATE TABLE orderitem (
   orderItemID INT NOT NULL AUTO_INCREMENT,
-  orderID INT NOT NULL,
-  productID varchar(5) NOT NULL,
+  orderID VARCHAR(13) NOT NULL,
+  productID varchar(10) NOT NULL,
   quantity INT NOT NULL,
-  price DOUBLE NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
   PRIMARY KEY (orderItemID),
   FOREIGN KEY (orderID) REFERENCES orders (orderID),
   FOREIGN KEY (productID) REFERENCES product (productID)
@@ -103,20 +105,20 @@ CREATE TABLE orderitem (
 
 INSERT INTO orderitem (orderID, productID, quantity, price)
 VALUES
-  (1, 'KP001', 1, 15.99),
-  (1, 'KP003', 2, 28.99),
-  (2, 'KP002', 1, 25.99),
-  (2, 'KP004', 1, 50), 
-  (2, 'KP005', 1, 5.99),
-  (3, 'KP002', 1, 25.99);
+  ('KSHOP01234567', 'KP001', 1, 15.99),
+  ('KSHOP01234567', 'KP003', 2, 28.99),
+  ('KSHOP12345678', 'KP002', 1, 25.99),
+  ('KSHOP12345678', 'KP004', 1, 50), 
+  ('KSHOP12345678', 'KP005', 1, 5.99),
+  ('KSHOP23456789', 'KP002', 1, 25.99);
 
 CREATE TABLE review (
   reviewID INT NOT NULL AUTO_INCREMENT,
-  productID varchar(5) NOT NULL,
+  productID varchar(10) NOT NULL,
   userID varchar(4) NOT NULL,
   rating INT DEFAULT NULL,
   comment TEXT,
-  response TEXT NULL;
+  response TEXT NULL,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (reviewID),
@@ -137,9 +139,9 @@ VALUES
 
 CREATE TABLE payment (
   paymentID int NOT NULL AUTO_INCREMENT,
-  orderID int NOT NULL,
+  orderID VARCHAR(13) NOT NULL,
   paymentDate date NOT NULL,
-  amount double NOT NULL,
+  amount DECIMAL(10, 2) NOT NULL,
   deliveryCharge double NOT NULL,
   paymentMethod varchar(30) NOT NULL,
   status varchar(15) NOT NULL,
@@ -149,9 +151,9 @@ CREATE TABLE payment (
 
 INSERT INTO payment (orderID, paymentDate, amount, deliveryCharge, paymentMethod, status)
 VALUES 
-    (1, '2024-12-29', 73.97, 0.00, 'Credit Card', 'Pending'),
-    (2, '2024-12-29', 81.98, 10.00, 'Bank Transfer', 'Completed'),
-    (3, '2024-12-29', 31.98, 0.00, 'Cash', 'Received');
+    ('KSHOP01234567', '2024-12-29', 73.97, 0.00, 'Credit Card', 'Pending'),
+    ('KSHOP12345678', '2024-12-29', 81.98, 10.00, 'Bank Transfer', 'Completed'),
+    ('KSHOP23456789', '2024-12-29', 31.98, 0.00, 'Cash', 'Received');
 
 CREATE TABLE feedback (
     feedbackID VARCHAR(4) PRIMARY KEY, 
