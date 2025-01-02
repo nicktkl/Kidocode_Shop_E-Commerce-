@@ -59,7 +59,11 @@ def home():
 def all_products():
     products = Product.query.all()
     categories = Category.query.all()
-    return render_template('/homepage/AllProducts.html', products = products, category = categories)
+    email = session.get('email', None)
+    first_name = session.get('first_name', None)
+    if 'cart' not in session:
+        session['cart'] = {}
+    return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
 
 @app.route('/categories', methods=['GET'])
 def get_categories():

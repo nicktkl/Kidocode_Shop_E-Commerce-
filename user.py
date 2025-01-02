@@ -16,6 +16,10 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@user_blueprint.route('/session-check', methods=['GET'])
+def session_check():
+    return jsonify({'logged_in': session.get('loggedin', False)})
+
 @user_blueprint.route('/')
 @login_required
 def homepage():
@@ -28,10 +32,6 @@ def homepage():
     if 'cart' not in session:
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email, first_name = first_name)
-
-@user_blueprint.route('/session-check', methods=['GET'])
-def session_check():
-    return jsonify({'logged_in': session.get('loggedin', False)})
 
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -136,17 +136,26 @@ def checkout():
     cart_items = session.get('cart', {})
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
 
+    branches = [
+        {'id': 'mk50480', 'name': 'Solaris Mont Kiara', 'address': 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '8qT2dKUGSaUP36hz7'},
+        {'id': 'sn47810', 'name': 'Sunway Nexis', 'address': 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '1dhDr7wAwzcNaWP1A'},
+        {'id': 'wf11900', 'name': 'Queens Residences Q2', 'address': '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', 'operating_hours': '10:00 AM - 6:00 PM', 'link': 'qifMavDRWxqAuAit7'},
+    ]
+
     if request.method == 'POST':
         # Process checkout form
         shipping_address = request.form.get('shipping_address')
+        pickup_location = request.form.get('pickup-location')
         city = request.form.get('city')
         state = request.form.get('state')
         postcode = request.form.get('postcode')
         phone = request.form.get('phone')
 
+        selected_branch = next((branch for branch in branches if branch['id'] == pickup_location), None)
+
         # Save order details in the database
         # Example: Save order and items
-        order = Order(user_email=session['email'], total_price=total_price)
+        order = Order(user_email=session['email'], total_price=total_price, pickup_location=selected_branch['name'])
         db.session.add(order)
         db.session.commit()
 
@@ -167,5 +176,6 @@ def checkout():
         '/homepage/Checkout.html',
         is_logged_in=True,
         cart_items=cart_items,
-        total_price=total_price
+        total_price=total_price,
+        branches=branches
     )
