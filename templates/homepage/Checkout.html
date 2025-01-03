@@ -172,7 +172,7 @@
                             <div id="cart-summary">
                                 <div class="d-flex justify-content-between mb-2">
                                     <div>
-                                        <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item_name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="{{ url_for('static', filename=item.image.replace('\\', '/')) }}" alt="{{ item_name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
                                         <span>{{ item_name }} (x{{item.quantity }})</span>
                                     </div>
                                     <span>RM{{ "%.2f"|format(item.price * item.quantity) }}</span>
