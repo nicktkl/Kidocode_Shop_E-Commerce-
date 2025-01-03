@@ -69,8 +69,15 @@
             </div>
             <div class="row mb-3">
               <div class="col-md-12">
-                <label for="address" class="form-label">Address</label>
+                <label for="address" class="form-label">Address (P.O. Box Not Accepted)</label>
                 <input type="text" class="form-control" id="address" placeholder="House number, Building, Street">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="postalCode" class="form-label">Postal Code</label>
+              <input type="text" class="form-control" id="postalCode" placeholder="Postal Code" pattern="\d*" required>
+              <div class="invalid-feedback">
+                  Please enter a valid postal code (numbers only).
               </div>
             </div>
             <div class="row mb-3">
@@ -79,15 +86,11 @@
                 <input type="text" class="form-control" id="city" placeholder="City">
               </div>
               <div class="col-md-4">
-                <label for="postalCode" class="form-label">Postal Code</label>
-                <input type="text" class="form-control" id="postalCode" placeholder="Postal Code">
-              </div>
-              <div class="col-md-4">
-                <label for="province" class="form-label">Province</label>
+                <label for="province" class="form-label">State/Territory</label>
                 <select class="form-select" id="province">
-                  <option selected>Province</option>
-                  <option>Province 1</option>
-                  <option>Province 2</option>
+                  <option selected>Kuala Lumpur</option>
+                  <option>State 1</option>
+                  <option>State 2</option>
                 </select>
               </div>
             </div>
