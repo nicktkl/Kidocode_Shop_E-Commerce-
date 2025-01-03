@@ -126,7 +126,7 @@ function updateCartItems(cart){
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
                 listItem.innerHTML = `
-                    <img src="${image}" alt="${name}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                    <img src="${STATIC_BASE_URL}${image}" alt="${name}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
                     <span>${name} (x${quantity})</span>
                     <span>RM${(price * quantity).toFixed(2)}</span>
                 `;

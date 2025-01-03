@@ -20,7 +20,7 @@ class Category(db.Model):
 class Product(db.Model):
     __tablename__ = 'product'
 
-    productID = db.Column(db.String(5), primary_key=True)
+    productID = db.Column(db.String(10), primary_key=True)
     productName = db.Column(db.String(30), nullable=False)
     description = db.Column(db.Text)
     img = db.Column(db.String(255), nullable=True)
