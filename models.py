@@ -1,17 +1,17 @@
 from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
 # Category model
 class Category(db.Model):
     __tablename__ = 'category'
-    
+
     categoryID = db.Column(db.String(7), primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
-    parentID = db.Column(db.String(7), db.ForeignKey('category.categoryID', ondelete='CASCADE', onupdate='CASCADE'), nullable=True)
-    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
-    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    parent_category = db.relationship('Category', backref=db.backref('subcategories', lazy=True), remote_side=[categoryID])
+    parentID = db.Column(db.String(7), db.ForeignKey('category.categoryID', ondelete='CASCADE'), nullable=True)
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
+
+    parent_category = db.relationship('Category', remote_side=[categoryID], backref=db.backref('subcategories', lazy=True))
 
     def __repr__(self):
         return f"<Category {self.name}>"
@@ -31,7 +31,7 @@ class Product(db.Model):
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
     status = db.Column(db.Enum('active', 'inactive', name='status_enum'), default='active', nullable=False)
 
-    category = db.relationship('Category', backref='products')
+    category = db.relationship('Category', backref=db.backref('products', lazy=True))
     order_items = db.relationship('OrderItem', back_populates='product')
     reviews = db.relationship('Review', back_populates='product')
 
@@ -50,11 +50,12 @@ class User(db.Model):
     phone = db.Column(db.String(15), nullable=True)
     address = db.Column(db.Text, nullable=True)
     secondaryAddress = db.Column(db.Text, nullable=True)
-    createdAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    updatedAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
 
     orders = db.relationship('Order', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')
+    feedbacks = db.relationship('Feedback', back_populates='user')
 
     def __repr__(self):
         return f"<User {self.firstName} {self.lastName}>"
@@ -63,18 +64,19 @@ class User(db.Model):
 class Order(db.Model):
     __tablename__ = 'orders'
 
-    orderID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    orderID = db.Column(db.String(13), primary_key=True)
     userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
     orderDate = db.Column(db.Date, nullable=False)
     totalAmount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(15), nullable=False)
     shippingAddress = db.Column(db.Text, nullable=False)
     shippingMethod = db.Column(db.String(50), nullable=False)
-    createdAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    updatedAt = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    pickupBranch = db.Column(db.Text, nullable=True)
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
 
     user = db.relationship('User', back_populates='orders')
-    order_items = db.relationship('OrderItem', back_populates='order')
+    order_items = db.relationship('OrderItem', back_populates='order', lazy='dynamic')
     payments = db.relationship('Payment', back_populates='order')
 
     def __repr__(self):
@@ -94,9 +96,8 @@ class OrderItem(db.Model):
     product = db.relationship('Product', back_populates='order_items')
 
     def __repr__(self):
-        return f"<OrderItem {self.orderItemID} for Order {self.orderID}, Product {self.productID}>"
+        return f"<OrderItem {self.orderItemID} for Order {self.orderID}>"
 
-# Review model
 # Review model
 class Review(db.Model):
     __tablename__ = 'review'
@@ -106,13 +107,15 @@ class Review(db.Model):
     userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
-    createdAt = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
+    response = db.Column(db.Text, nullable=True)
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
 
     product = db.relationship('Product', back_populates='reviews')
     user = db.relationship('User', back_populates='reviews')
 
     def __repr__(self):
-        return f"<Review {self.reviewID} for Product {self.productID}, User {self.userID}>"
+        return f"<Review {self.reviewID} for Product {self.productID}>"
 
 # Payment model
 class Payment(db.Model):
@@ -129,3 +132,22 @@ class Payment(db.Model):
 
     def __repr__(self):
         return f"<Payment {self.paymentID} for Order {self.orderID}>"
+
+# Feedback model
+class Feedback(db.Model):
+    __tablename__ = 'feedback'
+
+    feedbackID = db.Column(db.String(4), primary_key=True)
+    userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
+    feedbackType = db.Column(db.Enum('Bug', 'Suggestion', 'Praise', 'Complaint', name='feedback_type'), nullable=False)
+    feedbackText = db.Column(db.Text, nullable=False)
+    createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
+    updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
+    status = db.Column(db.Enum('Pending', 'Reviewed', 'Resolved', name='feedback_status'), default='Pending', nullable=False)
+    response = db.Column(db.Text, nullable=True)
+    severity = db.Column(db.Enum('Low', 'Medium', 'High', 'Critical', name='feedback_severity'), nullable=True)
+
+    user = db.relationship('User', back_populates='feedbacks')
+
+    def __repr__(self):
+        return f"<Feedback {self.feedbackID}: {self.feedbackType}>"

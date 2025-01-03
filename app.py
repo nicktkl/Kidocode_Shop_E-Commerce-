@@ -1,29 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from flask_mail import Mail, Message
-from flask_bcrypt import Bcrypt
-from models import Category, Product, User, Order, OrderItem, Review, Payment, db
-from itsdangerous import URLSafeTimedSerializer
-from datetime import datetime
-
-import pytz
-import random
+from imports import *
+from config import Config
 
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'kidocodeverysecretkey'
-
-app.config.update({
-    'MAIL_SERVER': 'smtp.gmail.com',
-    'MAIL_PORT': 587,
-    'MAIL_USE_TLS': True,
-    'MAIL_USE_SSL': False,
-    'MAIL_USERNAME': 'nurulizzatihayat@gmail.com',
-    'MAIL_PASSWORD': 'tmcn fehq fttp smym',
-    'MAIL_DEFAULT_SENDER': ('Kidocode', 'nurulizzatihayat@gmail.com')
-})
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@127.0.0.1:3306/ecommerceNEW'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 from user import user_blueprint
 from admin import admin_blueprint
@@ -31,10 +9,11 @@ from admin import admin_blueprint
 app.register_blueprint(user_blueprint)
 app.register_blueprint(admin_blueprint)
 
+app.config.from_object(Config)
+
 bcrypt = Bcrypt(app)
 mail = Mail(app)
 db.init_app(app)
-bcrypt.init_app(app)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -59,7 +38,11 @@ def home():
 def all_products():
     products = Product.query.all()
     categories = Category.query.all()
-    return render_template('/homepage/AllProducts.html', products = products, category = categories)
+    email = session.get('email', None)
+    first_name = session.get('first_name', None)
+    if 'cart' not in session:
+        session['cart'] = {}
+    return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
 
 @app.route('/categories', methods=['GET'])
 def get_categories():
@@ -248,15 +231,24 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password_candidate):
-            session['loggedin'] = True
-            session['email'] = user.email
-            session['first_name'] = user.firstName
             
-            next_url = request.args.get('next') or url_for('user.homepage')
-            flash('Login successful!', 'success')
-            return redirect(next_url)
+            if user.userID.startswith('A'):
+                session['loggedin'] = True
+                session['email'] = user.email
+                session['user_id'] = user.userID
+                session['first_name'] = user.firstName
+                flash('Admin logged in.', 'success')
+                return redirect(url_for('admin.dashboard'))
+            else:
+                session['loggedin'] = True
+                session['email'] = user.email
+                session['user_id'] = user.userID
+                session['first_name'] = user.firstName
+                next_url = request.args.get('next') or url_for('user.homepage')
+                flash('Login successful!', 'success')
+                return redirect(next_url)
         else:
-            flash('Incorrect email or password.', 'danger')
+            return redirect(url_for('login', alert='Login Failed.'))
     
     return render_template('signIn.html')
 
@@ -264,6 +256,7 @@ def login():
 def register():
     if request.method == 'POST':
         email = request.form['email']
+        firstName = request.form['first_name']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
@@ -278,15 +271,20 @@ def register():
         newID = f"C{userCount + 1:03d}"
         new_user = User(
             userID = newID,
+            firstName = firstName,
             email = email, 
             password = hashed_password)
 
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Registration successful! Proceed to log in.', 'success')
+            session['loggedin'] = True
+            session['userID'] = new_user.userID
+            session['email'] = new_user.email
+            session['first_name'] = new_user.firstName
+            flash('Registration successful! You are now logged in.', 'success')
             print("Login successful, flashing success message")
-            return redirect(url_for('login'))
+            return redirect(url_for('user.homepage'))
         except Exception as e:
             db.session.rollback()
             flash(f'An error occurred: {str(e)}', 'danger')
@@ -365,7 +363,7 @@ def resetpwd(token):
 def logout():
     session.pop('loggedin', None)
     session.pop('email', None)
-    flash('You have been loged out.', 'info')
+    flash('You have been logged out.', 'info')
     return redirect(url_for('home'))
 
 if __name__ == "__main__":

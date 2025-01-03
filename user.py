@@ -1,9 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from extensions import bcrypt
-from models import Category, Product, User, Order, OrderItem, Review, Payment, db
-from functools import wraps
-
-import random
+from imports import *
+from config import Config
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
@@ -15,6 +11,10 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
+@user_blueprint.route('/session-check', methods=['GET'])
+def session_check():
+    return jsonify({'logged_in': session.get('loggedin', False)})
 
 @user_blueprint.route('/')
 @login_required
@@ -28,10 +28,6 @@ def homepage():
     if 'cart' not in session:
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email, first_name = first_name)
-
-@user_blueprint.route('/session-check', methods=['GET'])
-def session_check():
-    return jsonify({'logged_in': session.get('loggedin', False)})
 
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -57,7 +53,7 @@ def profile():
             user.first_name = first_name
             user.last_name = last_name
             if password:  # Update password if provided
-                user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+                user.password = Bcrypt.generate_password_hash(password).decode('utf-8')
 
             db.session.commit()
             flash('Profile updated successfully!', 'success')
@@ -136,22 +132,65 @@ def checkout():
     cart_items = session.get('cart', {})
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
 
+    branches = [
+        {'id': 'MK50480', 'name': 'Solaris Mont Kiara', 'address': 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '8qT2dKUGSaUP36hz7'},
+        {'id': 'SN47810', 'name': 'Sunway Nexis', 'address': 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '1dhDr7wAwzcNaWP1A'},
+        {'id': 'WF11900', 'name': 'Queens Residences Q2', 'address': '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', 'operating_hours': '10:00 AM - 6:00 PM', 'link': 'qifMavDRWxqAuAit7'},
+    ]
+
     if request.method == 'POST':
         # Process checkout form
         shipping_address = request.form.get('shipping_address')
+        pickup_location = request.form.get('pickup-location')
         city = request.form.get('city')
         state = request.form.get('state')
         postcode = request.form.get('postcode')
         phone = request.form.get('phone')
 
+        user = User.query.filter_by(email = session['email']).first()
+        if not user:
+            flash('User not found. Please log in again.', 'danger')
+            return redirect(url_for('login'))
+        
+        user_id = user.id
+
+        selected_branch = next((branch for branch in branches if branch['id'] == pickup_location), None)
+
+        # Generate a unique order ID
+        order_id = generateOrderID()
+
         # Save order details in the database
-        # Example: Save order and items
-        order = Order(user_email=session['email'], total_price=total_price)
+        order = Order(
+            order_id = order_id,  # Assign the generated order ID
+            user_id = user.id,
+            user_email = session['email'],
+            total_price = total_price,
+            pickup_location = selected_branch['name'] if selected_branch else None,
+            shipping_address = shipping_address,
+            city = city,
+            state = state,
+            postcode = postcode,
+            phone = phone
+        )
         db.session.add(order)
         db.session.commit()
 
+        # Save items associated with the order
         for name, details in cart_items.items():
-            order_item = OrderItem(order_id=order.id, product_name=name, quantity=details['quantity'], price=details['price'])
+            
+            product = Product.query.filter_by(productName = name).first()
+            
+            if not product:
+                flash(f"Product '{name}' not found.", 'danger')
+                return redirect(url_for('user.checkout'))
+            
+            order_item = OrderItem(
+                order_id = order.id,
+                product_id=product.productID,
+                product_name = name,
+                quantity = details['quantity'],
+                price = details['price']
+            )
             db.session.add(order_item)
 
         db.session.commit()
@@ -160,12 +199,18 @@ def checkout():
         session['cart'] = {}
         session.modified = True
 
-        flash('Order placed successfully!', 'success')
+        flash(f'Order placed successfully! Your Order ID is {order_id}', 'success')
         return redirect(url_for('user.homepage'))
 
     return render_template(
         '/homepage/Checkout.html',
         is_logged_in=True,
         cart_items=cart_items,
-        total_price=total_price
+        total_price=total_price,
+        branches=branches
     )
+
+def generateOrderID():
+    prefix = "KSHOP"
+    generate = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    return prefix + generate

@@ -12,7 +12,7 @@
             <form action="/admin/review" method="get" class="mb-4">
                 <div class="d-flex w-100 align-items-center my-3">
                     <div class="flex-grow-1 me-2">
-                        <input type="text" class="form-control" name="searchReview" placeholder="Search reviews" value="{{ request.args.get('searchReview', '') }}">
+                        <input type="text" class="form-control" name="searchReview" placeholder="Search" value="{{ request.args.get('searchReview', '') }}">
                     </div>
                     <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit">
                         <i class="bi bi-search me-2"></i> Search
@@ -20,12 +20,12 @@
                 </div>
             
                 <div class="my-3">
-                    <button type="submit" name="rating" value="" class="btn btn-outline-warning">All Ratings</button>
-                    <button type="submit" name="rating" value="5" class="btn btn-warning text-light">5 <i class="bi bi-star-fill"></i></button>
-                    <button type="submit" name="rating" value="4" class="btn btn-warning text-light">4 <i class="bi bi-star-fill"></i></button>
-                    <button type="submit" name="rating" value="3" class="btn btn-warning text-light">3 <i class="bi bi-star-fill"></i></button>
-                    <button type="submit" name="rating" value="2" class="btn btn-warning text-light">2 <i class="bi bi-star-fill"></i></button>
-                    <button type="submit" name="rating" value="1" class="btn btn-warning text-light">1 <i class="bi bi-star-fill"></i></button>
+                    <button type="submit" name="ratingSearch" value="" class="btn btn-outline-warning">All Ratings</button>
+                    <button type="submit" name="ratingSearch" value="5" class="btn btn-outline-warning text-light-hover">5 <i class="bi bi-star-fill"></i></button>
+                    <button type="submit" name="ratingSearch" value="4" class="btn btn-outline-warning">4 <i class="bi bi-star-fill"></i></button>
+                    <button type="submit" name="ratingSearch" value="3" class="btn btn-outline-warning">3 <i class="bi bi-star-fill"></i></button>
+                    <button type="submit" name="ratingSearch" value="2" class="btn btn-outline-warning">2 <i class="bi bi-star-fill"></i></button>
+                    <button type="submit" name="ratingSearch" value="1" class="btn btn-outline-warning">1 <i class="bi bi-star-fill"></i></button>
                 </div>            
             </form>
             
@@ -56,14 +56,28 @@
                                 <p class="card-text">Product: {{ review.product.productName }}</p>
                                 <p class="card-text">{{ review.comment }}</p>
 
-                                <div class="d-flex align-items-center my-3">
-                                    <div class="flex-grow-1 me-2">
-                                        <input type="text" class="form-control" name="replyReview" placeholder="Write a reply">
+                                {% if review.response is none %}
+                                    <div class="d-flex align-items-center my-3">
+                                        <div class="flex-grow-1 me-2">
+                                            <input type="text" class="form-control" name="reply" placeholder="Write a reply">
+                                        </div>
+                                        <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnsend" value="{{ review.reviewID }}">
+                                            <i class="bi bi-send me-2"></i>Reply
+                                        </button>
                                     </div>
-                                    <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnsend" value="{{ review.reviewID }}">
-                                        <i class="bi bi-send me-2"></i>Reply
-                                    </button>
-                                </div>
+                                    {% else %}
+                                    <div class="d-flex align-items-center my-3">
+                                        <div class="flex-grow-1 me-2">
+                                            <input type="text" class="form-control" name="reply" value="{{review.response}}">
+                                        </div>
+                                        <button type="submit" class="btn btn-outline-danger mx-1" name="btndelete" value="{{ review.reviewID }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <button type="submit" class="btn btn-outline-success mx-1" name="btnsend" value="{{ review.reviewID }}">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
                             </form>
                         </div>
                     </div>
