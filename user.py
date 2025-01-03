@@ -1,10 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from imports import bcrypt
-from models import Category, Product, User, Order, OrderItem, Review, Payment, db
-from functools import wraps
-
-import random
-import string
+from imports import *
+from config import Config
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
@@ -58,7 +53,7 @@ def profile():
             user.first_name = first_name
             user.last_name = last_name
             if password:  # Update password if provided
-                user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+                user.password = Bcrypt.generate_password_hash(password).decode('utf-8')
 
             db.session.commit()
             flash('Profile updated successfully!', 'success')

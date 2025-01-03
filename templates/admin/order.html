@@ -15,7 +15,7 @@
                 <!-- Search Form -->
                 <div class="d-flex w-100 align-items-center my-3">
                     <div class="flex-grow-1 me-2">
-                        <input type="text" class="form-control" name="searchOrder" placeholder="Search an order" value="{{ request.args.get('searchOrder', '') }}">
+                        <input type="text" class="form-control" name="searchOrder" placeholder="Search" value="{{ request.args.get('searchOrder', '') }}">
                     </div>
                     <button class="btn btn-outline-primary d-flex align-items-center me-2 px-3" type="submit" name="btnSearch">
                         <i class="bi bi-search me-2"></i> Search
@@ -53,12 +53,41 @@
                 {% for order in order %}
                 <div class="col-md-6 col-12 mb-3">
                     <div class="card">
-                        <div class="card-header">
-                            <h6 class="card-title" style="display: flex; justify-content: space-between;">
-                                <span>Order ID</span>
-                                <span>{{ order.orderID }}</span>
-                            </h6>
-                        </div>
+                        <form action="/admin/order" method="post">
+                            <div class="card-header d-flex justify-content-between">
+                                <span class="my-1">
+                                    <strong><i class="bi bi-tag mx-2"></i></strong>ID : {{ order.orderID }}
+                                </span>
+                                <span>
+                                    <div class="d-flex align-items-center">
+                                        <select name="status" class="form-select form-select-sm rounded-pill w-auto">
+                                            <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>
+                                                Completed
+                                            </option>
+                                            <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>
+                                                Cancelled
+                                            </option>
+                                            <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>
+                                                Processing
+                                            </option>
+                                            <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>
+                                                Shipped
+                                            </option>
+                                            <option value="Ready" {% if order.status == 'Ready' %}selected{% endif %}>
+                                                Ready
+                                            </option>
+                                            <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>
+                                                Pending
+                                            </option>
+                                        </select>
+                                        <button class="btn btn-sm btn-outline-success hover-effect mx-3" name="btnsave" value="{{order.orderID}}">
+                                            <i class="bi bi-save"></i>
+                                        </button>
+                                    </div>
+                                </span>
+                            </div>
+                        </form>
+                        
                         
                         <div class="card-body">
                             <table class="table">
@@ -105,24 +134,8 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
+                        <div class="card-footer text-muted">
                             <span>Updated At: {{ order.updatedAt }}</span>
-                            <span style="display: inline-block; padding: 5px 20px; width: 120px; text-align: center;"
-                                class="
-                                    {% if order.status == 'Completed' %}
-                                        bg-success text-light rounded-pill
-                                    {% elif order.status == 'Cancelled' %}
-                                        bg-danger text-light rounded-pill
-                                    {% elif order.status == 'Processing' %}
-                                        bg-warning text-dark rounded-pill
-                                    {% elif order.status == 'Shipped' %}
-                                        bg-info text-light rounded-pill
-                                    {% elif order.status == 'Ready' %}
-                                        bg-info text-light rounded-pill
-                                    {% elif order.status == 'Pending' %}
-                                        bg-secondary text-light rounded-pill
-                                    {% endif %}
-                                ">{{ order.status }}</span>
                         </div>                         
                     </div>
                 </div>
