@@ -1,13 +1,12 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from models import Category, Product, User, Order, OrderItem, Review, Payment, Feedback, db
-import os
-from sqlalchemy.sql import func
-from werkzeug.utils import secure_filename
+from imports import *
+from config import Config
+
+mail = Mail()
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
 #DASHBOARD CAN BE BETTER
-@admin_blueprint.route('/dashboard')
+@admin_blueprint.route('/')
 def dashboard():
     cust_result = db.session.query(
         func.date_format(User.createdAt, '%Y-%u').label('week_date'),
@@ -244,7 +243,7 @@ def product():
 
     return render_template("/admin/product.html", product=products, category=category, category_data=category_data)
 
-#CUSTOMER JUSTTHEMAILTHING
+#CUSTOMER
 @admin_blueprint.route('/customer', methods=["GET", "POST"])
 def customer():
     search_query = request.args.get('searchCust', '')  
@@ -259,7 +258,7 @@ def customer():
 
     if request.method == 'POST':
         email = request.form['btnmail']
-        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         token = serializer.dumps(email, salt='password-reset-salt')
 
         reset_url = f"http://127.0.0.1:5000/resetpwd/{token}"
@@ -284,7 +283,7 @@ def customer():
     return render_template("/admin/customer.html", user=user)
 
 #ORDER DONE
-@admin_blueprint.route('/order')
+@admin_blueprint.route('/order', methods=["GET", "POST"])
 def order():
     search_query = request.args.get('searchOrder', '')  
     status_filter = request.args.get('statusOrder', '')  
@@ -311,6 +310,24 @@ def order():
     order_ids = [order.orderID for order in orders]
     orderItems = OrderItem.query.filter(OrderItem.orderID.in_(order_ids)).all()
 
+    if request.method == 'POST':
+        ID = request.form.get('btnsave')
+        status = request.form.get('status')
+
+        try:
+            order = Order.query.get(ID)
+
+            if order:
+                order.status = status
+                db.session.commit()
+                return redirect(url_for('admin.order'))
+            else:
+                return "Order not found", 404
+
+        except Exception as e:
+            db.session.rollback()
+            return f"An error occurred while saving the transaction: {e}", 500
+
     return render_template("/admin/order.html", order=orders, order_items=orderItems)
 
 #REVIEW DONE
@@ -335,19 +352,33 @@ def review():
     else:
         reviews = Review.query.all()
 
+    
     if request.method == 'POST':
-        response = request.form['reply']
-        id = request.form['btnsend']
+        if 'btnsend' in request.form:
+                response = request.form['reply']
+                id = request.form['btnsend']
 
-        review = Review.query.get_or_404(id)
-                
-        try:
-            review.response = response
-            db.session.commit()
-            return redirect(url_for('admin.review'))
-        except Exception as e:
-            db.session.rollback()
-            return f"An error occurred: {e}", 500
+                review = Review.query.get_or_404(id)
+                        
+                try:
+                    review.response = response
+                    db.session.commit()
+                    return redirect(url_for('admin.review'))
+                except Exception as e:
+                    db.session.rollback()
+                    return f"An error occurred: {e}", 500
+        
+        if 'btndelete' in request.form:
+                id = request.form['btndelete']
+                review = Review.query.get_or_404(id)
+                        
+                try:
+                    review.response = None
+                    db.session.commit()
+                    return redirect(url_for('admin.review'))
+                except Exception as e:
+                    db.session.rollback()
+                    return f"An error occurred: {e}", 500
 
     return render_template("/admin/review.html", review=reviews)
 
@@ -389,22 +420,72 @@ def transaction():
         
     return render_template("/admin/transaction.html", payment=payment)
 
+#FEEDBACK DONE
 @admin_blueprint.route('/feedback', methods=["GET", "POST"])
 def feedback():
+    search_query = request.args.get('searchFeedback', '')
+    statusfilter = request.args.get('statusfilter', 'all')
+    severityfilter = request.args.get('severityfilter', 'all')
+    typefilter = request.args.get('typefilter', 'all')
+    
+    query = Feedback.query
+
+    if search_query:
+        query = query.join(User).filter(
+            (User.lastName.ilike(f'%{search_query}%')) | 
+            (User.firstName.ilike(f'%{search_query}%'))
+        )
+    if typefilter != 'all':
+        query = query.filter(Feedback.feedbackType == typefilter)
+    if severityfilter != 'all':
+        if severityfilter == 'None':
+            query = query.filter(Feedback.severity.is_(None))
+        else:
+            query = query.filter(Feedback.severity == severityfilter)
+    if statusfilter != 'all':
+        query = query.filter(Feedback.status == statusfilter)
+
+    feedback = query.all()
+
     if request.method == 'POST':
-        response = request.form['reply']
-        id = request.form['btnsend']
+        if 'btnsave' in request.form:
+                status = request.form['status']
+                id = request.form['btnsave']
 
-        feedback = Feedback.query.get_or_404(id)
+                feedback = Feedback.query.get_or_404(id)
+                        
+                try:
+                    feedback.status = status
+                    db.session.commit()
+                    return redirect(url_for('admin.feedback'))
+                except Exception as e:
+                    db.session.rollback()
+                    return f"An error occurred: {e}", 500
                 
-        try:
-            feedback.response = response
-            db.session.commit()
-            return redirect(url_for('admin.feedback'))
-        except Exception as e:
-            db.session.rollback()
-            return f"An error occurred: {e}", 500
+        if 'btnsend' in request.form:
+            response = request.form['reply']
+            id = request.form['btnsend']
 
-    feedback = Feedback.query.all()
+            feedback = Feedback.query.get_or_404(id)
+                    
+            try:
+                feedback.response = response
+                db.session.commit()
+                return redirect(url_for('admin.feedback'))
+            except Exception as e:
+                db.session.rollback()
+                return f"An error occurred: {e}", 500
+            
+        if 'btndelete' in request.form:
+                id = request.form['btndelete']
+                feedback = Feedback.query.get_or_404(id)
+                        
+                try:
+                    feedback.response = None
+                    db.session.commit()
+                    return redirect(url_for('admin.feedback'))
+                except Exception as e:
+                    db.session.rollback()
+                    return f"An error occurred: {e}", 500
 
     return render_template("/admin/feedback.html", feedback=feedback)
