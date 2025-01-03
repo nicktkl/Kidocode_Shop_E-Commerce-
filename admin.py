@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from models import Category, Product, User, Order, OrderItem, Review, Payment, Feedback, db
-import os
-from sqlalchemy.sql import func
-from werkzeug.utils import secure_filename
+from imports import *
+from config import Config
+
+mail = Mail()
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -244,7 +243,7 @@ def product():
 
     return render_template("/admin/product.html", product=products, category=category, category_data=category_data)
 
-#CUSTOMER JUSTTHEMAILTHING
+#CUSTOMER
 @admin_blueprint.route('/customer', methods=["GET", "POST"])
 def customer():
     search_query = request.args.get('searchCust', '')  
@@ -259,7 +258,7 @@ def customer():
 
     if request.method == 'POST':
         email = request.form['btnmail']
-        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         token = serializer.dumps(email, salt='password-reset-salt')
 
         reset_url = f"http://127.0.0.1:5000/resetpwd/{token}"
