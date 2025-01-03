@@ -3,6 +3,8 @@ from config import Config
 
 app = Flask(__name__)
 
+app.secret_key = 'kidocodeverysecretkey'
+
 from user import user_blueprint
 from admin import admin_blueprint
 
@@ -228,6 +230,39 @@ def checkout():
         total_price=sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
         is_logged_in=False
     )
+
+@app.route('/trackorder', methods=['GET', 'POST'])
+def trackOrder():
+    order_details = []
+
+    user_id = session.get('user_id')
+
+    if request.method == 'POST':
+        order_ids = request.form.get('order_ids').split(',')
+        order_ids = [order_id.strip() for order_id in order_ids if order_id.strip()]
+
+        if order_ids:
+            if user_id:
+                orders = Order.query.filter(Order.orderID.in_(order_ids)).all()
+            else:
+                orders = Order.query.filter(Order.orderID.in_(order_ids)).all()
+
+            if not orders:
+                flash('No orders found for the provided Order IDs.', 'danger')
+            else:
+                for order in orders:
+                    items = OrderItem.query.filter_by(orderID=order.orderID).all()
+                    order_details.append({'order': order, 'items': items})
+        else:
+            flash('Please provide at least one valid Order ID.', 'warning')
+    
+    elif user_id:
+        orders = Order.query.filter_by(userID=user_id).all()
+        for order in orders:
+            items = list(order.order_items)
+            order_details.append({'order': order, 'items': items})
+
+    return render_template('/homepage/TrackOrder.html', order_details = order_details)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
