@@ -118,19 +118,23 @@ def get_products():
         'description': product.description,
         'price': product.price,
         'stock': product.stock,
-        'image': url_for('static', filename=f'images/{product.img}') if product.img else None,
+        'image': url_for('static', filename=product.img.replace('\\', '/')) if product.img else None,
         'category_id': product.categoryID,
         'status': product.status
     } for product in products]
 
     return jsonify({'success': True, 'products': product_list})
 
-
-@app.route('/product/<int:product_id>', methods = ['GET'])
+@app.route('/product/<string:product_id>', methods = ['GET'])
 def get_product_details(product_id):
     product = Product.query.get_or_404(product_id)
     product_details = {
-        'id': product.productID, 'name': product.productName, 'price': float(product.price), 'image': url_for('static', filename='images/' + product.img), 'description': product.description, 'quantity': product.stock, 'category': product.categoryID
+        'id': product.productID, 'name': product.productName,
+        'price': float(product.price),
+        'image': url_for('static', filename=product.img.replace('\\', '/')) if product.img else None,
+        'description': product.description,
+        'quantity': product.stock,
+        'category': product.categoryID
     }
     return jsonify({'success': True, 'product': product_details})
 
@@ -145,7 +149,10 @@ def cart():
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
     total_price = round(total_price, 2)
     cart_list = [
-        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        {'name': name,
+        'price': details['price'],
+        'quantity': details['quantity'],
+        'image': details['img']}
         for name, details in cart_items.items()
     ]
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
@@ -163,7 +170,7 @@ def add_to_cart():
         if not product_name:
             return jsonify({'success': False, 'message': 'Invalid product name.'}), 400
         
-        product_record = Product.query.filter_by(productName=product_name).first()
+        product_record = Product.query.filter_by(productName = product_name).first()
         if not product_record:
             return jsonify({'success': False, 'message': 'Product not found.'}), 404
 
