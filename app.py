@@ -1,29 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from flask_mail import Mail, Message
-from flask_bcrypt import Bcrypt
-from models import Category, Product, User, Order, OrderItem, Review, Payment, db
-from itsdangerous import URLSafeTimedSerializer
-from datetime import datetime
-
-import pytz
-import random
+from imports import *
+from config import Config
 
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'kidocodeverysecretkey'
-
-app.config.update({
-    'MAIL_SERVER': 'smtp.gmail.com',
-    'MAIL_PORT': 587,
-    'MAIL_USE_TLS': True,
-    'MAIL_USE_SSL': False,
-    'MAIL_USERNAME': 'nurulizzatihayat@gmail.com',
-    'MAIL_PASSWORD': 'tmcn fehq fttp smym',
-    'MAIL_DEFAULT_SENDER': ('Kidocode', 'nurulizzatihayat@gmail.com')
-})
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerceNEW'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 from user import user_blueprint
 from admin import admin_blueprint
@@ -31,10 +9,11 @@ from admin import admin_blueprint
 app.register_blueprint(user_blueprint)
 app.register_blueprint(admin_blueprint)
 
+app.config.from_object(Config)
+
 bcrypt = Bcrypt(app)
 mail = Mail(app)
 db.init_app(app)
-bcrypt.init_app(app)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -249,18 +228,15 @@ def login():
 
         if user and bcrypt.check_password_hash(user.password, password_candidate):
             session['loggedin'] = True
-            session['email'] = user.email
-            session['first_name'] = user.firstName
+            session['email'] = user.email #why?
+            session['first_name'] = user.firstName #why?
             
-            if email == 'a.test@testing.com':
-                flash('Admin logged in.', 'success')
-                return redirect(url_for('admin.dashboard'))
-
-            next_url = request.args.get('next') or url_for('user.homepage')
-            flash('Login successful!', 'success')
-            return redirect(next_url)
+            if user.userID.startswith('A'):
+                return redirect(url_for('admin.dashboard', alert='Admin logged in.'))
+            else :
+                return redirect(url_for('user.homepage', alert='Login Successful.'))
         else:
-            flash('Incorrect email or password.', 'danger')
+            return redirect(url_for('login', alert='Login Failed.'))
     
     return render_template('signIn.html')
 
@@ -369,7 +345,7 @@ def resetpwd(token):
 def logout():
     session.pop('loggedin', None)
     session.pop('email', None)
-    flash('You have been loged out.', 'info')
+    flash('You have been logged out.', 'info')
     return redirect(url_for('home'))
 
 if __name__ == "__main__":
