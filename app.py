@@ -38,7 +38,11 @@ def home():
 def all_products():
     products = Product.query.all()
     categories = Category.query.all()
-    return render_template('/homepage/AllProducts.html', products = products, category = categories)
+    email = session.get('email', None)
+    first_name = session.get('first_name', None)
+    if 'cart' not in session:
+        session['cart'] = {}
+    return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
 
 @app.route('/categories', methods=['GET'])
 def get_categories():
@@ -227,14 +231,22 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password_candidate):
-            session['loggedin'] = True
-            session['email'] = user.email #why?
-            session['first_name'] = user.firstName #why?
             
             if user.userID.startswith('A'):
-                return redirect(url_for('admin.dashboard', alert='Admin logged in.'))
-            else :
-                return redirect(url_for('user.homepage', alert='Login Successful.'))
+                session['loggedin'] = True
+                session['email'] = user.email
+                session['user_id'] = user.userID
+                session['first_name'] = user.firstName
+                flash('Admin logged in.', 'success')
+                return redirect(url_for('admin.dashboard'))
+            else:
+                session['loggedin'] = True
+                session['email'] = user.email
+                session['user_id'] = user.userID
+                session['first_name'] = user.firstName
+                next_url = request.args.get('next') or url_for('user.homepage')
+                flash('Login successful!', 'success')
+                return redirect(next_url)
         else:
             return redirect(url_for('login', alert='Login Failed.'))
     
@@ -244,6 +256,7 @@ def login():
 def register():
     if request.method == 'POST':
         email = request.form['email']
+        firstName = request.form['first_name']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
 
@@ -258,15 +271,20 @@ def register():
         newID = f"C{userCount + 1:03d}"
         new_user = User(
             userID = newID,
+            firstName = firstName,
             email = email, 
             password = hashed_password)
 
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Registration successful! Proceed to log in.', 'success')
+            session['loggedin'] = True
+            session['userID'] = new_user.userID
+            session['email'] = new_user.email
+            session['first_name'] = new_user.firstName
+            flash('Registration successful! You are now logged in.', 'success')
             print("Login successful, flashing success message")
-            return redirect(url_for('login'))
+            return redirect(url_for('user.homepage'))
         except Exception as e:
             db.session.rollback()
             flash(f'An error occurred: {str(e)}', 'danger')

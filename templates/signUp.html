@@ -21,9 +21,13 @@
             </div>
             <h2 class="title">Sign Up</h2>
             <div class="mb-3">
-                <form action="/register" method = "post">
+                <form action="/register" method = "POST">
                     <label for="email" class="form-label">Enter your Email</label>
-                    <input type="email" name="email" class="form-control" id="email" placeholder="Email" required>
+                    <input type="email" name="email" class="form-control" id="email" placeholder="example@example.com" required>
+            </div>
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Enter your First Name</label>
+                <input type="text" name="first_name" class="form-control" id="first_name" placeholder="Given Name" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Create a Password</label>
@@ -37,19 +41,16 @@
             <div class="mb-3">
                 <label for="password" class="form-label">Re-enter Password</label>
                 <div class="input-group">
-                <input type="password" name="confirm_password" class="form-control" id="password" placeholder="Password" required>
-                <span class="input-group-text eye-icon" onclick="togglePassword()">
-                    <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
-                </span>
+                    <input type="password" name="confirm_password" class="form-control" id="password" placeholder="Confirm Password" required>
                 </div>
             </div>
             <div class="row justify-content-center"> 
                 <div class="col-5 d-flex justify-content-between gap-3">
                     <button type="button" onclick="window.location.href='/login'" class="btn btn-light w-100">Cancel</button>
                     <button type="submit" name="btncontinue" class="btn btn-primary w-100">Continue</button> 
-                    </form>
                 </div>
             </div>
+            </form>
             <div class="text-center mt-3">
                 <p>
                     Already have an account? <a href="{{ url_for('login') }}">Login and Shop!</a>
@@ -86,3 +87,4 @@
             });
         </script>        
     </body>
+</html>
