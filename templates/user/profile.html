@@ -13,6 +13,7 @@
       <link  href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet">
   </head>
   <body>
+    {% include '/user/navbar.html' %}
       <div class="container profile-container">
         <div class="mx-auto p-3">
           <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="fs-4 text-decoration-none">

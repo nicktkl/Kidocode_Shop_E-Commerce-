@@ -1,25 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for the existence of the category accordion before initializing
+    if (document.getElementById('categoryAccordion')) {
+        fetchAndRenderCategories();
+    } else {
+        console.warn('Category accordion not found on this page.');
+    }
 
-    // Fetch and render categories dynamically
-    fetchAndRenderCategories();
-
-    // Fetch the cart from the server on page load
-    fetch('/get-cart')
-        .then(response => response.json())
-        .then(cart => {
-            const cartCountElement = document.getElementById('cart-count');
-            console.log('Cart count element:', cartCountElement);
-            if (!cartCountElement) {
-                console.warn('Cart count element not found in the DOM.');
-                return;
-            }
-            // Sync the client-side cart with the server cart
-            updateCartCount(cart);
-            updateCartItems(cart);
-        })
-        .catch(error => {
-            console.error('Error fetching cart:', error);
-        });
+    // Initialize cart-related functionality only if cart elements exist
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        fetch('/get-cart')
+            .then(response => response.json())
+            .then(cart => {
+                updateCartCount(cart);
+                updateCartItems(cart);
+            })
+            .catch(error => console.error('Error fetching cart:', error));
+    } else {
+        console.warn('Cart count element not found in the DOM.');
+    }
 
     // Attach event listeners to all "Add to cart" buttons
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
@@ -108,6 +107,11 @@ function updateCartCount(cart){
 // Function to update cart items in the UI
 function updateCartItems(cart){
     const cartItems = document.getElementById('cart-items');
+    if (!cartItems) {
+        console.warn('Cart items element not found. Skipping cart update.');
+        return;
+    }
+    
     const cartItemsTable = document.getElementById('cart-items-table');
     const totalPriceElement = document.getElementById('total-price');
     const checkoutButton = document.getElementById('btn-checkout');
@@ -242,8 +246,7 @@ function showProductModal(product){
 function fetchAndRenderCategories() {
     const categoryAccordion = document.getElementById('categoryAccordion'); // Target the updated HTML
     if (!categoryAccordion) {
-        console.error('Category accordion not found.');
-        return;
+        console.info('Category accordion is not present on this page.');
     }
 
     fetch('/categories') // Backend endpoint to fetch categories
@@ -323,8 +326,6 @@ function filterProductsByCategory(categoryID, parentCategoryID = null) {
         }
     });
 }
-
-document.addEventListener('DOMContentLoaded', fetchAndRenderCategories);
 
 function removeFromCart(name){
     console.log(`Removing ${name} from cart`);
