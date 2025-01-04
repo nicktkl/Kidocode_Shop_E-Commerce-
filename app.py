@@ -3,6 +3,8 @@ from config import Config
 
 app = Flask(__name__)
 
+app.secret_key = 'kidocodeverysecretkey'
+
 from user import user_blueprint
 from admin import admin_blueprint
 
@@ -118,19 +120,23 @@ def get_products():
         'description': product.description,
         'price': product.price,
         'stock': product.stock,
-        'image': url_for('static', filename=f'images/{product.img}') if product.img else None,
+        'image': url_for('static', filename=product.img.replace('\\', '/')) if product.img else None,
         'category_id': product.categoryID,
         'status': product.status
     } for product in products]
 
     return jsonify({'success': True, 'products': product_list})
 
-
-@app.route('/product/<int:product_id>', methods = ['GET'])
+@app.route('/product/<string:product_id>', methods = ['GET'])
 def get_product_details(product_id):
     product = Product.query.get_or_404(product_id)
     product_details = {
-        'id': product.productID, 'name': product.productName, 'price': float(product.price), 'image': url_for('static', filename='images/' + product.img), 'description': product.description, 'quantity': product.stock, 'category': product.categoryID
+        'id': product.productID, 'name': product.productName,
+        'price': float(product.price),
+        'image': url_for('static', filename=product.img.replace('\\', '/')) if product.img else None,
+        'description': product.description,
+        'quantity': product.stock,
+        'category': product.categoryID
     }
     return jsonify({'success': True, 'product': product_details})
 
@@ -145,7 +151,10 @@ def cart():
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
     total_price = round(total_price, 2)
     cart_list = [
-        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        {'name': name,
+        'price': details['price'],
+        'quantity': details['quantity'],
+        'image': details['img']}
         for name, details in cart_items.items()
     ]
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
@@ -163,7 +172,7 @@ def add_to_cart():
         if not product_name:
             return jsonify({'success': False, 'message': 'Invalid product name.'}), 400
         
-        product_record = Product.query.filter_by(productName=product_name).first()
+        product_record = Product.query.filter_by(productName = product_name).first()
         if not product_record:
             return jsonify({'success': False, 'message': 'Product not found.'}), 404
 
@@ -221,6 +230,39 @@ def checkout():
         total_price=sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
         is_logged_in=False
     )
+
+@app.route('/trackorder', methods=['GET', 'POST'])
+def trackOrder():
+    order_details = []
+
+    user_id = session.get('user_id')
+
+    if request.method == 'POST':
+        order_ids = request.form.get('order_ids').split(',')
+        order_ids = [order_id.strip() for order_id in order_ids if order_id.strip()]
+
+        if order_ids:
+            if user_id:
+                orders = Order.query.filter(Order.orderID.in_(order_ids)).all()
+            else:
+                orders = Order.query.filter(Order.orderID.in_(order_ids)).all()
+
+            if not orders:
+                flash('No orders found for the provided Order IDs.', 'danger')
+            else:
+                for order in orders:
+                    items = OrderItem.query.filter_by(orderID=order.orderID).all()
+                    order_details.append({'order': order, 'items': items})
+        else:
+            flash('Please provide at least one valid Order ID.', 'warning')
+    
+    elif user_id:
+        orders = Order.query.filter_by(userID=user_id).all()
+        for order in orders:
+            items = list(order.order_items)
+            order_details.append({'order': order, 'items': items})
+
+    return render_template('/homepage/TrackOrder.html', order_details = order_details)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

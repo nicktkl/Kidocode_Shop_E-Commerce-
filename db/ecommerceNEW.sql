@@ -65,7 +65,7 @@ CREATE TABLE user (
 
 INSERT INTO user (userID, firstName, lastName, email, password, phone, address)
 VALUES 
-    ('A001', 'Nurul', 'Izzati', 'nurulizzatihayat@gmail.com', '$2b$12$//CsxmFxUWWkMU1SWTd3F.5L3O8j2t5LJfke.74C4cVhc7/uoYjju', '01123768906', 'Kuala Lumpur'),
+    ('A001', 'Nurul', 'Izzati', 'nurulizzatihayat@gmail.com', '$2b$12$NsF71m655Vh.hX6AjNm4huhvN3//gal9Qh/WblOCmJF0VC88Emf0a', '01123768906', 'Kuala Lumpur'),
     ('T001', 'Test', 'Testing', 'test@testing.com', '$2b$12$TODs62ZYFBZKcFD1fF8XLeDMFpFRxnFax39xCcjhESbJFdPi0FzeW', '01234567890', 'Kuala Lumpur'),
     ('C001', 'John', 'Doe', 'john.doe@example.com', '$2b$12$aJYYm73Du78flQxrT7cbu.wufwbfMLhL2UsCb84nQIx4gMRemGoyi', '1234567890', '123 Main St, City, Country'),
     ('C002', 'Jane', 'Smith', 'jane.smith@example.com', '$2b$12$R2uJMT8XPPQUDtSQ4GcZQOOEaoTfGfLjlaQMk1Q68Ngqsqp4QPqhu', '0987654321', '456 Another St, City, Country'),

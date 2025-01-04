@@ -1,10 +1,6 @@
 from imports import *
 
 class Config:
-    # Secret key for session management
-    SECRET_KEY = os.getenv('SECRET_KEY', 'kidocodeverysecretkey')
-
-    # Mail server configurations
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
