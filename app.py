@@ -206,26 +206,26 @@ def remove_from_cart():
 def checkout():
     # Check if the user is logged in
     if session.get('loggedin'):
-        return redirect(url_for('user.checkout'))  # Redirect to user.py's checkout
+        return redirect(url_for('user.checkout'))
 
     if request.method == 'POST':
         # Process login form
         email = request.form.get('email')
         password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email = email).first()
 
         if user and bcrypt.check_password_hash(user.password, password):
             # Set user session
             session['loggedin'] = True
             session['email'] = user.email
             session['first_name'] = user.firstName
-            # flash('Login successful! Redirecting to checkout.', 'success')
-            return redirect(url_for('user.checkout'))  # Redirect after login
-        alert_message = "Invalid email or password. Please try again."
-        # flash('Invalid email or password. Please try again.', 'danger')
+            flash('Login successful! Redirecting to checkout.', 'success')
+            return redirect(url_for('user.checkout'))
+        else:
+            flash('Invalid email or password. Please try again.', 'danger')
 
     # Render login form on checkout.html for guests
-    return render_template('/homepage/Checkout.html', cart_items=session.get('cart', {}), total_price=sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()), alert_message=alert_message, is_logged_in=False)
+    return render_template('/homepage/Checkout.html', cart_items = session.get('cart', {}), total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()), is_logged_in = False)
 
 @app.route('/trackorder', methods=['GET', 'POST'])
 def trackOrder():
@@ -240,7 +240,7 @@ def trackOrder():
 
         if order_ids:
             if user_id:
-                orders = Order.query.filter(Order.orderID.in_(order_ids)).all()
+                orders = Order.query.filter(Order.orderID.in_(order_ids), Order.userID == user_id).all()
             else:
                 orders = Order.query.filter(Order.orderID.in_(order_ids)).all()
 
@@ -248,7 +248,7 @@ def trackOrder():
                 flash('No orders found for the provided Order IDs.', 'danger')
             else:
                 for order in orders:
-                    items = OrderItem.query.filter_by(orderID=order.orderID).all()
+                    items = OrderItem.query.filter_by(orderID = order.orderID).all()
                     order_details.append({'order': order, 'items': items})
         else:
             flash('Please provide at least one valid Order ID.', 'warning')
@@ -276,20 +276,19 @@ def login():
                 session['email'] = user.email
                 session['user_id'] = user.userID
                 session['first_name'] = user.firstName
-                # flash('Admin logged in.', 'success')
-                return redirect(url_for('admin.dashboard'), message='Admin logged in.', message_type='success')
+                return redirect(url_for('admin.dashboard'))
             else:
                 session['loggedin'] = True
                 session['email'] = user.email
                 session['user_id'] = user.userID
                 session['first_name'] = user.firstName
                 next_url = request.args.get('next') or url_for('user.homepage')
-                # flash('Login successful!', 'success')
-                return redirect(next_url, message='Login successful!', message_type='success')
+                return redirect(next_url)
         else:
-            return redirect(url_for('login', message='Invalid email or password. Please try again.', message_type='error'))
+            flash('Invalid email or password. Please try again.', 'error')
+            return redirect(url_for('login'))
     
-    return render_template('signIn.html', message=None)
+    return render_template('signIn.html')
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
@@ -304,7 +303,6 @@ def register():
             return redirect(url_for('register'))
         
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
 
         userCount = User.query.count()
         newID = f"C{userCount + 1:03d}"
@@ -349,7 +347,7 @@ def forgotpass():
                 email_body = email_body.replace("{{ timestamp }}", timestamp)
 
             subject = "Password Reset Request"
-            msg = Message(subject=subject, recipients=[email], body=email_body)
+            msg = Message(subject = subject, recipients=[email], body = email_body)
             mail.send(msg)
 
             return render_template('/forgot-pass-submitted.html')
@@ -364,7 +362,7 @@ def forgotpass():
 def resetpwd(token):
     try:
         serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+        email = serializer.loads(token, salt = 'password-reset-salt', max_age = 3600)
 
         if request.method == 'POST':
             password = request.form['password']
@@ -372,7 +370,7 @@ def resetpwd(token):
             
             if password != confirm_password:
                 flash('Passwords do not match, please try again.', 'danger')
-                return redirect(url_for('resetpwd', token=token))
+                return redirect(url_for('resetpwd', token = token))
             
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
             user = db.session.query(User).filter_by(email=email).first()
@@ -386,10 +384,10 @@ def resetpwd(token):
                 except Exception as e:
                     db.session.rollback()
                     flash(f'An error occurred: {str(e)}', 'danger')
-                    return redirect(url_for('resetpwd', token=token))
+                    return redirect(url_for('resetpwd', token = token))
             else:
                 flash('User not found.', 'danger')
-                return redirect(url_for('resetpwd', token=token))
+                return redirect(url_for('resetpwd', token = token))
 
     except Exception as e:
         flash('The reset link is invalid or has expired.', 'danger')
@@ -397,13 +395,15 @@ def resetpwd(token):
 
     return render_template('reset-pass.html', token=token)
 
-
 @app.route('/logout')
 def logout():
-    session.pop('loggedin', None)
-    session.pop('email', None)
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('home'))
+    if session.get('loggedin'):
+        session.clear()
+        session.pop('loggedin', None)
+        session.pop('email', None)
+        session.pop('first_name', None)
+        flash('You have been signed out.', 'info')
+        return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)
