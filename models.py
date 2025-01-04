@@ -68,7 +68,7 @@ class Order(db.Model):
     userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
     orderDate = db.Column(db.Date, nullable=False)
     totalAmount = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(15), nullable=False)
+    status = db.Column(db.String(15), nullable=False, default="Processing")
     shippingAddress = db.Column(db.Text, nullable=False)
     shippingMethod = db.Column(db.String(50), nullable=False)
     pickupBranch = db.Column(db.Text, nullable=True)

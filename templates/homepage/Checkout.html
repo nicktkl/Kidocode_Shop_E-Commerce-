@@ -24,6 +24,7 @@
                     {% if not is_logged_in %}
                     <form method="POST">
                         <h4 class="text-center">Sign In</h4>
+                        {% include '/user/alert.html' %}
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" required>
@@ -161,7 +162,7 @@
                 </div>
                 <!-- Right Section: Cart Summary -->
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card mt-5">
                         <div class="card-header bg-light">
                             <h4 class="card-title mb-0">Order Summary</h4>
                         </div>
