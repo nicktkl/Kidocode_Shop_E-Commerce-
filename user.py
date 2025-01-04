@@ -33,6 +33,8 @@ def homepage():
 @login_required
 def profile():
     email = session.get('email')
+    first_name = session.get('first_name')
+
     if not email:
         flash('No user logged in.', 'danger')
         return redirect(url_for('login'))
@@ -62,11 +64,12 @@ def profile():
             db.session.rollback()
             flash('An error occurred. Please try again.', 'danger')
 
-    return render_template('/user/profile.html', user=user)
+    return render_template('/user/profile.html', user = user, first_name = first_name)
 
 @user_blueprint.route('/logout')
 def logout():
     if session.get('loggedin'):
+        session.clear()
         session.pop('loggedin', None)
         session.pop('email', None)
         session.pop('first_name', None)
@@ -186,7 +189,7 @@ def checkout():
             
             order_item = OrderItem(
                 order_id = order.id,
-                product_id=product.productID,
+                product_id = product.productID,
                 product_name = name,
                 quantity = details['quantity'],
                 price = details['price']
@@ -204,10 +207,10 @@ def checkout():
 
     return render_template(
         '/homepage/Checkout.html',
-        is_logged_in=True,
-        cart_items=cart_items,
-        total_price=total_price,
-        branches=branches
+        is_logged_in = True,
+        cart_items = cart_items,
+        total_price = total_price,
+        branches = branches
     )
 
 def generateOrderID():
