@@ -42,6 +42,7 @@ def all_products():
     categories = Category.query.all()
     email = session.get('email', None)
     first_name = session.get('first_name', None)
+    
     if 'cart' not in session:
         session['cart'] = {}
     return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
@@ -218,24 +219,20 @@ def checkout():
             session['loggedin'] = True
             session['email'] = user.email
             session['first_name'] = user.firstName
-            flash('Login successful! Redirecting to checkout.', 'success')
+            # flash('Login successful! Redirecting to checkout.', 'success')
             return redirect(url_for('user.checkout'))  # Redirect after login
-
-        flash('Invalid email or password. Please try again.', 'danger')
+        alert_message = "Invalid email or password. Please try again."
+        # flash('Invalid email or password. Please try again.', 'danger')
 
     # Render login form on checkout.html for guests
-    return render_template(
-        '/homepage/Checkout.html',
-        cart_items=session.get('cart', {}),
-        total_price=sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()),
-        is_logged_in=False
-    )
+    return render_template('/homepage/Checkout.html', cart_items=session.get('cart', {}), total_price=sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()), alert_message=alert_message, is_logged_in=False)
 
 @app.route('/trackorder', methods=['GET', 'POST'])
 def trackOrder():
     order_details = []
 
     user_id = session.get('user_id')
+    first_name = session.get('first_name', None)
 
     if request.method == 'POST':
         order_ids = request.form.get('order_ids').split(',')
@@ -262,7 +259,7 @@ def trackOrder():
             items = list(order.order_items)
             order_details.append({'order': order, 'items': items})
 
-    return render_template('/homepage/TrackOrder.html', order_details = order_details)
+    return render_template('/homepage/TrackOrder.html', order_details = order_details, first_name = first_name)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -279,20 +276,20 @@ def login():
                 session['email'] = user.email
                 session['user_id'] = user.userID
                 session['first_name'] = user.firstName
-                flash('Admin logged in.', 'success')
-                return redirect(url_for('admin.dashboard'))
+                # flash('Admin logged in.', 'success')
+                return redirect(url_for('admin.dashboard'), message='Admin logged in.', message_type='success')
             else:
                 session['loggedin'] = True
                 session['email'] = user.email
                 session['user_id'] = user.userID
                 session['first_name'] = user.firstName
                 next_url = request.args.get('next') or url_for('user.homepage')
-                flash('Login successful!', 'success')
-                return redirect(next_url)
+                # flash('Login successful!', 'success')
+                return redirect(next_url, message='Login successful!', message_type='success')
         else:
-            return redirect(url_for('login', alert='Login Failed.'))
+            return redirect(url_for('login', message='Invalid email or password. Please try again.', message_type='error'))
     
-    return render_template('signIn.html')
+    return render_template('signIn.html', message=None)
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():

@@ -62,7 +62,7 @@
                 </div>
             </div>
         </nav>
-        <div class="container mt-5">
+        <div class="container my-5">
             <h2 class="text-center">Track Your Order</h2>
         
             <!-- Order Tracking Form -->
@@ -86,32 +86,11 @@
                         </h2>
                         <div id="collapse-{{ order_detail.order.orderID }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ order_detail.order.orderID }}" data-bs-parent="#ordersAccordion">
                             <div class="accordion-body">
-                                <p><strong>Status:</strong> {{ order_detail.order.status }}</p>
-                                <p><strong>Shipping Method:</strong> {{ order_detail.order.shippingMethod }}</p>
-                                <p><strong>Pickup Location:</strong> {{ order_detail.order.pickupBranch or 'Not applicable' }}</p>
-                                <p><strong>Shipping Address:</strong> {{ order_detail.order.shippingAddress or 'Not applicable' }}</p>
-                                <p><strong>Date:</strong> {{ order_detail.order.createdAt.strftime('%d %b %Y %I:%M %p') }}</p>
-                                <h5>Products</h5>
-                                <table class="table mt-3">
-                                    <thead>
-                                        <tr>
-                                            <th>Product Name</th>
-                                            <th>Quantity</th>
-                                            <th>Price (RM)</th>
-                                            <th>Total (RM)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for item in order_detail.order_items %}
-                                        <tr>
-                                            <td>{{ item.product.productName }}</td>
-                                            <td>{{ item.quantity }}</td>
-                                            <td>{{ item.price }}</td>
-                                            <td>{{ item.quantity * item.price }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                <p><i class="bi bi-info-circle me-2"></i><strong>Status:</strong> {{ order_detail.order.status }}</p>
+                                <p><i class="bi bi-truck me-2"></i><strong>Shipping Method:</strong> {{ order_detail.order.shippingMethod }}</p>
+                                <p><i class="bi bi-geo me-2"></i><strong>Pickup Location:</strong> {{ order_detail.order.pickupBranch or 'Not applicable' }}</p>
+                                <p><i class="bi bi-house-up me-2"></i><strong>Shipping Address:</strong> {{ order_detail.order.shippingAddress or 'Not applicable' }}</p>
+                                <p><i class="bi bi-calendar me-2"></i><strong>Date:</strong> {{ order_detail.order.createdAt.strftime('%d %b %Y %I:%M %p') }}</p>
                             </div>
                         </div>
                     </div>

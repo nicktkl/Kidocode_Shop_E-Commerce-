@@ -3,6 +3,7 @@
   <head>
       <script src="{{ url_for('static', filename='js/add-to-cart.js') }}"></script>
       <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="">
@@ -20,8 +21,9 @@
             Shop
           </a>
         </div>
+        <div id="message-box" style="display:none; padding: 10px; border: 1px solid; margin-bottom: 10px;"></div>
         <h2 class="title">Sign In</h2>
-          <form action="/login" method = "post">
+          <form action="/login" method = "POST">
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
               <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
@@ -52,14 +54,14 @@
             <p>
               Don't have an account? <a href="{{ url_for('register') }}" class="text-decoration-none">Sign Up and Shop!</a>
             </p>
+          </div>
+          <div id="flash-messages">
             {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                <ul>
-                  {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash-message" data-category="{{ category }}" data-message="{{ message }}"></div>
+                {% endfor %}
+            {% endif %}
             {% endwith %}
           </div>
       </div>
