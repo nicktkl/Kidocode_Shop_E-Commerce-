@@ -219,29 +219,6 @@ function updateCheckoutCart(cart){
     totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
 }
 
-// Function to show the product modal with detailed information
-function showProductModal(product){
-    const modalElement = document.getElementById('productModal'); // Your modal container
-    if(!modalElement){
-        console.error('Product modal not found in the DOM.');
-        return;
-    }
-
-    // Populate modal content dynamically
-    modalElement.querySelector('.modal-title').textContent = product.name;
-    modalElement.querySelector('.modal-body').innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="img-fluid mb-3">
-        <p>${product.description}</p>
-        <p>Price: RM${product.price}</p>
-        <p>Quantity available: ${product.quantity}</p>
-        <button class="btn btn-primary" onclick="addToCart({ name: '${product.name}', price: ${product.price}, img: '${product.image}' })">Add to Cart</button>
-    `;
-
-    // Show the modal using Bootstrap
-    const productModal = new bootstrap.Modal(modalElement);
-    productModal.show();
-}
-
 // Function to fetch categories and render the list dynamically
 function fetchAndRenderCategories() {
     const categoryAccordion = document.getElementById('categoryAccordion'); // Target the updated HTML
