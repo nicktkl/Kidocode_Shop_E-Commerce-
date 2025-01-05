@@ -15,9 +15,9 @@
     gap: 0.5rem;
 } */
 
-.bi {
+/* .bi {
     font-size: 1.2rem; 
-}
+} */
 
 /* Hero Section Styles */
 .hero-section {
@@ -82,30 +82,6 @@
     cursor: pointer;
 } */
 
-@media (max-width: 932px) {
-    .navbar-nav {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .ms-auto {
-        display: flex;
-        justify-content: center; /* Center the items horizontally */
-        align-items: center; /* Align items vertically */
-        gap: 10px; /* Add space between the buttons */
-    }
-
-    .ms-auto .btn,
-    .ms-auto #cart-icon {
-        margin: 0; /* Remove any extra margins causing misalignment */
-    }
-
-    .dropdown-item-text {
-        font-weight: bold;
-        color: #333;
-    }
-}
-
 .btn:hover {
     background-color: #0052cc;
     transform: scale(1.05);
@@ -122,51 +98,6 @@
 }
 .testimonials-section .card:hover {
     transform: scale(1.05);
-}
-
-/*Footer*/
-.footer-container {
-    background-color: #000000; 
-    color: #f5f5f5; 
-    padding: 40px 0;
-}
-.footer-top-line, .footer-bottom-line {
-    border-top: 1px solid #555555; 
-    margin-bottom: 20px;
-}
-.footer-logo img {
-    filter: brightness(0) invert(1);
-    width: 200px; 
-    margin-bottom: 15px;
-}
-.footer-description {
-    text-align: left; 
-    max-width: 300px; 
-    line-height: 1.5;
-    max-height: calc(1.5em * 5);
-    overflow: hidden;
-}
-.footer-section h6 {
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-.footer-section a {
-    color: #f5f5f5;
-    text-decoration: none;
-}
-.footer-section a:hover {
-    color: #cccccc; 
-}
-.footer-bottom-line {
-    margin-top: 20px;
-}
-.footer-bottom {
-    color: #ffffff; 
-    text-align: center;
-    padding: 0; 
-}
-.footer-bottom .copyright-container {
-    display: inline-block; 
 }
 
 .section-box {
