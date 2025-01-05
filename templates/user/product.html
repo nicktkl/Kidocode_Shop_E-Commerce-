@@ -1,0 +1,37 @@
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="product-details"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// Function to show the product modal with detailed information
+function showProductModal(product){
+    const modalElement = document.getElementById('productModal'); // Your modal container
+    if(!modalElement){
+        console.error('Product modal not found in the DOM.');
+        return;
+    }
+
+    // Populate modal content dynamically
+    modalElement.querySelector('.modal-title').textContent = product.name;
+    modalElement.querySelector('.modal-body').innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="img-fluid mb-3">
+        <p>${product.description}</p>
+        <p>Price: RM${product.price}</p>
+        <p>Quantity available: ${product.quantity}</p>
+        <button class="btn btn-primary" onclick="addToCart({ name: '${product.name}', price: ${product.price}, img: '${product.image}' })">Add to Cart</button>
+    `;
+
+    // Show the modal using Bootstrap
+    const productModal = new bootstrap.Modal(modalElement);
+    productModal.show();
+}
+</script>
