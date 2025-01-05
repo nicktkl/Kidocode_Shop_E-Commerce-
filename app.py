@@ -28,7 +28,7 @@ def session_check():
 @app.route('/')
 def home():
     products = Product.query.all()
-    random_products = random.sample(products, min(len(products), 8))
+    random_products = random.sample(products, min(len(products), 9))
     reviews = Review.query.filter_by(rating=5).all()
 
     email = session.get('email', None)
