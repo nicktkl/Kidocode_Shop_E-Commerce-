@@ -1,3 +1,100 @@
+<style>
+    .footer-container {
+        background-color: #000000; 
+        color: #f5f5f5; 
+        padding: 40px 0;
+    }
+
+    .footer-top-line, .footer-bottom-line {
+        border-top: 1px solid #555555; 
+        margin-bottom: 20px;
+    }
+
+    .footer-logo img {
+        filter: brightness(0) invert(1);
+        width: 200px; 
+        margin-bottom: 15px;
+    }
+
+    .footer-description {
+        text-align: left; 
+        max-width: 300px; 
+        line-height: 1.5;
+        max-height: calc(1.5em * 5);
+        overflow: hidden;
+    }
+
+    .footer-section h5 {
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .footer-section a {
+        color: #f5f5f5;
+        text-decoration: none;
+        display: block;
+        padding: 5px 0;
+    }
+
+    .footer-section a:hover {
+        color: #cccccc; 
+        text-decoration: underline;  /* Subtle underline effect on hover */
+    }
+
+    .footer-bottom-line {
+        margin-top: 20px;
+    }
+
+    .footer-bottom {
+        color: #ffffff; 
+        text-align: center;
+        padding: 0; 
+    }
+
+    .footer-bottom .copyright-container {
+        display: inline-block; 
+    }
+
+    /* Mobile View Enhancements */
+    @media (max-width: 768px) {
+        .footer-container {
+            padding: 20px 0; /* Adjust padding for mobile */
+        }
+
+        .footer-top-line, .footer-bottom-line {
+            margin-bottom: 10px;
+        }
+
+        .footer-description {
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .footer-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-section h5 {
+            font-size: 1.2rem; /* Slightly smaller font size on mobile */
+        }
+
+        .footer-section a {
+            font-size: 1rem;
+        }
+    }
+
+    /* Small screen (very mobile devices) */
+    @media (max-width: 480px) {
+        .footer-logo img {
+            width: 150px; /* Smaller logo on very small screens */
+        }
+
+        .footer-description {
+            max-height: none; /* Allow description to expand on very small screens */
+        }
+    }
+</style>
 <footer class="footer-container">
     <!-- Single top line -->
     <div class="footer-top-line text-center"></div>
@@ -15,23 +112,23 @@
             <!-- Discovery column -->
             <div class="col-md-2 footer-section mx-auto mb-3">
                 <h5>Discovery</h5>
-                <p><a href="#!" class="text-reset">Cubie</a></p>
-                <p><a href="#!" class="text-reset">Community</a></p>
-                <p><a href="#!" class="text-reset">Internship</a></p>
+                <a href="#!" class="text-reset">Cubie</a>
+                <a href="#!" class="text-reset">Community</a>
+                <a href="#!" class="text-reset">Internship</a>
             </div>
             <!-- About column -->
             <div class="col-md-2 footer-section mx-auto mb-3">
                 <h5>About</h5>
-                <p><a href="#!" class="text-reset">Help</a></p>
-                <p><a href="#!" class="text-reset">Shipping</a></p>
-                <p><a href="#!" class="text-reset">Gallery</a></p>
+                <a href="#!" class="text-reset">Help</a>
+                <a href="#!" class="text-reset">Shipping</a>
+                <a href="#!" class="text-reset">Gallery</a>
             </div>
             <!-- Info column -->
             <div class="col-md-2 footer-section mx-auto mb-3">
                 <h5>Info</h5>
-                <p><a href="#!" class="text-reset">Contact us</a></p>
-                <p><a href="#!" class="text-reset">Privacy Policies</a></p>
-                <p><a href="#!" class="text-reset">Terms & Conditions</a></p>
+                <a href="#!" class="text-reset">Contact us</a>
+                <a href="#!" class="text-reset">Privacy Policies</a>
+                <a href="#!" class="text-reset">Terms & Conditions</a>
             </div>
         </div>
     </div>
