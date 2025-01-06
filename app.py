@@ -42,7 +42,19 @@ def all_products():
     categories = Category.query.all()
     email = session.get('email', None)
     first_name = session.get('first_name', None)
-    
+
+    # for product in products:
+    #     if product.categoryID:
+    #         # Find the category for the product
+    #         category = Category.query.filter_by(categoryID=product.categoryID).first()
+    #         if category:
+    #             if category.parentID:  # If it's a subcategory, assign parent category ID
+    #                 product.parentCategoryID = category.parentID
+    #             else:
+    #                 product.parentCategoryID = None  # Main categories have no parent
+    #         else:
+    #             product.parentCategoryID = None  # In case category not found
+
     if 'cart' not in session:
         session['cart'] = {}
     return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
@@ -219,7 +231,7 @@ def checkout():
             session['loggedin'] = True
             session['email'] = user.email
             session['first_name'] = user.firstName
-            flash('Login successful! Redirecting to checkout.', 'success')
+            # flash('Login successful! Redirecting to checkout.', 'success')
             return redirect(url_for('user.checkout'))
         else:
             flash('Invalid email or password. Please try again.', 'danger')
@@ -250,6 +262,9 @@ def trackOrder():
                 for order in orders:
                     items = OrderItem.query.filter_by(orderID = order.orderID).all()
                     order_details.append({'order': order, 'items': items})
+            
+            session.pop('order_ids', None)
+            
         else:
             flash('Please provide at least one valid Order ID.', 'warning')
     
@@ -258,6 +273,9 @@ def trackOrder():
         for order in orders:
             items = list(order.order_items)
             order_details.append({'order': order, 'items': items})
+    
+    if not order_details:
+        session.pop('order_ids', None)
 
     return render_template('/homepage/TrackOrder.html', order_details = order_details, first_name = first_name)
 
