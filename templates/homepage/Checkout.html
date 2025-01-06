@@ -23,21 +23,37 @@
                     </header>
                     {% if not is_logged_in %}
                     <form method="POST">
-                        <h4 class="text-center">Sign In</h4>
+                        <h4 class="title text-center">Sign In</h4>
                         {% include '/user/alert.html' %}
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
+                            <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
+                          </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" placeholder="Password" name="password" required>
+                                <span class="input-group-text eye-icon" onclick="togglePassword()">
+                                  <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                                </span>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Sign In</button>
-                        <p class="text-center mt-3">
-                            Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a>
-                        </p>
-                    </form>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Sign In</button>
+                        </div>
+                        <div class="text-end mt-2">
+                          <a href="{{ url_for('forgotpass') }}" class="text-decoration-none">Forgot password?</a>
+                        </div>
+                      </form>
+                      <div class="text-center my-3">
+                        <span>OR</span>
+                      </div>
+                      <div class="d-grid">
+                        <a href="#" class="btn btn-outline-primary">Sign in with Google</a>
+                      </div>
+                      <div class="text-center mt-3">
+                        <p>Don't have an account?<a href="{{ url_for('register') }}" class="text-decoration-none"> Sign Up and Shop!</a></p>
+                      </div>
                     {% else %}
                     <!-- Checkout Form -->
                     <form method="POST" action="{{ url_for('user.checkout') }}">

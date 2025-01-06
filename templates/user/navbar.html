@@ -1,5 +1,39 @@
 <style>
+    .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1050; /* Ensure navbar is above other elements */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow for better visibility */
+    }
+
+    /* Add padding to content below the navbar */
+    body {
+        padding-top: 80px; /* Adjust the value based on your navbar height */
+    }
+
+    /* Optional: Make the navbar background opaque when scrolling */
+    .navbar.scrolled {
+        background-color: #ffffff; /* Change the background when scrolling */
+        transition: background-color 0.3s ease;
+    }
+
     @media (max-width: 932px) {
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1050;
+        }
+
+        body {
+            padding-top: 80px;
+        }
+        
         .navbar-nav {
             flex-direction: column;
             align-items: center;

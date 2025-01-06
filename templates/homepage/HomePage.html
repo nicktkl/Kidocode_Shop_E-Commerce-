@@ -14,14 +14,8 @@
     </head>
     <body>
         {% include '/user/navbar.html' %}
-        <div class="hero-section">
-            <div class="hero-card">
-                <h1 class="text-center my-4">Welcome to Kidocode Shop</h1>
-                <p>All items for your child’s learning and development, hand-picked by the Kido Team.</p>
-                <a href="{{ url_for('all_products')}}" class="btn btn-primary hero-btn">Look at all the cool new stuff!</a>
-            </div>
-        </div>
-        <div class="container">
+        {% include '/user/welcome.html' %}
+        <div class="container py-3">
             <div class="row justify-content-center">
                 {% for product in product %}
                 <div class="col-md-3 card mx-2 mb-3 card-wrapper card-hover" data-category="{{ product.categoryID }}" data-parent-category="{{ product.parentCategoryID }}" data-product-id="{{ product.productID }}" data-context="main" style="width: 18rem; display: flex; flex-direction: column; height: 100%;">
@@ -30,21 +24,21 @@
                         <h5 class="card-title product-card-title" style="cursor: pointer; flex-grow: 0;">{{ product.productName }}</h5>
                         <p class="card-text" style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ product.description }}</p>
                         <div class="d-flex justify-content-between align-items-center" style="flex-shrink: 0;">
-                            <h5><strong>RM{{ product.price }}</strong></h5>
+                            <h4><strong>RM{{ product.price }}</strong></h4>
                             <button class="btn btn-primary add-to-cart-btn" data-name="{{ product.productName }}" data-price="{{ product.price }}" data-quantity="{{ product.quantity }}" data-img="{{ url_for('static', filename=product.img.replace('\\', '/')) }}">Add to cart</button>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-        </div>        
+        </div>
         {% include '/homepage/ProductSlide.html' %}
         {% include '/user/product.html' %}
         <!-- Testimonials Section -->
         <section class="testimonials-section bg-light py-5">
             <div class="container">
                 <h2 class="text-center mb-4">Reviews</h2>
-                <p class="text-center mb-5">Some quotes from our happy Users</p>
+                <p class="text-center mb-5">Quotes from out customers!</p>
                 <div class="row g-4">
                     <!-- First Testimonial -->
                     {% for review in review %}

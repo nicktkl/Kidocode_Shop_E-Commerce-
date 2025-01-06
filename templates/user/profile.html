@@ -74,14 +74,14 @@
                 <input type="text" class="form-control" id="address" placeholder="House number, Building, Street">
               </div>
             </div>
-            <div class="col-md-4">
-              <label for="postalCode" class="form-label">Postal Code</label>
-              <input type="text" class="form-control" id="postalCode" placeholder="Postal Code" pattern="\d*" required>
-              <div class="invalid-feedback">
-                  Please enter a valid postal code (numbers only).
-              </div>
-            </div>
             <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="postalCode" class="form-label">Postal Code</label>
+                <input type="text" class="form-control" id="postalCode" placeholder="Postal Code" pattern="\d*" required>
+                <div class="invalid-feedback">
+                    Please enter a valid postal code (numbers only).
+                </div>
+              </div>
               <div class="col-md-4">
                 <label for="city" class="form-label">City</label>
                 <input type="text" class="form-control" id="city" placeholder="City">
@@ -96,8 +96,8 @@
               </div>
             </div>
             <div class="btn-container">
-              <button type="submit" class="btn btn-primary">Save Changes</button>
               <a href="{{ url_for('user.homepage') }}" class="btn btn-secondary">Back</a>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>
           </form>
       </div>
