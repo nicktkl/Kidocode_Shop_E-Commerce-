@@ -294,12 +294,18 @@ function filterProductsByCategory(categoryID, parentCategoryID = null) {
         const productCategory = product.getAttribute('data-category');
         const productParentCategory = product.getAttribute('data-parent-category');
 
+        // Show all products if the "All Products" category is selected
         if (categoryID === 'all') {
-            product.style.display = 'block'; // Show all products
-        } else if (productCategory === categoryID || (parentCategoryID && productParentCategory === parentCategoryID)) {
-            product.style.display = 'block'; // Match category or subcategory
+            product.style.display = 'block';
+        } else if (categoryID === productCategory) {
+            // If the product belongs to the selected category, show it
+            product.style.display = 'block';
+        } else if (parentCategoryID && productParentCategory === parentCategoryID) {
+            // If the product belongs to a subcategory of the selected category, show it
+            product.style.display = 'block';
         } else {
-            product.style.display = 'none'; // Hide non-matching products
+            // Hide products that do not match the selected category or subcategory
+            product.style.display = 'none';
         }
     });
 }
@@ -323,4 +329,19 @@ function removeFromCart(name){
         .catch(error => {
             console.error('Error removing product from cart:', error);
         });
+}
+
+function togglePassword() {
+    const passwordField = document.getElementById("password");
+    const toggleIcon = document.getElementById("togglePasswordIcon");
+    
+    if(passwordField.type === "password"){
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
 }
