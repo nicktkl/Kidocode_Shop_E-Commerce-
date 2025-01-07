@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/add-to-cart.js') }}"></script>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="description" content="">
@@ -15,13 +15,7 @@
   <body>
     {% include '/user/navbar.html' %}
       <div class="container profile-container">
-        <div class="mx-auto p-3">
-          <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="fs-4 text-decoration-none">
-            <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
-            Shop
-          </a>
-        </div>
-        <h3 class="mb-4 text-center">My Profile</h3>
+        <h3 class="mb-4 title">My Profile</h3>
         <form>
           <div class="row mb-3">
             <div class="col-md-6">
@@ -49,7 +43,7 @@
                   <option>+1</option>
                   <option>+44</option>
                 </select>
-                <input type="text" class="form-control" id="phone" placeholder="XX XXXX-XXXX">
+                <input type="text" class="form-control" id="phone" placeholder="XX XXXX XXXX">
               </div>
             </div>
           </div>
@@ -99,7 +93,12 @@
               <a href="{{ url_for('user.homepage') }}" class="btn btn-secondary">Back</a>
               <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>
-          </form>
+        </form>
+      </div>
+      <div class="container">
+        <h2 class="title">Look at this!</h2>
+        <p class="fs-3 fst-italic text-center">Why not add some of this products to your cart?</p>
+        {% include '/user/product-random.html' %}
       </div>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
