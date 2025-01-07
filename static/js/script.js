@@ -27,13 +27,13 @@
 //     });
 // });
 
-// Initialize the toast
-var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-var toastList = toastElList.map(function (toastEl) {
-    return new bootstrap.Toast(toastEl);
-});
+// // Initialize the toast
+// var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+// var toastList = toastElList.map(function (toastEl) {
+//     return new bootstrap.Toast(toastEl);
+// });
 
-// Function to show the toast
-function showToast() {
-    toastList[0].show(); // Show the first toast in the list (there's only one here)
-}
+// // Function to show the toast
+// function showToast() {
+//     toastList[0].show(); // Show the first toast in the list (there's only one here)
+// }
