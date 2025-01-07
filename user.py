@@ -32,6 +32,8 @@ def homepage():
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    products = Product.query.all()
+    random_products = random.sample(products, min(len(products), 9))
     email = session.get('email')
     first_name = session.get('first_name')
 
@@ -64,7 +66,7 @@ def profile():
             db.session.rollback()
             flash('An error occurred. Please try again.', 'danger')
 
-    return render_template('/user/profile.html', user = user, first_name = first_name)
+    return render_template('/user/profile.html', product = random_products, user = user, first_name = first_name)
 
 @user_blueprint.route('/logout')
 def logout():
