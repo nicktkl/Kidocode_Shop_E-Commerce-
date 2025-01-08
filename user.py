@@ -186,14 +186,8 @@ def checkout():
                 return redirect(url_for('user.checkout'))
             
             order_item = OrderItem(
-<<<<<<< HEAD
                 orderID = order.orderID,
                 productID = product.productID,
-=======
-                order_id = order.id,
-                product_id = product.productID,
-                product_name = name,
->>>>>>> e89cc705b09f07e62f34632fd49d03325af03a03
                 quantity = details['quantity'],
                 price = details['price']
             )
@@ -219,7 +213,7 @@ def checkout():
 @user_blueprint.route('/payment', methods=['GET', 'POST'])
 def payment():
     order = Order.query.filter_by(orderID=session.get('orderID')).first()
-    orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
+    orderItems = OrderItem.query.filter_by(orderID=session.get('orderID')).all()
 
     if request.method == 'POST':
         if 'btnpay' in request.form:
@@ -251,8 +245,25 @@ def payment():
                 except Exception as e:
                     return str(e)
                 
-            elif method == "Cash at counter":  # Corrected "Case" to "Cash at counter"
-                return redirect(url_for('user.success'))  # You can change this to any desired page
+            elif method == "Cash at counter":
+                return redirect(url_for('user.success')) 
+            
+        try:
+            payment = Payment(
+                orderID = session.get('orderID'),
+                amount = order.totalAmount,
+                deliveryCharge = 0.00,
+                paymentMethod = method,
+                status = "Received"
+            )
+
+            db.session.add(payment)
+            db.session.commit()
+            return redirect(url_for('user.home'))
+        
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            db.session.rollback()
 
     return render_template('payment.html', order=order, order_items=orderItems, public_key=Config.STRIPE_PK)
 

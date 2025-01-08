@@ -167,7 +167,7 @@ def cart():
         {'name': name,
         'price': details['price'],
         'quantity': details['quantity'],
-        'image': details['img']}
+        'image': details.get('img', '/static/images/gambar.jpg')}
         for name, details in cart_items.items()
     ]
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
