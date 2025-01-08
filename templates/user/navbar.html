@@ -96,9 +96,9 @@
     }
 </style>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-xxl">
+    <div class="container">
         <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="nav-brand fs-4 text-decoration-none">
-            <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
+            <img src="/static/images/kidocode_logo.png" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
             Shop
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">

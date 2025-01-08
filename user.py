@@ -185,7 +185,7 @@ def checkout():
                 flash(f"Product '{name}' not found.", 'danger')
                 return redirect(url_for('user.checkout'))
             
-            order_item = OrderItem(order_id = order.id, product_id = product.productID, product_name = name, quantity = details['quantity'], price = details['price'])
+            order_item = OrderItem(orderID = order.orderID, productID = product.productID, quantity = details['quantity'], price = details['price'])
             db.session.add(order_item)
 
         db.session.commit()
@@ -202,7 +202,7 @@ def checkout():
 @user_blueprint.route('/payment', methods=['GET', 'POST'])
 def payment():
     order = Order.query.filter_by(orderID=session.get('orderID')).first()
-    orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
+    orderItems = OrderItem.query.filter_by(orderID=session.get('orderID')).all()
 
     if request.method == 'POST':
         if 'btnpay' in request.form:
@@ -234,8 +234,25 @@ def payment():
                 except Exception as e:
                     return str(e)
                 
-            elif method == "Cash at counter":  # Corrected "Case" to "Cash at counter"
-                return redirect(url_for('user.success'))  # You can change this to any desired page
+            elif method == "Cash at counter":
+                return redirect(url_for('user.success')) 
+            
+        try:
+            payment = Payment(
+                orderID = session.get('orderID'),
+                amount = order.totalAmount,
+                deliveryCharge = 0.00,
+                paymentMethod = method,
+                status = "Received"
+            )
+
+            db.session.add(payment)
+            db.session.commit()
+            return redirect(url_for('user.home'))
+        
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")
+            db.session.rollback()
 
     return render_template('payment.html', order = order, order_items = orderItems, public_key = Config.STRIPE_PK)
 
