@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     cartButtons.forEach(button => {
         button.addEventListener('click', (event) => {
             event.stopPropagation();
-            const name = button.dataset.name; // Get the product name
-            const price = parseFloat(button.dataset.price); // Get the product price
-            const image = button.dataset.img; // Get the product's image
+            const name = button.dataset.name;
+            const price = parseFloat(button.dataset.price);
+            const image = button.dataset.img;
 
             // Call the addToCart function with the product details
             addToCart({ name, price, image });
@@ -76,6 +76,7 @@ function addToCart(product, endpoint = '/add-to-cart'){
                 console.log('Product successfully added to cart:', data.cart);
                 updateCartCount(data.cart);
                 updateCartItems(data.cart);
+                showCartToast('Cart Updated', `${product.name} has been added to your cart!`);
             } else{
                 alert('Failed to add the product to the cart.');
             }
@@ -158,7 +159,6 @@ function updateCartItems(cart){
         cartItemsTable.innerHTML = ''; // Clear existing content
         if(Object.keys(cart).length === 0){
             cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
-            // checkoutButton.classList.add('d-none');
         } else {
             for(const [name, { price, quantity }] of Object.entries(cart)){
                 const row = document.createElement('tr');
@@ -179,8 +179,6 @@ function updateCartItems(cart){
 
                 totalPrice += price * quantity;
             }
-
-            // checkoutButton.classList.add('d-none');
         }
     }
 
@@ -294,17 +292,23 @@ function filterProductsByCategory(categoryID, parentCategoryID = null) {
         const productCategory = product.getAttribute('data-category');
         const productParentCategory = product.getAttribute('data-parent-category');
 
+        // Show all products if the "All Products" category is selected
         if (categoryID === 'all') {
-            product.style.display = 'block'; // Show all products
-        } else if (productCategory === categoryID || (parentCategoryID && productParentCategory === parentCategoryID)) {
-            product.style.display = 'block'; // Match category or subcategory
+            product.style.display = 'block';
+        } else if (categoryID === productCategory) {
+            // If the product belongs to the selected category, show it
+            product.style.display = 'block';
+        } else if (parentCategoryID && productParentCategory === parentCategoryID) {
+            // If the product belongs to a subcategory of the selected category, show it
+            product.style.display = 'block';
         } else {
-            product.style.display = 'none'; // Hide non-matching products
+            // Hide products that do not match the selected category or subcategory
+            product.style.display = 'none';
         }
     });
 }
 
-function removeFromCart(name){
+function removeFromCart(name) {
     console.log(`Removing ${name} from cart`);
 
     fetch('/remove-from-cart', {
@@ -323,4 +327,19 @@ function removeFromCart(name){
         .catch(error => {
             console.error('Error removing product from cart:', error);
         });
+}
+
+function togglePassword() {
+    const passwordField = document.getElementById("password");
+    const toggleIcon = document.getElementById("togglePasswordIcon");
+    
+    if(passwordField.type === "password"){
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
 }
