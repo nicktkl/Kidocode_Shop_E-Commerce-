@@ -1,34 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for the existence of the category accordion before initializing
+    if (document.getElementById('categoryAccordion')) {
+        fetchAndRenderCategories();
+    } else {
+        console.warn('Category accordion not found on this page.');
+    }
 
-    // Fetch and render categories dynamically
-    fetchAndRenderCategories();
-
-    // Fetch the cart from the server on page load
-    fetch('/get-cart')
-        .then(response => response.json())
-        .then(cart => {
-            const cartCountElement = document.getElementById('cart-count');
-            console.log('Cart count element:', cartCountElement);
-            if (!cartCountElement) {
-                console.warn('Cart count element not found in the DOM.');
-                return;
-            }
-            // Sync the client-side cart with the server cart
-            updateCartCount(cart);
-            updateCartItems(cart);
-        })
-        .catch(error => {
-            console.error('Error fetching cart:', error);
-        });
+    // Initialize cart-related functionality only if cart elements exist
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        fetch('/get-cart')
+            .then(response => response.json())
+            .then(cart => {
+                updateCartCount(cart);
+                updateCartItems(cart);
+            })
+            .catch(error => console.error('Error fetching cart:', error));
+    } else {
+        console.warn('Cart count element not found in the DOM.');
+    }
 
     // Attach event listeners to all "Add to cart" buttons
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
     cartButtons.forEach(button => {
         button.addEventListener('click', (event) => {
             event.stopPropagation();
-            const name = button.dataset.name; // Get the product name
-            const price = parseFloat(button.dataset.price); // Get the product price
-            const image = button.dataset.img; // Get the product's image
+            const name = button.dataset.name;
+            const price = parseFloat(button.dataset.price);
+            const image = button.dataset.img;
 
             // Call the addToCart function with the product details
             addToCart({ name, price, image });
@@ -77,6 +76,7 @@ function addToCart(product, endpoint = '/add-to-cart'){
                 console.log('Product successfully added to cart:', data.cart);
                 updateCartCount(data.cart);
                 updateCartItems(data.cart);
+                showCartToast('Cart Updated', `${product.name} has been added to your cart!`);
             } else{
                 alert('Failed to add the product to the cart.');
             }
@@ -108,6 +108,11 @@ function updateCartCount(cart){
 // Function to update cart items in the UI
 function updateCartItems(cart){
     const cartItems = document.getElementById('cart-items');
+    if (!cartItems) {
+        console.warn('Cart items element not found. Skipping cart update.');
+        return;
+    }
+    
     const cartItemsTable = document.getElementById('cart-items-table');
     const totalPriceElement = document.getElementById('total-price');
     const checkoutButton = document.getElementById('btn-checkout');
@@ -154,7 +159,6 @@ function updateCartItems(cart){
         cartItemsTable.innerHTML = ''; // Clear existing content
         if(Object.keys(cart).length === 0){
             cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
-            // checkoutButton.classList.add('d-none');
         } else {
             for(const [name, { price, quantity }] of Object.entries(cart)){
                 const row = document.createElement('tr');
@@ -175,8 +179,6 @@ function updateCartItems(cart){
 
                 totalPrice += price * quantity;
             }
-
-            // checkoutButton.classList.add('d-none');
         }
     }
 
@@ -215,35 +217,11 @@ function updateCheckoutCart(cart){
     totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
 }
 
-// Function to show the product modal with detailed information
-function showProductModal(product){
-    const modalElement = document.getElementById('productModal'); // Your modal container
-    if(!modalElement){
-        console.error('Product modal not found in the DOM.');
-        return;
-    }
-
-    // Populate modal content dynamically
-    modalElement.querySelector('.modal-title').textContent = product.name;
-    modalElement.querySelector('.modal-body').innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="img-fluid mb-3">
-        <p>${product.description}</p>
-        <p>Price: RM${product.price}</p>
-        <p>Quantity available: ${product.quantity}</p>
-        <button class="btn btn-primary" onclick="addToCart({ name: '${product.name}', price: ${product.price}, img: '${product.image}' })">Add to Cart</button>
-    `;
-
-    // Show the modal using Bootstrap
-    const productModal = new bootstrap.Modal(modalElement);
-    productModal.show();
-}
-
 // Function to fetch categories and render the list dynamically
 function fetchAndRenderCategories() {
     const categoryAccordion = document.getElementById('categoryAccordion'); // Target the updated HTML
     if (!categoryAccordion) {
-        console.error('Category accordion not found.');
-        return;
+        console.info('Category accordion is not present on this page.');
     }
 
     fetch('/categories') // Backend endpoint to fetch categories
@@ -314,19 +292,23 @@ function filterProductsByCategory(categoryID, parentCategoryID = null) {
         const productCategory = product.getAttribute('data-category');
         const productParentCategory = product.getAttribute('data-parent-category');
 
+        // Show all products if the "All Products" category is selected
         if (categoryID === 'all') {
-            product.style.display = 'block'; // Show all products
-        } else if (productCategory === categoryID || (parentCategoryID && productParentCategory === parentCategoryID)) {
-            product.style.display = 'block'; // Match category or subcategory
+            product.style.display = 'block';
+        } else if (categoryID === productCategory) {
+            // If the product belongs to the selected category, show it
+            product.style.display = 'block';
+        } else if (parentCategoryID && productParentCategory === parentCategoryID) {
+            // If the product belongs to a subcategory of the selected category, show it
+            product.style.display = 'block';
         } else {
-            product.style.display = 'none'; // Hide non-matching products
+            // Hide products that do not match the selected category or subcategory
+            product.style.display = 'none';
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', fetchAndRenderCategories);
-
-function removeFromCart(name){
+function removeFromCart(name) {
     console.log(`Removing ${name} from cart`);
 
     fetch('/remove-from-cart', {
@@ -345,4 +327,19 @@ function removeFromCart(name){
         .catch(error => {
             console.error('Error removing product from cart:', error);
         });
+}
+
+function togglePassword() {
+    const passwordField = document.getElementById("password");
+    const toggleIcon = document.getElementById("togglePasswordIcon");
+    
+    if(passwordField.type === "password"){
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
 }
