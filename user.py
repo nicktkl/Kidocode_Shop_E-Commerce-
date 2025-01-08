@@ -151,26 +151,22 @@ def checkout():
         if not user:
             flash('User not found. Please log in again.', 'danger')
             return redirect(url_for('login'))
-        
-        user_id = user.id
 
         selected_branch = next((branch for branch in branches if branch['id'] == pickup_location), None)
 
         # Generate a unique order ID
         order_id = generateOrderID()
 
+        session['orderID'] = order_id
+
         # Save order details in the database
         order = Order(
-            order_id = order_id,  # Assign the generated order ID
-            user_id = user.id,
-            user_email = session['email'],
-            total_price = total_price,
-            pickup_location = selected_branch['name'] if selected_branch else None,
-            shipping_address = shipping_address,
-            city = city,
-            state = state,
-            postcode = postcode,
-            phone = phone
+            orderID = order_id,  # Assign the generated order ID
+            userID = user.userID,
+            totalAmount = total_price,
+            pickupBranch = "Mont Kiara", #selected_branch['name'] if selected_branch else None,
+            shippingAddress = "No address",
+            shippingMethod = "Pick up"
         )
         db.session.add(order)
         db.session.commit()
@@ -185,9 +181,8 @@ def checkout():
                 return redirect(url_for('user.checkout'))
             
             order_item = OrderItem(
-                order_id = order.id,
-                product_id=product.productID,
-                product_name = name,
+                orderID = order.orderID,
+                productID = product.productID,
                 quantity = details['quantity'],
                 price = details['price']
             )
@@ -199,8 +194,7 @@ def checkout():
         session['cart'] = {}
         session.modified = True
 
-        flash(f'Order placed successfully! Your Order ID is {order_id}', 'success')
-        return redirect(url_for('user.homepage'))
+        return redirect(url_for('user.payment'))
 
     return render_template(
         '/homepage/Checkout.html',
@@ -209,6 +203,59 @@ def checkout():
         total_price=total_price,
         branches=branches
     )
+
+#checked
+@user_blueprint.route('/payment', methods=['GET', 'POST'])
+def payment():
+    order = Order.query.filter_by(orderID=session.get('orderID')).first()
+    orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
+
+    if request.method == 'POST':
+        if 'btnpay' in request.form:
+            method = request.form.get('p_method')
+            if method == "Card":
+                try:
+                    total_amount_in_sen = int(order.totalAmount * 100)
+                    checkout_session = stripe.checkout.Session.create(
+                        payment_method_types=['card'],
+                        line_items=[
+                            {
+                                'price_data': {
+                                    'currency': 'myr',
+                                    'product_data': {
+                                        'name': 'Total Order Amount',
+                                    },
+                                    'unit_amount': total_amount_in_sen,  # Amount in cents ($50.00)
+                                },
+                                'quantity': 1,
+                            },
+                        ],
+                        mode='payment',
+                        success_url=url_for('user.success', _external=True),
+                        cancel_url=url_for('user.cancel', _external=True),
+                    )
+
+                    return redirect(checkout_session.url, code=303)
+
+                except Exception as e:
+                    return str(e)
+                
+            elif method == "Cash at counter":  # Corrected "Case" to "Cash at counter"
+                return redirect(url_for('user.success'))  # You can change this to any desired page
+
+    return render_template('payment.html', order=order, order_items=orderItems, public_key=Config.STRIPE_PK)
+
+@user_blueprint.route('/success')
+def success():
+    order = Order.query.filter_by(orderID=session.get('orderID')).first()
+    orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
+    payment = Payment.query.filter_by(orderID=order.orderID).first()
+
+    return render_template('thanks.html', order=order, order_items=orderItems, payment=payment)
+
+@user_blueprint.route('/cancel')
+def cancel():
+    return "Payment canceled. Please try again."
 
 def generateOrderID():
     prefix = "KSHOP"
