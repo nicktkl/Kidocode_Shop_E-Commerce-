@@ -3,8 +3,6 @@ from config import Config
 
 app = Flask(__name__)
 
-app.secret_key = 'kidocodeverysecretkey'
-
 from user import user_blueprint
 from admin import admin_blueprint
 
@@ -42,7 +40,19 @@ def all_products():
     categories = Category.query.all()
     email = session.get('email', None)
     first_name = session.get('first_name', None)
-    
+
+    # for product in products:
+    #     if product.categoryID:
+    #         # Find the category for the product
+    #         category = Category.query.filter_by(categoryID=product.categoryID).first()
+    #         if category:
+    #             if category.parentID:  # If it's a subcategory, assign parent category ID
+    #                 product.parentCategoryID = category.parentID
+    #             else:
+    #                 product.parentCategoryID = None  # Main categories have no parent
+    #         else:
+    #             product.parentCategoryID = None  # In case category not found
+
     if 'cart' not in session:
         session['cart'] = {}
     return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
@@ -155,7 +165,7 @@ def cart():
         {'name': name,
         'price': details['price'],
         'quantity': details['quantity'],
-        'image': details['img']}
+        'image': details.get('img', '/static/images/gambar.jpg')}
         for name, details in cart_items.items()
     ]
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
@@ -219,7 +229,7 @@ def checkout():
             session['loggedin'] = True
             session['email'] = user.email
             session['first_name'] = user.firstName
-            flash('Login successful! Redirecting to checkout.', 'success')
+            # flash('Login successful! Redirecting to checkout.', 'success')
             return redirect(url_for('user.checkout'))
         else:
             flash('Invalid email or password. Please try again.', 'danger')
@@ -230,7 +240,8 @@ def checkout():
 @app.route('/trackorder', methods=['GET', 'POST'])
 def trackOrder():
     order_details = []
-
+    products = Product.query.all()
+    random_products = random.sample(products, min(len(products), 9))
     user_id = session.get('user_id')
     first_name = session.get('first_name', None)
 
@@ -250,6 +261,9 @@ def trackOrder():
                 for order in orders:
                     items = OrderItem.query.filter_by(orderID = order.orderID).all()
                     order_details.append({'order': order, 'items': items})
+            
+            session.pop('order_ids', None)
+            
         else:
             flash('Please provide at least one valid Order ID.', 'warning')
     
@@ -258,8 +272,11 @@ def trackOrder():
         for order in orders:
             items = list(order.order_items)
             order_details.append({'order': order, 'items': items})
+    
+    if not order_details:
+        session.pop('order_ids', None)
 
-    return render_template('/homepage/TrackOrder.html', order_details = order_details, first_name = first_name)
+    return render_template('/homepage/TrackOrder.html', product = random_products, order_details = order_details, first_name = first_name)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -334,7 +351,7 @@ def forgotpass():
     if request.method == 'POST':
         email = request.form['getemail']
 
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         token = serializer.dumps(email, salt='password-reset-salt')
 
         reset_url = f"http://127.0.0.1:5000/resetpwd/{token}"
@@ -361,7 +378,7 @@ def forgotpass():
 @app.route('/resetpwd/<token>', methods=['GET', 'POST'])
 def resetpwd(token):
     try:
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         email = serializer.loads(token, salt = 'password-reset-salt', max_age = 3600)
 
         if request.method == 'POST':

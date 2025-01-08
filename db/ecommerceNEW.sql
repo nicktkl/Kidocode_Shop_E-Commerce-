@@ -46,7 +46,7 @@ VALUES
     ('KP004', 'K-Box Starter Kit', 'All-in-one K-Box for beginners.', 'images\\kbox-basic.jpg', 50, 20, 'ELE001K'),
     ('KP005', 'LED Lights Pack', 'A pack of assorted LED lights.', 'images\\led.jpg', 5.99, 10, 'ELE003C'),
     ('KP006', 'USB Cable', 'Durable USB-A to USB-B cable', 'images\\wire.jpeg', 3.49, 49, 'ELE004W'),
-    ('KP007', 'Testing', 'Test product', 'images\\dummy.png', 15.99, 50, '3DP003O');
+    ('KP007', 'Testing', 'Test product', 'images\\cubie_kidocode.png', 15.99, 50, '3DP003O');
 
 CREATE TABLE user (
   userID varchar(4) NOT NULL,

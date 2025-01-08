@@ -66,7 +66,6 @@ class Order(db.Model):
 
     orderID = db.Column(db.String(13), primary_key=True)
     userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
-    orderDate = db.Column(db.Date, nullable=False)
     totalAmount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(15), nullable=False, default="Processing")
     shippingAddress = db.Column(db.Text, nullable=False)
@@ -122,9 +121,10 @@ class Payment(db.Model):
     __tablename__ = 'payment'
 
     paymentID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    orderID = db.Column(db.Integer, db.ForeignKey('orders.orderID', ondelete='CASCADE'), nullable=False)
+    orderID = db.Column(db.String(13), db.ForeignKey('orders.orderID', ondelete='CASCADE'), nullable=False)
     paymentDate = db.Column(db.Date, nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    deliveryCharge = db.Column(db.Float, nullable=False)  # Added deliveryCharge column
     paymentMethod = db.Column(db.String(30), nullable=False)
     status = db.Column(db.String(15), nullable=False)
 
@@ -132,7 +132,7 @@ class Payment(db.Model):
 
     def __repr__(self):
         return f"<Payment {self.paymentID} for Order {self.orderID}>"
-
+    
 # Feedback model
 class Feedback(db.Model):
     __tablename__ = 'feedback'
