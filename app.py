@@ -3,8 +3,6 @@ from config import Config
 
 app = Flask(__name__)
 
-app.secret_key = Config.SECRET_KEY
-
 from user import user_blueprint
 from admin import admin_blueprint
 
@@ -353,7 +351,7 @@ def forgotpass():
     if request.method == 'POST':
         email = request.form['getemail']
 
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         token = serializer.dumps(email, salt='password-reset-salt')
 
         reset_url = f"http://127.0.0.1:5000/resetpwd/{token}"
@@ -380,7 +378,7 @@ def forgotpass():
 @app.route('/resetpwd/<token>', methods=['GET', 'POST'])
 def resetpwd(token):
     try:
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(Config.SECRET_KEY)
         email = serializer.loads(token, salt = 'password-reset-salt', max_age = 3600)
 
         if request.method == 'POST':
