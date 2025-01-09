@@ -14,7 +14,7 @@ class Config:
     MAIL_DEFAULT_SENDER = ('Kidocode', 'nurulizzatihayat@gmail.com')
 
     # SQLAlchemy configurations
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerceNEW')
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerce')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     #STRIPE configuration

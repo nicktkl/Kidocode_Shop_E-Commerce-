@@ -302,7 +302,7 @@ def login():
                 next_url = request.args.get('next') or url_for('user.homepage')
                 return redirect(next_url)
         else:
-            flash('Invalid email or password. Please try again.', 'error')
+            flash('Invalid email or password. Please try again.', 'danger')
             return redirect(url_for('login'))
     
     return render_template('signIn.html')

@@ -1,6 +1,18 @@
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
+# Branches model
+class Branch(db.Model):
+    __tablename__ = 'branches'
+    id = db.Column(db.String(10), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.Text, nullable=False)
+    operating_hours = db.Column(db.String(50), nullable=False)
+    link = db.Column(db.String(100), nullable=True)
+
+    def __repr__(self):
+        return f"<Branch {self.name}>"
+
 # Category model
 class Category(db.Model):
     __tablename__ = 'category'
