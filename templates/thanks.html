@@ -12,56 +12,6 @@
         <script src="/static/script/script.js"></script>
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="../images/kidocode_logo.png" alt="Kidocode Logo">
-                </a>
-    
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-    
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav mx-auto">
-    
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="discoveryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Discovery
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="discoveryDropdown">
-                                <li><a class="dropdown-item" href="index.html">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="all_product.html">Product</a></li>
-                                <li><a class="dropdown-item" href="gallery.html">Gallery</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="about.html">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="contact.html">Contact Us</a>
-                        </li>
-                    </ul>
-    
-                    <div class="icon-links d-lg-none">
-                        <a href="profile.html" class="nav-link icon-size d-block">
-                            <i class="bi bi-person"></i>
-                        </a>
-                        <a href="cart.html" class="nav-link icon-size d-block">
-                            <i class="bi bi-cart"></i> 
-                        </a>
-                    </div>
-                </div>
-    
-                <div class="d-none d-lg-flex icon-links">
-                    <a href="profile.html" class="nav-link icon-size">
-                        <i class="bi bi-person"></i> 
-                    <a href="cart.html" class="nav-link icon-size">
-                        <i class="bi bi-cart"></i> 
-                    </a>
-                </div>
-            </div>
-        </nav>
         <div class="container my-5">
             <div class="row">
                 <!-- Left Section -->
@@ -69,10 +19,10 @@
                     <div class="my-5">
                         <i class="bi bi-check-circle-fill text-primary" style="font-size: 4rem;"></i>
                         <h2 class="mt-3">Payment Confirmed</h2>
-                        <p class="text-muted">ORDER #2039</p>
-                        <p class="text-muted">Your items will be delivered soon!</p>
-                        <a href="index.html" class="btn btn-primary mt-3">Back to shopping</a>
-                        <a href="#" class="btn btn-link mt-3 text-decoration-none">Print receipt</a>
+                        <p class="text-muted">ORDER {{order.orderID}}</p>
+                        <p class="text-muted">Thank you for purchasing with us!</p>
+                        <button href="/user/"  class="btn btn-primary mt-3">Back to shopping</button>
+                        <button href="/user/success" class="btn btn-link mt-3 text-decoration-none">Print receipt</button>
                     </div>
                 </div>
 
@@ -80,84 +30,32 @@
                 <div class="col-md-6 order-summary">
                     <div class="p-4">
                         <h5 class="mb-3">Order Summary</h5>
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="../images/cubie_kidocode.png" alt="Product Image" class="product-img">
-                                <div class="ms-3">
-                                    <p class="mb-0">Cubie 1 Month Access</p>
-                                    <p class="text-muted mb-0">$9.99</p>
-                                </div>
+                        {% for item in order_items %}
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename=item.product.img) }}" class="img-thumbnail" style="width: 100px; height: auto;" alt="Product Image">
+                            <div class="ms-3">
+                                <p class="mb-1"><strong>{{ item.product.name }} (x{{ item.quantity }})</strong></p>
+                                <p class="mb-0">RM {{ (item.price * item.quantity) }}</p>
                             </div>
-                        
-                            <hr>
-                            <div class="d-flex justify-content-between">
-                                <span>Subtotal</span>
-                                <span>$9.99</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Shipping</span>
-                                <span>Free Shipping</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between fw-bold">
-                                <span>Paid</span>
-                                <span>$9.99</span>
-                            </div>
+                        </div>
+                        {% endfor %}
+                        <table class="summary-table w-100">
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td class="text-end">RM {{order.totalAmount}}</td>
+                            </tr>
+                            <tr>
+                                <td>Shipping:</td>
+                                <td class="text-end">RM {{ payment.deliveryCharge }}</td>
+                            </tr>
+                            <tr class="border-top">
+                                <td>Total:</td>
+                                <td class="text-end fw-bold">RM  {{ payment.amount }}</td>
+                            </tr>
+                        </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Footer -->
-            <footer class="footer-container">
-                <!-- Single top line -->
-                <div class="footer-top-line text-center"></div>
-
-                <!-- Logo and description -->
-                <div class="container text-center text-md-start">
-                    <div class="row">
-                        <div class="col-md-3 footer-logo mb-4">
-                            <img src="../images/kidocode_logo.png" alt="Kidocode Logo">
-                            <p class="footer-description">
-                                Kidocode is a school of technology and entrepreneurship for K-12 students. Our community is driven to rebuild the education system for the modern era with a combination of AI-empowered tools, top-notch educators, and in-demand campus facilities.
-                            </p>
-                        </div>
-
-                        <!-- Discovery column -->
-                        <div class="col-md-2 footer-section mx-auto mb-3">
-                            <h6>Discovery</h6>
-                            <p><a href="#!" class="text-reset">Cubie</a></p>
-                            <p><a href="#!" class="text-reset">Community</a></p>
-                            <p><a href="#!" class="text-reset">Internship</a></p>
-                        </div>
-
-                        <!-- About column -->
-                        <div class="col-md-2 footer-section mx-auto mb-3">
-                            <h6>About</h6>
-                            <p><a href="#!" class="text-reset">Help</a></p>
-                            <p><a href="#!" class="text-reset">Shipping</a></p>
-                            <p><a href="#!" class="text-reset">Gallery</a></p>
-                        </div>
-
-                        <!-- Info column -->
-                        <div class="col-md-2 footer-section mx-auto mb-3">
-                            <h6>Info</h6>
-                            <p><a href="#!" class="text-reset">Contact us</a></p>
-                            <p><a href="#!" class="text-reset">Privacy Policies</a></p>
-                            <p><a href="#!" class="text-reset">Terms & Conditions</a></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bottom line above copyright -->
-                <div class="footer-bottom-line text-center"></div>
-
-                <!-- Copyright -->
-                <div class="footer-bottom text-center">
-                    <div class="copyright-container">
-                        © 2024 Copyright:
-                        <a class="text-reset fw-normal text-decoration-none" href="https://www.kidocode.com/">2024 All Rights Reserved. Kidocode Sdn Bhd (1133758-X) | 201501008423(1133758-X)</a>
-                    </div>
-                </div>
-            </footer>
-            <!-- Footer -->
     </body>
 </html>

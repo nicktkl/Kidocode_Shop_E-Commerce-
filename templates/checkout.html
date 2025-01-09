@@ -66,47 +66,40 @@
                             <label class="form-label fw-bold fs-5">Delivery Method</label>
                             <div>
                                 <div class="form-check mt-2">
-                                    <input type="radio" class="form-check-input" id="delivery-ship" name="delivery-method" value="ship" disabled>
+                                    <input type="radio" class="form-check-input" id="delivery-ship" name="deliveryMethod" value="Delivery" disabled>
                                     <label for="delivery-ship" class="form-check-label">Shipping (Coming Soon)</label>
                                 </div>
                                 <div class="form-check mt-2">
-                                    <input type="radio" class="form-check-input" id="delivery-pickup" name="delivery-method" value="pickup">
+                                    <input type="radio" class="form-check-input" id="delivery-pickup" name="deliveryMethod" value="Pick Up">
                                     <label for="delivery-pickup" class="form-check-label">Self Pick-Up</label>
                                 </div>
                             </div>
                         </div>
                         <!-- Shipping Section -->
-                        <div class="mb-3" id="shipping-address-section">
+                        <!--<div class="mb-3" id="shipping-address-section">
                             <label for="country" class="form-label">Country/Region</label>
                             <select id="country" class="form-select">
                                 <option selected>Malaysia</option>
-                                <!-- Add other countries if needed -->
                             </select>
                             <div class="row mt-3">
-                                <!-- First Name -->
                                 <div class="col-md-6">
                                     <label for="first-name" class="form-label">First Name</label>
                                     <input type="text" class="form-control" id="first_name" placeholder="Given Name">
                                 </div>
-                                <!-- Last Name -->
                                 <div class="col-md-6">
                                     <label for="last-name" class="form-label">Last Name</label>
                                     <input type="text" class="form-control" id="last-name" placeholder="Surname">
                                 </div>
                             </div>
-                            <!-- Company -->
                             <div class="mt-3">
                                 <label for="company" class="form-label">Company Name</label>
                                 <input type="text" class="form-control" id="company" placeholder="Optional">
                             </div>
-                            <!-- Address -->
                             <div class="mt-3">
                                 <label for="address" class="form-label">Address (P.O. Box Not Accepted)</label>
                                 <input type="text" class="form-control" id="address" placeholder="House number, Building, Street" required>
                             </div>
-                            <!-- Postcode, City, State -->
                             <div class="row mt-3">
-                                <!-- Postcode -->
                                 <div class="col-md-4">
                                     <label for="postalCode" class="form-label">Postal Code</label>
                                     <input type="text" class="form-control" id="postalCode" placeholder="Postal Code" pattern="\d*" required>
@@ -114,33 +107,28 @@
                                         Please enter a valid postal code (numbers only).
                                     </div>
                                 </div>
-                                <!-- City -->
                                 <div class="col-md-4">
                                     <label for="city" class="form-label">City</label>
                                     <input type="text" class="form-control" id="city" placeholder="City" required>
                                 </div>
-                                <!-- State/Territory -->
                                 <div class="col-md-4">
                                     <label for="state" class="form-label">State/Territory</label>
                                     <select id="state" class="form-select" required>
                                         <option selected>Kuala Lumpur</option>
-                                        <!-- Add other states/territories -->
                                     </select>
                                 </div>
                             </div>
-                            <!-- Phone -->
                             <div class="mt-3">
                                 <label for="phone" class="form-label">Contact Number</label>
                                 <input type="tel" class="form-control" id="phone" placeholder="Office/Mobile Number" required>
                             </div>
-                            <!-- Save Information -->
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" id="save-info">
                                 <label class="form-check-label" for="save-info">
                                     Save this information for next order.
                                 </label>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- Pickup Section -->
                         <div class="card mb-3" id="self-pickup-section">
                             <h6 class="card-header">Select Pickup Location</h6>
@@ -149,8 +137,8 @@
                                     {% for branch in branch %}
                                     <div class="list-group-item">
                                         <div class="form-check">
-                                            <input type="radio" class="form-check-input" name="pickup-location" id="branch-{{ branch.id }}" value="{{ branch.id }}" data-bs-toggle="collapse" data-bs-target="#details-{{ branch.id }}" aria-expanded="false" aria-controls="details-{{ branch.id }}" required>
-                                            <label for="branch-{{ branch.id }}" class="form-check-label">{{ branch.name }}</label>
+                                            <input type="radio" class="form-check-input" name="pickup-location" id="branch-{{ branch.branchID }}" value="{{ branch.address }}" data-bs-toggle="collapse" data-bs-target="#details-{{ branch.branchID }}" aria-expanded="false" aria-controls="details-{{ branch.branchID }}" required>
+                                            <label for="branch-{{ branch.branchID }}" class="form-check-label">{{ branch.name }}</label>
                                         </div>
                                         <div class="collapse my-2 ms-4" id="details-{{ branch.branchID }}" data-bs-parent="#branch-options">
                                             <p><strong>Address:</strong> {{ branch.address }}</p>
@@ -165,7 +153,7 @@
                             </div>
                         </div>
                         <div>
-                            <button type="submit" class="btn btn-primary">Place Order</button>
+                            <button type="submit" class="btn btn-primary" name="pickupPay">Place Order</button>
                         </div>
                     </form>
                     {% endif %}
@@ -199,7 +187,7 @@
                             <!-- Shipping Fee -->
                             <div class="d-flex justify-content-between">
                                 <span>Shipping:</span>
-                                <span id="shipping-fee">RM0.00</span>
+                                <span id="shipping-fee">Shipping fee will be calculated later</span>
                             </div>
                             <!-- Total -->
                             <div class="d-flex justify-content-between fw-bold">
