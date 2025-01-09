@@ -70,7 +70,7 @@ def profile():
 
     return render_template('/user/profile.html', product = random_products, user = user, first_name = first_name)
 
-@user_blueprint.route('/purchases')
+@user_blueprint.route('/purchases', methods=['GET'])
 def purchases():
     email = session.get('email')
     first_name = session.get('first_name')
