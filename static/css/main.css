@@ -39,7 +39,7 @@
     margin-bottom: 15px;
 }
 
-.purchase-card {
+/* .purchase-card {
     border-radius: 15px;
     background-color: #f8f9fa;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -55,7 +55,21 @@
 .status-successful {
     color: #28a745;
     font-weight: bold;
+} */
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.accordion-button {
+    flex-grow: 1;
+}
+
+/* .badge {
+    font-size: 0.85rem;
+} */
 
 .navbar-status {
     display: flex;
