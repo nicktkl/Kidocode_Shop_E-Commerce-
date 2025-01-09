@@ -38,3 +38,29 @@
     border-radius: 5px;
     margin-bottom: 15px;
 }
+
+.purchase-card {
+    border-radius: 15px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.status-pending {
+    color: #ff8800;
+    font-weight: bold;
+}
+
+.status-successful {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.navbar-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    text-align: center;
+    font-size: medium;
+}
