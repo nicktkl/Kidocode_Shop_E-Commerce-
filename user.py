@@ -226,6 +226,7 @@ def payment():
     if request.method == 'POST':
         if 'btnpay' in request.form:
             method = request.form.get('p_method')
+            session['payment_method'] = method
             if method == "Card":
                 try:
                     total_amount_in_sen = int(order.totalAmount * 100)
@@ -255,28 +256,31 @@ def payment():
                 
             elif method == "Cash":
                 return redirect(url_for('user.success')) 
-            
-            try:
-                payment.paymentMethod = method
-                payment.status = "Received"
-                db.session.commit()
-                return redirect(url_for('admin.category'))
-            except Exception as e:
-                db.session.rollback()
-
+             
     return render_template('payment.html', order = order, order_items = orderItems, payment=payment, public_key = Config.STRIPE_PK)
 
-@user_blueprint.route('/success')
+@user_blueprint.route('/success', methods=['GET', 'POST'])
 def success():
     order = Order.query.filter_by(orderID=session.get('orderID')).first()
     orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
     payment = Payment.query.filter_by(orderID=order.orderID).first()
 
-    return render_template('thanks.html', order = order, order_items = orderItems, payment = payment)
+    if payment and order:
+        payment.paymentMethod = session.get('payment_method')
+        payment.status = "Received"
+        db.session.commit()
+        flash("Payment successful!", "success")
+    else:
+        flash("Order or payment record not found!", "error")
 
-@user_blueprint.route('/cancel')
-def cancel():
-    return "Payment canceled. Please try again."
+    
+    if request.method == 'POST':
+        if 'btnBack' in request.form:
+            session.pop('payment_method', None)
+            session.pop('orderID', None)
+            return redirect(url_for('user.homepage'))
+
+    return render_template('thanks.html', order = order, order_items = orderItems, payment = payment)
 
 #to generate orderID
 def generateOrderID():

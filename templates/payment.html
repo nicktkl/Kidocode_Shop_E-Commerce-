@@ -43,33 +43,42 @@
             </div>
 
             <div class="col-md-6">
-                <div class="summary">
-                    <h5 class="mb-3">Order Summary</h5>
-                    {% for item in order_items %}
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="{{ url_for('static', filename=item.product.img) }}" class="img-thumbnail" style="width: 100px; height: auto;" alt="Product Image">
-                        <div class="ms-3">
-                            <p class="mb-1"><strong>{{ item.product.name }} (x{{ item.quantity }})</strong></p>
-                            <p class="mb-0">RM {{ (item.price * item.quantity) }}</p>
+                <div class="card mt-5">
+                    <div class="card-header bg-light">
+                        <h4 class="card-title mb-0">Order Summary</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for item in order_items %}
+                        <!-- Cart Items -->
+                        <div id="cart-summary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <img src="{{ url_for('static', filename=item.product.img.replace('\\', '/')) }}" alt="{{ item_name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <span>{{ item.product.productName }} (x{{item.quantity }})</span>
+                                </div>
+                                <span>RM{{ "%.2f"|format(item.price * item.quantity) }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <hr>
+                        <!-- Subtotal -->
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">RM{{ order.totalAmount }}</span>
+                        </div>
+                        <!-- Shipping Fee -->
+                        <div class="d-flex justify-content-between">
+                            <span>Shipping:</span>
+                            <span id="shipping-fee">RM{{ payment.deliveryCharge }}</span>
+                        </div>
+                        <!-- Total -->
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span id="total">RM{{ payment.amount }}</span>
                         </div>
                     </div>
-                    {% endfor %}
-                    <table class="summary-table w-100">
-                        <tr>
-                            <td>Subtotal:</td>
-                            <td class="text-end">RM {{order.totalAmount}}</td>
-                        </tr>
-                        <tr>
-                            <td>Shipping:</td>
-                            <td class="text-end">RM {{ payment.deliveryCharge }}</td>
-                        </tr>
-                        <tr class="border-top">
-                            <td>Total:</td>
-                            <td class="text-end fw-bold">RM  {{ payment.amount }}</td>
-                        </tr>
-                    </table>
                 </div>
-            </div>            
+            </div>           
             
         </div>
     </div>

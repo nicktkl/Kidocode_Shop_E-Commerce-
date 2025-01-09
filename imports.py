@@ -8,3 +8,7 @@ from flask_bcrypt import Bcrypt, bcrypt
 from itsdangerous import URLSafeTimedSerializer
 from datetime import datetime
 from functools import wraps
+from flask_wtf.csrf import CSRFProtect
+
+csrf = CSRFProtect()
+
