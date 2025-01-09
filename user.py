@@ -185,12 +185,7 @@ def checkout():
                 flash(f"Product '{name}' not found.", 'danger')
                 return redirect(url_for('user.checkout'))
             
-            order_item = OrderItem(
-                orderID = order.orderID,
-                productID = product.productID,
-                quantity = details['quantity'],
-                price = details['price']
-            )
+            order_item = OrderItem(orderID = order.orderID, productID = product.productID, quantity = details['quantity'], price = details['price'])
             db.session.add(order_item)
 
         db.session.commit()
@@ -201,13 +196,7 @@ def checkout():
 
         return redirect(url_for('user.payment'))
 
-    return render_template(
-        '/homepage/Checkout.html',
-        is_logged_in = True,
-        cart_items = cart_items,
-        total_price = total_price,
-        branches = branches
-    )
+    return render_template('/homepage/Checkout.html', is_logged_in = True, cart_items = cart_items, total_price = total_price, branches = branches)
 
 #checked
 @user_blueprint.route('/payment', methods=['GET', 'POST'])
@@ -265,7 +254,7 @@ def payment():
             print(f"Error occurred: {str(e)}")
             db.session.rollback()
 
-    return render_template('payment.html', order=order, order_items=orderItems, public_key=Config.STRIPE_PK)
+    return render_template('payment.html', order = order, order_items = orderItems, public_key = Config.STRIPE_PK)
 
 @user_blueprint.route('/success')
 def success():
@@ -273,7 +262,7 @@ def success():
     orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
     payment = Payment.query.filter_by(orderID=order.orderID).first()
 
-    return render_template('thanks.html', order=order, order_items=orderItems, payment=payment)
+    return render_template('thanks.html', order = order, order_items = orderItems, payment = payment)
 
 @user_blueprint.route('/cancel')
 def cancel():
