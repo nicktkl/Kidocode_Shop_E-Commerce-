@@ -189,6 +189,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="{{ url_for('user.profile') }}">Welcome, {{ first_name }}</a></li>
+                        <li><a class="dropdown-item" href="/user/purchases">My Purchases</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">Sign Out</a></li>
                     </ul>
                 </div>

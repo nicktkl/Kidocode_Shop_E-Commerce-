@@ -68,6 +68,12 @@ def profile():
 
     return render_template('/user/profile.html', product = random_products, user = user, first_name = first_name)
 
+@user_blueprint.route('/purchases')
+def purchases():
+    email = session.get('email')
+    first_name = session.get('first_name')
+    return render_template('/user/purchase.html', email = email, first_name = first_name)
+
 @user_blueprint.route('/logout')
 def logout():
     if session.get('loggedin'):
