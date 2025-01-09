@@ -25,6 +25,7 @@ def homepage():
 
     email = session.get('email', None)
     first_name = session.get('first_name', None)
+
     if 'cart' not in session:
         session['cart'] = {}
     return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email, first_name = first_name)
@@ -34,11 +35,12 @@ def homepage():
 def profile():
     products = Product.query.all()
     random_products = random.sample(products, min(len(products), 9))
+
     email = session.get('email')
     first_name = session.get('first_name')
 
     if not email:
-        flash('No user logged in.', 'danger')
+        flash("You need to log in to proceed.", "warning")
         return redirect(url_for('login'))
     
     user = User.query.filter_by(email=email).first()
@@ -72,7 +74,20 @@ def profile():
 def purchases():
     email = session.get('email')
     first_name = session.get('first_name')
-    return render_template('/user/purchase.html', email = email, first_name = first_name)
+    user_id = session.get('userID')
+
+    if not email:
+        flash("You need to log in to proceed.", "warning")
+        return redirect(url_for('login'))
+
+    status_filter = request.args.get('status', 'all')
+
+    if status_filter == 'all':
+        orders = Order.query.filter_by(userID = user_id).order_by(Order.createdAt.desc()).all()
+    else:
+        orders = Order.query.filter_by(userID = user_id, status = status_filter).order_by(Order.createdAt.desc()).all()
+
+    return render_template('/user/purchase.html', email = email, first_name = first_name, orders = orders)
 
 @user_blueprint.route('/logout')
 def logout():
