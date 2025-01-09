@@ -1,3 +1,4 @@
+/* For the 'Track Order' */
 .track-container {
     max-width: 800px;
     margin: 40px auto;
@@ -7,12 +8,19 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Heading Text */
 .title {
     text-align: center;
     color: #1d4ed8; 
     font-weight: bold;
     margin-bottom: 2rem;
 }
+
+/* Sub Heading Text */
+/* ADD HERE */
+
+/* Product Image Card */
+/* ADD HERE */
 
 .btn:hover {
     transform: scale(1.05);
@@ -57,20 +65,23 @@
     font-weight: bold;
 } */
 
+/* For the 'All Products' Category */
 .accordion-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* I think still for the 'All Product' Category */
 .accordion-button {
     flex-grow: 1;
 }
 
-/* .badge {
+.status-badge {
     font-size: 0.85rem;
-} */
+}
 
+/* For the User 'My Purchases' */
 .navbar-status {
     display: flex;
     align-items: center;

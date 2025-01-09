@@ -49,7 +49,7 @@
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ order.orderID }}" aria-expanded="false" aria-controls="collapse-{{ order.orderID }}">
                             Order ID: {{ order.orderID }}
                         </button>
-                        <span class="badge bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
+                        <span class="status-badge bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
                             {{ order.status|capitalize }}
                         </span>
                     </h2>
