@@ -292,18 +292,12 @@ function filterProductsByCategory(categoryID, parentCategoryID = null) {
         const productCategory = product.getAttribute('data-category');
         const productParentCategory = product.getAttribute('data-parent-category');
 
-        // Show all products if the "All Products" category is selected
         if (categoryID === 'all') {
-            product.style.display = 'block';
-        } else if (categoryID === productCategory) {
-            // If the product belongs to the selected category, show it
-            product.style.display = 'block';
-        } else if (parentCategoryID && productParentCategory === parentCategoryID) {
-            // If the product belongs to a subcategory of the selected category, show it
-            product.style.display = 'block';
+            product.style.display = 'block'; // Show all products
+        } else if (categoryID === productCategory || categoryID === productParentCategory) {
+            product.style.display = 'block'; // Show matching category or subcategory products
         } else {
-            // Hide products that do not match the selected category or subcategory
-            product.style.display = 'none';
+            product.style.display = 'none'; // Hide non-matching products
         }
     });
 }
