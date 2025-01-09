@@ -168,73 +168,78 @@ def remove_from_cart():
 @user_blueprint.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
+    branch = Branch.query.all()
+
     cart_items = session.get('cart', {})
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
 
-    branches = [
-        {'id': 'MK50480', 'name': 'Solaris Mont Kiara', 'address': 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '8qT2dKUGSaUP36hz7'},
-        {'id': 'SN47810', 'name': 'Sunway Nexis', 'address': 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '1dhDr7wAwzcNaWP1A'},
-        {'id': 'WF11900', 'name': 'Queens Residences Q2', 'address': '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', 'operating_hours': '10:00 AM - 6:00 PM', 'link': 'qifMavDRWxqAuAit7'},
-    ]
-
     if request.method == 'POST':
-        shipping_address = request.form.get('shipping_address')
-        pickup_location = request.form.get('pickup-location')
+        #shipping_address = request.form.get('shipping_address')
+        if 'pickupPay' in request.form:
+            deliverycharge = 0
+            pickup_location = request.form.get('pickup-location')
+            method = request.form.get('deliveryMethod')
 
-        user = User.query.filter_by(email = session['email']).first()
-        if not user:
-            flash('User not found. Please log in again.', 'danger')
-            return redirect(url_for('login'))
-
-        selected_branch = next((branch for branch in branches if branch['id'] == pickup_location), None)
-
-        order_id = generateOrderID()
-
-        session['orderID'] = order_id
-
-        order = Order(
-            orderID = order_id,  # Assign the generated order ID
-            userID = user.userID,
-            totalAmount = total_price,
-            pickupBranch = "Mont Kiara", #selected_branch['name'] if selected_branch else None,
-            shippingAddress = "No address",
-            shippingMethod = "Pick up"
-        )
-
-        db.session.add(order)
-        db.session.commit()
-
-        for name, details in cart_items.items():
+            user = User.query.filter_by(email = session['email']).first()
+            if not user:
+                flash('User not found. Please log in again.', 'danger')
+                return redirect(url_for('login'))
             
-            product = Product.query.filter_by(productName = name).first()
-            
-            if not product:
-                flash(f"Product '{name}' not found.", 'danger')
-                return redirect(url_for('user.checkout'))
-            
-            order_item = OrderItem(orderID = order.orderID, productID = product.productID, quantity = details['quantity'], price = details['price'])
-            db.session.add(order_item)
 
-        db.session.commit()
+            order_id = generateOrderID()
 
-        # Clear the cart
-        session['cart'] = {}
-        session.modified = True
+            session['orderID'] = order_id
 
-        flash(f'Order placed successfully! Your Order ID is {order_id}', 'success')
-        return redirect(url_for('user.homepage'))
+            order = Order(
+                orderID = order_id,
+                userID = user.userID,
+                totalAmount = total_price,
+                shippingMethod = method,
+                dropLocation = pickup_location
+            )
 
-    return render_template('/homepage/Checkout.html', is_logged_in = True, cart_items = cart_items, total_price = total_price, branches = branches)
+            payment = Payment(
+                orderID = order_id,
+                amount = total_price + deliverycharge,
+                deliveryCharge = deliverycharge,
+                paymentMethod = None
+            )
+
+            db.session.add(order)
+            db.session.add(payment)
+            db.session.commit()
+
+            for name, details in cart_items.items():
+                
+                product = Product.query.filter_by(productName = name).first()
+                
+                if not product:
+                    flash(f"Product '{name}' not found.", 'danger')
+                    return redirect(url_for('user.checkout'))
+                
+                order_item = OrderItem(orderID = order.orderID, productID = product.productID, quantity = details['quantity'], price = details['price'])
+                db.session.add(order_item)
+
+            db.session.commit()
+
+            session['cart'] = {}
+            session.modified = True
+
+            return redirect(url_for('user.payment'))
+
+    return render_template('checkout.html', is_logged_in = True, cart_items = cart_items, total_price = total_price, branch = branch)
 
 #checked
 @user_blueprint.route('/payment', methods=['GET', 'POST'])
 def payment():
     order = Order.query.filter_by(orderID=session.get('orderID')).first()
-    orderItems = OrderItem.query.filter_by(orderID=session.get('orderID')).all()
+    orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
+    payment = Payment.query.filter_by(orderID=order.orderID).first()
 
     if request.method == 'POST':
         if 'btnpay' in request.form:
             method = request.form.get('p_method')
+            session['payment_method'] = method
             if method == "Card":
                 try:
                     total_amount_in_sen = int(order.totalAmount * 100)
@@ -262,39 +267,33 @@ def payment():
                 except Exception as e:
                     return str(e)
                 
-            elif method == "Cash at counter":
+            elif method == "Cash":
                 return redirect(url_for('user.success')) 
-            
-        try:
-            payment = Payment(
-                orderID = session.get('orderID'),
-                amount = order.totalAmount,
-                deliveryCharge = 0.00,
-                paymentMethod = method,
-                status = "Received"
-            )
+             
+    return render_template('payment.html', order = order, order_items = orderItems, payment=payment, public_key = Config.STRIPE_PK)
 
-            db.session.add(payment)
-            db.session.commit()
-            return redirect(url_for('user.home'))
-        
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            db.session.rollback()
-
-    return render_template('payment.html', order = order, order_items = orderItems, public_key = Config.STRIPE_PK)
-
-@user_blueprint.route('/success')
+@user_blueprint.route('/success', methods=['GET', 'POST'])
 def success():
     order = Order.query.filter_by(orderID=session.get('orderID')).first()
     orderItems = OrderItem.query.filter_by(orderID=order.orderID).all()
     payment = Payment.query.filter_by(orderID=order.orderID).first()
 
-    return render_template('thanks.html', order = order, order_items = orderItems, payment = payment)
+    if payment and order:
+        payment.paymentMethod = session.get('payment_method')
+        payment.status = "Received"
+        db.session.commit()
+        flash("Payment successful!", "success")
+    else:
+        flash("Order or payment record not found!", "error")
 
-@user_blueprint.route('/cancel')
-def cancel():
-    return "Payment canceled. Please try again."
+    
+    if request.method == 'POST':
+        if 'btnBack' in request.form:
+            session.pop('payment_method', None)
+            session.pop('orderID', None)
+            return redirect(url_for('user.homepage'))
+
+    return render_template('thanks.html', order = order, order_items = orderItems, payment = payment)
 
 #to generate orderID
 def generateOrderID():
