@@ -28,12 +28,12 @@
                         <form action="/admin/order" method="get" class="d-inline">
                             <div class="me-2">
                                 <button type="submit" name="statusOrder" class="btn btn-primary text-light me-1">All</button>
-                                <button type="submit" name="statusOrder" value="completed" class="btn btn-success text-light me-1">Completed</button>
-                                <button type="submit" name="statusOrder" value="cancelled" class="btn btn-danger text-light me-1">Cancelled</button>
-                                <button type="submit" name="statusOrder" value="pending" class="btn btn-secondary text-light me-1">Pending</button>
-                                <button type="submit" name="statusOrder" value="processing" class="btn btn-secondary text-light me-1">Processing</button>
-                                <button type="submit" name="statusOrder" value="shipped" class="btn btn-secondary text-light me-1">Shipped</button>
-                                <button type="submit" name="statusOrder" value="ready" class="btn btn-secondary text-light me-1">Ready to picked up</button>
+                                <button type="submit" name="statusOrder" value="Completed" class="btn btn-success text-light me-1">Completed</button>
+                                <button type="submit" name="statusOrder" value="Cancelled" class="btn btn-danger text-light me-1">Cancelled</button>
+                                <button type="submit" name="statusOrder" value="Pending" class="btn btn-secondary text-light me-1">Pending</button>
+                                <button type="submit" name="statusOrder" value="Processing" class="btn btn-secondary text-light me-1">Processing</button>
+                                <button type="submit" name="statusOrder" value="Shipped" class="btn btn-secondary text-light me-1">Shipped</button>
+                                <button type="submit" name="statusOrder" value="Ready" class="btn btn-secondary text-light me-1">Ready to picked up</button>
                             </div>
                         </form>
                     </div>
@@ -97,8 +97,8 @@
                                         <td>{{ order.user.firstName }} {{ order.user.lastName }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Shipping Address:</td>
-                                        <td>{{ order.shippingAddress }}</td>
+                                        <td>Drop Location:</td>
+                                        <td>{{ order.dropLocation }}</td>
                                     </tr>
                                     <tr>
                                         <td>Shipping Method:</td>
@@ -106,7 +106,7 @@
                                     </tr>
                                     <tr>
                                         <td>Date of Order:</td>
-                                        <td>{{ order.orderDate }}</td>
+                                        <td>{{ order.createdAt }}</td>
                                     </tr>
                                 </tbody>
                             </table>
