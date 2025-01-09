@@ -14,12 +14,11 @@
     <body>
         <div class="container">
             <div class="mx-auto p-3">
-                <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="fs-4 text-decoration-none">
-                  <img src="{{ url_for('static', filename='images/kidocode_logo.png') }}" alt="kidocode-logo" width="191.375" class="d-inline-block align-top img-s">
-                  Shop
-                </a>
+                <a href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}" class="navbar-brand d-flex align-items-center mx-3" href="#">
+                    <img src="/static/images/kidocode_logo.png" height="40" alt="Kidocode Logo">
+                    <span class="ms-2 fw-bold text-primary">Sign Up</span>
+                  </a>
             </div>
-            <h2 class="title">Sign Up</h2>
             <div class="mb-3">
                 {% include '/user/alert.html' %}
                 <form action="/register" method = "POST">
@@ -48,7 +47,7 @@
             <div class="row justify-content-center"> 
                 <div class="col-5 d-flex justify-content-between gap-3">
                     <button type="button" onclick="window.location.href='/login'" class="btn btn-light w-100">Cancel</button>
-                    <button type="submit" name="btncontinue" class="btn btn-primary w-100">Continue</button> 
+                    <button type="submit" name="btncontinue" class="btn btn-primary w-100">Register</button> 
                 </div>
             </div>
                 </form>

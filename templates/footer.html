@@ -2,12 +2,16 @@
     .footer-container {
         background-color: #000000; 
         color: #f5f5f5; 
-        padding: 40px 0;
+        padding: 40px 0px;
     }
 
     .footer-top-line, .footer-bottom-line {
         border-top: 1px solid #555555; 
         margin-bottom: 20px;
+        max-width: 90%;
+        margin-left: auto; /* Centers horizontally */
+        margin-right: auto; /* Centers horizontally */
+        align-items: center;
     }
 
     .footer-logo img {
@@ -96,9 +100,6 @@
     }
 </style>
 <footer class="footer-container">
-    <!-- Single top line -->
-    <div class="footer-top-line text-center"></div>
-    <!-- Logo and description -->
     <div class="container text-center text-md-start">
         <div class="row">
             <div class="col-md-3 footer-logo mb-4">
@@ -112,16 +113,16 @@
             <!-- Discovery column -->
             <div class="col-md-2 footer-section mx-auto mb-3">
                 <h5>Discovery</h5>
-                <a href="#!" class="text-reset">Cubie</a>
-                <a href="#!" class="text-reset">Community</a>
-                <a href="#!" class="text-reset">Internship</a>
+                <a href="https://cubie.kidocode.com/" class="text-reset">Cubie</a>
+                <a href="https://www.kidocode.com/community" class="text-reset">Community</a>
+                <a href="https://www.kidocode.com/internship" class="text-reset">Internship</a>
             </div>
             <!-- About column -->
             <div class="col-md-2 footer-section mx-auto mb-3">
                 <h5>About</h5>
                 <a href="#!" class="text-reset">Help</a>
                 <a href="#!" class="text-reset">Shipping</a>
-                <a href="#!" class="text-reset">Gallery</a>
+                <a href="https://www.kidocode.com/gallery" class="text-reset">Gallery</a>
             </div>
             <!-- Info column -->
             <div class="col-md-2 footer-section mx-auto mb-3">
@@ -132,8 +133,7 @@
             </div>
         </div>
     </div>
-    <!-- Bottom line above copyright -->
-    <div class="footer-bottom-line text-center"></div>
+    <div class="footer-bottom-line"></div>
     <!-- Copyright -->
     <div class="footer-bottom text-center">
         <div class="copyright-container">
