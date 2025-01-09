@@ -84,6 +84,7 @@ class Order(db.Model):
     status = db.Column(db.Enum('pending', 'processing', 'shipped', 'delivered', 'canceled', 'completed', name='order_status_enum'), nullable=False, default='pending')
     shippingMethod = db.Column(db.String(50), nullable=False)
     dropLocation = db.Column(db.Text, nullable=False)
+    
     user = db.relationship('User', back_populates='orders')
     order_items = db.relationship('OrderItem', back_populates='order', lazy='dynamic')
     payments = db.relationship('Payment', back_populates='order')
