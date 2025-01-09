@@ -7,11 +7,11 @@ CREATE TABLE branches (
     link VARCHAR(100)
 );
 
-INSERT INTO branches (id, name, address, operating_hours, link) VALUES
-('MK50480', 'Solaris Mont Kiara', 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', '10:00 AM - 6:00 PM', '8qT2dKUGSaUP36hz7'),
-('SN47810', 'Sunway Nexis', 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', '10:00 AM - 6:00 PM', '1dhDr7wAwzcNaWP1A'),
-('WF11900', 'Queens Residences Q2', '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', '10:00 AM - 6:00 PM', 'qifMavDRWxqAuAit7');
-
+INSERT INTO branches (id, name, address, operating_hours, link)
+VALUES
+    ('MK50480', 'Solaris Mont Kiara', 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', '10:00 AM - 6:00 PM', '8qT2dKUGSaUP36hz7'),
+    ('SN47810', 'Sunway Nexis', 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', '10:00 AM - 6:00 PM', '1dhDr7wAwzcNaWP1A'),
+    ('WF11900', 'Queens Residences Q2', '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', '10:00 AM - 6:00 PM', 'qifMavDRWxqAuAit7');
 
 CREATE TABLE category (
     categoryID VARCHAR(7) PRIMARY KEY, 
@@ -85,7 +85,6 @@ VALUES
 CREATE TABLE orders (
   orderID VARCHAR(13) NOT NULL UNIQUE,
   userID varchar(4) NOT NULL,
-  orderDate DATE NOT NULL,
   totalAmount DECIMAL(10, 2) NOT NULL,
   status ENUM('pending', 'processing', 'shipped', 'ready', 'completed', 'cancelled') DEFAULT 'pending',
   shippingMethod VARCHAR(50) NOT NULL,
@@ -96,11 +95,11 @@ CREATE TABLE orders (
   CONSTRAINT fk_customer FOREIGN KEY (userID) REFERENCES user(userID) ON DELETE CASCADE
 );
 
-INSERT INTO orders (orderID, userID, orderDate, totalAmount, status, dropLocation, shippingMethod)
+INSERT INTO orders (orderID, userID, totalAmount, status, dropLocation, shippingMethod)
 VALUES 
-    ('KSHOP01234567', 'C001', '2024-12-28', 73.97, 'Pending', '123 Main St, City, Country', 'Pick Up'),            
-    ('KSHOP12345678', 'C002', '2024-12-28', 81.98, 'Completed', '456 Another St, City, Country', 'Delivery'),  
-    ('KSHOP23456789', 'C003', '2024-12-28', 31.98, 'Shipped', '789 Third St, City, Country', 'Pick Up'); 
+    ('KSHOP01234567', 'C001', 73.97, 'Pending', '123 Main St, City, Country', 'Pick Up'),            
+    ('KSHOP12345678', 'C002', 81.98, 'Completed', '456 Another St, City, Country', 'Delivery'),  
+    ('KSHOP23456789', 'C003', 31.98, 'Shipped', '789 Third St, City, Country', 'Pick Up'); 
 
 CREATE TABLE orderitem (
   orderItemID INT NOT NULL AUTO_INCREMENT,
