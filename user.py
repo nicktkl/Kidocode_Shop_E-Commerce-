@@ -150,13 +150,8 @@ def checkout():
     ]
 
     if request.method == 'POST':
-        # Process checkout form
         shipping_address = request.form.get('shipping_address')
         pickup_location = request.form.get('pickup-location')
-        city = request.form.get('city')
-        state = request.form.get('state')
-        postcode = request.form.get('postcode')
-        phone = request.form.get('phone')
 
         user = User.query.filter_by(email = session['email']).first()
         if not user:
@@ -165,12 +160,10 @@ def checkout():
 
         selected_branch = next((branch for branch in branches if branch['id'] == pickup_location), None)
 
-        # Generate a unique order ID
         order_id = generateOrderID()
 
         session['orderID'] = order_id
 
-        # Save order details in the database
         order = Order(
             orderID = order_id,  # Assign the generated order ID
             userID = user.userID,
@@ -179,10 +172,10 @@ def checkout():
             shippingAddress = "No address",
             shippingMethod = "Pick up"
         )
+
         db.session.add(order)
         db.session.commit()
 
-        # Save items associated with the order
         for name, details in cart_items.items():
             
             product = Product.query.filter_by(productName = name).first()
@@ -200,7 +193,8 @@ def checkout():
         session['cart'] = {}
         session.modified = True
 
-        return redirect(url_for('user.payment'))
+        flash(f'Order placed successfully! Your Order ID is {order_id}', 'success')
+        return redirect(url_for('user.homepage'))
 
     return render_template('/homepage/Checkout.html', is_logged_in = True, cart_items = cart_items, total_price = total_price, branches = branches)
 
@@ -274,6 +268,7 @@ def success():
 def cancel():
     return "Payment canceled. Please try again."
 
+#to generate orderID
 def generateOrderID():
     prefix = "KSHOP"
     generate = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))

@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-    <div class="signin-container">
-        <h2 class="signin-title">Reset Password</h2>
+    <div class="container">
+        <h2 class="signin-title text-primary text-center mb-3">Reset Password</h2>
         <form action="{{ url_for('resetpwd', token=token) }}" method="post">
             <div class="mb-3">
                 <label for="password" class="form-label">New Password</label>

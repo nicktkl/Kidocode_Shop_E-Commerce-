@@ -1,4 +1,18 @@
--- Active: 1733837847961@@127.0.0.1@3306@ecommercenew
+-- Active: 1733283387949@@127.0.0.1@3306@ecommerce
+CREATE TABLE branches (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    address TEXT NOT NULL,
+    operating_hours VARCHAR(50) NOT NULL,
+    link VARCHAR(100)
+);
+
+INSERT INTO branches (id, name, address, operating_hours, link)
+VALUES
+    ('MK50480', 'Solaris Mont Kiara', 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', '10:00 AM - 6:00 PM', '8qT2dKUGSaUP36hz7'),
+    ('SN47810', 'Sunway Nexis', 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', '10:00 AM - 6:00 PM', '1dhDr7wAwzcNaWP1A'),
+    ('WF11900', 'Queens Residences Q2', '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', '10:00 AM - 6:00 PM', 'qifMavDRWxqAuAit7');
+
 CREATE TABLE category (
     categoryID VARCHAR(7) PRIMARY KEY, 
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -45,8 +59,7 @@ VALUES
     ('KP003', 'Arduino Uno Board', 'Original Arduino Uno R3 development board.', 'images\\Arduino.jpg', 28.99, 15, 'ELE002B'),
     ('KP004', 'K-Box Starter Kit', 'All-in-one K-Box for beginners.', 'images\\kbox-basic.jpg', 50, 20, 'ELE001K'),
     ('KP005', 'LED Lights Pack', 'A pack of assorted LED lights.', 'images\\led.jpg', 5.99, 10, 'ELE003C'),
-    ('KP006', 'USB Cable', 'Durable USB-A to USB-B cable', 'images\\wire.jpeg', 3.49, 49, 'ELE004W'),
-    ('KP007', 'Testing', 'Test product', 'images\\cubie_kidocode.png', 15.99, 50, '3DP003O');
+    ('KP006', 'USB Cable', 'Durable USB-A to USB-B cable', 'images\\wire.jpeg', 3.49, 49, 'ELE004W');
 
 CREATE TABLE user (
   userID varchar(4) NOT NULL,
@@ -56,7 +69,6 @@ CREATE TABLE user (
   `password` varchar(255) NOT NULL,
   phone varchar(15) DEFAULT NULL,
   address text,
-  secondaryAddress text,
   createdAt datetime DEFAULT CURRENT_TIMESTAMP,
   updatedAt datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (userID),
@@ -66,7 +78,6 @@ CREATE TABLE user (
 INSERT INTO user (userID, firstName, lastName, email, password, phone, address)
 VALUES 
     ('A001', 'Nurul', 'Izzati', 'nurulizzatihayat@gmail.com', '$2b$12$NsF71m655Vh.hX6AjNm4huhvN3//gal9Qh/WblOCmJF0VC88Emf0a', '01123768906', 'Kuala Lumpur'),
-    ('T001', 'Test', 'Testing', 'test@testing.com', '$2b$12$TODs62ZYFBZKcFD1fF8XLeDMFpFRxnFax39xCcjhESbJFdPi0FzeW', '01234567890', 'Kuala Lumpur'),
     ('C001', 'John', 'Doe', 'john.doe@example.com', '$2b$12$aJYYm73Du78flQxrT7cbu.wufwbfMLhL2UsCb84nQIx4gMRemGoyi', '1234567890', '123 Main St, City, Country'),
     ('C002', 'Jane', 'Smith', 'jane.smith@example.com', '$2b$12$R2uJMT8XPPQUDtSQ4GcZQOOEaoTfGfLjlaQMk1Q68Ngqsqp4QPqhu', '0987654321', '456 Another St, City, Country'),
     ('C003', 'Alice', 'Johnson', 'alice.johnson@example.com', '$2b$12$twCjk04hc6M83brvAr0HfOnw889ZIMGz8m4J1Mzi7UaS9APpETnyi', '1122334455', '789 Third St, City, Country');
@@ -74,23 +85,21 @@ VALUES
 CREATE TABLE orders (
   orderID VARCHAR(13) NOT NULL UNIQUE,
   userID varchar(4) NOT NULL,
-  orderDate DATE NOT NULL,
   totalAmount DECIMAL(10, 2) NOT NULL,
-  status VARCHAR(15) NOT NULL,
-  shippingAddress TEXT NOT NULL,
+  status ENUM('pending', 'processing', 'shipped', 'ready', 'completed', 'cancelled') DEFAULT 'pending',
   shippingMethod VARCHAR(50) NOT NULL,
-  pickupBranch TEXT,
+  dropLocation TEXT NOT NULL,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (orderID),
   CONSTRAINT fk_customer FOREIGN KEY (userID) REFERENCES user(userID) ON DELETE CASCADE
 );
 
-INSERT INTO orders (orderID, userID, orderDate, totalAmount, status, shippingAddress, shippingMethod)
+INSERT INTO orders (orderID, userID, totalAmount, status, dropLocation, shippingMethod)
 VALUES 
-    ('KSHOP01234567', 'C001', '2024-12-28', 73.97, 'Pending', '123 Main St, City, Country', 'Pick Up'),            
-    ('KSHOP12345678', 'C002', '2024-12-28', 81.98, 'Completed', '456 Another St, City, Country', 'Delivery'),  
-    ('KSHOP23456789', 'C003', '2024-12-28', 31.98, 'Shipped', '789 Third St, City, Country', 'Pick Up'); 
+    ('KSHOP01234567', 'C001', 73.97, 'Pending', '123 Main St, City, Country', 'Pick Up'),            
+    ('KSHOP12345678', 'C002', 81.98, 'Completed', '456 Another St, City, Country', 'Delivery'),  
+    ('KSHOP23456789', 'C003', 31.98, 'Shipped', '789 Third St, City, Country', 'Pick Up'); 
 
 CREATE TABLE orderitem (
   orderItemID INT NOT NULL AUTO_INCREMENT,
@@ -111,6 +120,24 @@ VALUES
   ('KSHOP12345678', 'KP004', 1, 50), 
   ('KSHOP12345678', 'KP005', 1, 5.99),
   ('KSHOP23456789', 'KP002', 1, 25.99);
+  
+CREATE TABLE payment (
+  paymentID int NOT NULL AUTO_INCREMENT,
+  orderID VARCHAR(13) NOT NULL,
+  paymentDate date NOT NULL,
+  amount DECIMAL(10, 2) NOT NULL,
+  deliveryCharge DECIMAL(10, 2) NOT NULL,
+  paymentMethod varchar(30) NOT NULL,
+  status varchar(15) NOT NULL,
+  PRIMARY KEY (paymentID),
+  FOREIGN KEY (orderID) REFERENCES orders(orderID) ON DELETE CASCADE
+);
+
+INSERT INTO payment (orderID, paymentDate, amount, deliveryCharge, paymentMethod, status)
+VALUES 
+    ('KSHOP01234567', '2024-12-29', 73.97, 0.00, 'Credit Card', 'Pending'),
+    ('KSHOP12345678', '2024-12-29', 81.98, 10.00, 'Bank Transfer', 'Completed'),
+    ('KSHOP23456789', '2024-12-29', 31.98, 0.00, 'Cash', 'Received');
 
 CREATE TABLE review (
   reviewID INT NOT NULL AUTO_INCREMENT,
@@ -136,24 +163,6 @@ VALUES
     ('KP005', 'C003', 3, 'The LED Lights Pack was okay, but the colors were not as vibrant as expected.', NULL),
     ('KP006', 'C003', 5, 'The USB Cable is sturdy and does its job perfectly.', NULL);
 
-
-CREATE TABLE payment (
-  paymentID int NOT NULL AUTO_INCREMENT,
-  orderID VARCHAR(13) NOT NULL,
-  paymentDate date NOT NULL,
-  amount DECIMAL(10, 2) NOT NULL,
-  deliveryCharge double NOT NULL,
-  paymentMethod varchar(30) NOT NULL,
-  status varchar(15) NOT NULL,
-  PRIMARY KEY (paymentID),
-  FOREIGN KEY (orderID) REFERENCES orders(orderID) ON DELETE CASCADE
-);
-
-INSERT INTO payment (orderID, paymentDate, amount, deliveryCharge, paymentMethod, status)
-VALUES 
-    ('KSHOP01234567', '2024-12-29', 73.97, 0.00, 'Credit Card', 'Pending'),
-    ('KSHOP12345678', '2024-12-29', 81.98, 10.00, 'Bank Transfer', 'Completed'),
-    ('KSHOP23456789', '2024-12-29', 31.98, 0.00, 'Cash', 'Received');
 
 CREATE TABLE feedback (
     feedbackID VARCHAR(4) PRIMARY KEY, 

@@ -302,7 +302,7 @@ def login():
                 next_url = request.args.get('next') or url_for('user.homepage')
                 return redirect(next_url)
         else:
-            flash('Invalid email or password. Please try again.', 'error')
+            flash('Invalid email or password. Please try again.', 'danger')
             return redirect(url_for('login'))
     
     return render_template('signIn.html')
@@ -358,7 +358,7 @@ def forgotpass():
         malaysia_tz = pytz.timezone('Asia/Kuala_Lumpur')
         timestamp = datetime.now(pytz.utc).astimezone(malaysia_tz).strftime('%Y/%m/%d %H:%M GMT')
         try:
-            with open("templates/reset-pwd.txt", "r") as file:
+            with open("templates/txt/reset-pwd.txt", "r") as file:
                 email_body = file.read()
                 email_body = email_body.replace("{{ url }}", reset_url)
                 email_body = email_body.replace("{{ timestamp }}", timestamp)
@@ -367,7 +367,7 @@ def forgotpass():
             msg = Message(subject = subject, recipients=[email], body = email_body)
             mail.send(msg)
 
-            return render_template('/forgot-pass-submitted.html')
+            flash(f'An email has been sent to your inbox. Follow the instructions to reset your password. Click this link to <a href="{url_for("login")}" class="alert-link">Login</a>', 'success')
 
         except Exception as e:
             flash(f"An error occurred while sending the email: {e}", 'danger')
