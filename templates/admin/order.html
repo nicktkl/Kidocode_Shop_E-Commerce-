@@ -97,8 +97,8 @@
                                         <td>{{ order.user.firstName }} {{ order.user.lastName }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Shipping Address:</td>
-                                        <td>{{ order.shippingAddress }}</td>
+                                        <td>Drop Location:</td>
+                                        <td>{{ order.dropLocation }}</td>
                                     </tr>
                                     <tr>
                                         <td>Shipping Method:</td>
@@ -106,7 +106,7 @@
                                     </tr>
                                     <tr>
                                         <td>Date of Order:</td>
-                                        <td>{{ order.orderDate }}</td>
+                                        <td>{{ order.createdAt }}</td>
                                     </tr>
                                 </tbody>
                             </table>
