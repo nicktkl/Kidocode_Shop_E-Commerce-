@@ -57,28 +57,23 @@
                       </div>
                     {% else %}
                     
-                    <!-- Checkout Form -->
                     <form method="POST" action="/user/checkout">
-                        <h4 class="text-center title">Checkout</h4>
-                        <!-- Contact Email -->
                         <div class="mb-3">
-                            <label for="email" class="form-label">Contact</label>
+                            <label for="email" class="form-label fw-bold fs-5">Contact</label>
                             <input type="email" class="form-control" id="email" name="email" value="{{ session.email }}">
                         </div>
-                        <!-- Delivery Method -->
                         <div class="mb-3">
-                            <label class="form-label">Delivery Method
-                                <div>
-                                    <div class="form-check mt-2">
-                                        <input type="radio" class="form-check-input" id="delivery-ship" name="delivery-method" value="ship" disabled>
-                                        <label for="delivery-ship" class="form-check-label">Shipping (Coming Soon)</label>
-                                    </div>
-                                    <div class="form-check mt-2">
-                                        <input type="radio" class="form-check-input" id="delivery-pickup" name="delivery-method" value="pickup">
-                                        <label for="delivery-pickup" class="form-check-label">Self Pick-Up</label>
-                                    </div>
+                            <label class="form-label fw-bold fs-5">Delivery Method</label>
+                            <div>
+                                <div class="form-check mt-2">
+                                    <input type="radio" class="form-check-input" id="delivery-ship" name="delivery-method" value="ship" disabled>
+                                    <label for="delivery-ship" class="form-check-label">Shipping (Coming Soon)</label>
                                 </div>
-                            </label>
+                                <div class="form-check mt-2">
+                                    <input type="radio" class="form-check-input" id="delivery-pickup" name="delivery-method" value="pickup">
+                                    <label for="delivery-pickup" class="form-check-label">Self Pick-Up</label>
+                                </div>
+                            </div>
                         </div>
                         <!-- Shipping Section -->
                         <div class="mb-3" id="shipping-address-section">
@@ -150,32 +145,27 @@
                         <div class="card mb-3" id="self-pickup-section">
                             <h6 class="card-header">Select Pickup Location</h6>
                             <div class="card-body">
-                                <form method="POST" action="{{ url_for('user.checkout') }}">
-                                    <div class="list-group" id="branch-options">
-                                        {% for branch in branches %}
-                                        <div class="list-group-item">
-                                            <div class="form-check">
-                                                <input type="radio" class="form-chek-input" name="pickup-location" id="branch-{{ branch.id }}" value="{{ branch.id }}" data-bs-toggle="collapse" data-bs-target="#details-{{ branch.id }}" aria-expanded="false" aria-controls="details-{{ branch.id }}" required>
-                                                <label for="branch-{{ branch.id }}" class="form-check-label">{{ branch.name }}</label>
-                                            </div>
-                                            <div class="collapse my-2 ms-4" id="details-{{ branch.id }}" data-bs-parent="#branch-options">
-                                                <p><strong>Address:</strong> {{ branch.address }}</p>
-                                                <p><strong>Operating Hours:</strong> {{ branch.operating_hours }}</p>
-                                                <a href="https://maps.app.goo.gl/{{ branch.link }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                                    View on Google Maps
-                                                </a>
-                                            </div>
+                                <div class="list-group" id="branch-options">
+                                    {% for branch in branch %}
+                                    <div class="list-group-item">
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" name="pickup-location" id="branch-{{ branch.id }}" value="{{ branch.id }}" data-bs-toggle="collapse" data-bs-target="#details-{{ branch.id }}" aria-expanded="false" aria-controls="details-{{ branch.id }}" required>
+                                            <label for="branch-{{ branch.id }}" class="form-check-label">{{ branch.name }}</label>
                                         </div>
-                                        {% endfor %}
+                                        <div class="collapse my-2 ms-4" id="details-{{ branch.branchID }}" data-bs-parent="#branch-options">
+                                            <p><strong>Address:</strong> {{ branch.address }}</p>
+                                            <p><strong>Operating Hours:</strong> {{ branch.operating_hours }}</p>
+                                            <a href="https://maps.app.goo.gl/{{ branch.link }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                View on Google Maps
+                                            </a>
+                                        </div>
                                     </div>
-                                </form>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                        <!-- Place Order Button -->
                         <div>
-                            <form action="/user/payment">
-                                <button type="submit" class="btn btn-primary">Place Order</button>
-                            </form>
+                            <button type="submit" class="btn btn-primary">Place Order</button>
                         </div>
                     </form>
                     {% endif %}

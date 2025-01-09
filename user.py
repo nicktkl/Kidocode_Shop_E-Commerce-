@@ -134,14 +134,10 @@ def remove_from_cart():
 @user_blueprint.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
+    branch = Branch.query.all()
+
     cart_items = session.get('cart', {})
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
-
-    branches = [
-        {'id': 'MK50480', 'name': 'Solaris Mont Kiara', 'address': 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '8qT2dKUGSaUP36hz7'},
-        {'id': 'SN47810', 'name': 'Sunway Nexis', 'address': 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', 'operating_hours': '10:00 AM - 6:00 PM', 'link': '1dhDr7wAwzcNaWP1A'},
-        {'id': 'WF11900', 'name': 'Queens Residences Q2', 'address': '3-1-2, Queens Residences Q2, Jalan Bayan Indah, 11900, Bayan Lepas, Pulau Pinang', 'operating_hours': '10:00 AM - 6:00 PM', 'link': 'qifMavDRWxqAuAit7'},
-    ]
 
     if request.method == 'POST':
         shipping_address = request.form.get('shipping_address')
@@ -151,8 +147,6 @@ def checkout():
         if not user:
             flash('User not found. Please log in again.', 'danger')
             return redirect(url_for('login'))
-
-        selected_branch = next((branch for branch in branches if branch['id'] == pickup_location), None)
 
         order_id = generateOrderID()
 
@@ -190,7 +184,7 @@ def checkout():
         flash(f'Order placed successfully! Your Order ID is {order_id}', 'success')
         return redirect(url_for('user.homepage'))
 
-    return render_template('/homepage/Checkout.html', is_logged_in = True, cart_items = cart_items, total_price = total_price, branches = branches)
+    return render_template('checkout.html', is_logged_in = True, cart_items = cart_items, total_price = total_price, branch = branch)
 
 #checked
 @user_blueprint.route('/payment', methods=['GET', 'POST'])
