@@ -5,8 +5,21 @@ mail = Mail()
 
 admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
 
-#DASHBOARD CAN BE BETTER
+#AUTHENTICATION
+def check_admin(view_func):
+    @wraps(view_func)
+    def wrapped_view(*args, **kwargs):
+        if session.get('admin') != True:
+            flash('You must be logged in as an admin to access this page.', 'danger')
+            return redirect(url_for('login'))
+        
+        return view_func(*args, **kwargs)
+    
+    return wrapped_view
+
+#DASHBOARD DONE
 @admin_blueprint.route('/')
+@check_admin
 def dashboard():
     cust_result = db.session.query(
         func.date_format(User.createdAt, '%Y-%u').label('week_date'),
@@ -58,6 +71,7 @@ def dashboard():
 
 #CATEGORY DONE
 @admin_blueprint.route('/category', methods=["GET","POST"])
+@check_admin
 def category():
     search_query = request.args.get('searchCategory', '')
 
@@ -153,6 +167,7 @@ def category():
 
 #PRODUCT DONE
 @admin_blueprint.route('/product', methods=["GET", "POST"])
+@check_admin
 def product():
     search_query = request.args.get('searchProduct', '')  
     filter_status = request.args.get('filter', 'all')
@@ -254,6 +269,7 @@ def product():
 
 #CUSTOMER
 @admin_blueprint.route('/customer', methods=["GET", "POST"])
+@check_admin
 def customer():
     search_query = request.args.get('searchCust', '')  
     if search_query:
@@ -294,6 +310,7 @@ def customer():
 
 #ORDER DONE
 @admin_blueprint.route('/order', methods=["GET", "POST"])
+@check_admin
 def order():
     search_query = request.args.get('searchOrder', '')  
     status_filter = request.args.get('statusOrder', '')  
@@ -343,6 +360,7 @@ def order():
 
 #REVIEW DONE
 @admin_blueprint.route('/review', methods=["GET", "POST"])
+@check_admin
 def review():
     search_query = request.args.get('searchReview', '')
     filter_query = request.args.get('ratingSearch', '') 
@@ -397,6 +415,7 @@ def review():
 
 #SALE DONE
 @admin_blueprint.route('/transaction', methods=["GET", "POST"])
+@check_admin
 def transaction():
     search_query = request.args.get('searchPayment', '')
     filter_query = request.args.get('searchStatus', '')  
@@ -436,6 +455,7 @@ def transaction():
 
 #FEEDBACK DONE
 @admin_blueprint.route('/feedback', methods=["GET", "POST"])
+@check_admin
 def feedback():
     search_query = request.args.get('searchFeedback', '')
     statusfilter = request.args.get('statusfilter', 'all')
@@ -446,7 +466,8 @@ def feedback():
 
     if search_query:
         query = query.filter(
-            (Feedback.sender.ilike(f'%{search_query}%'))
+            (Feedback.name.ilike(f'%{search_query}%')) |
+            (Feedback.email.ilike(f'%{search_query}%'))
         )
     if typefilter != 'all':
         query = query.filter(Feedback.feedbackType == typefilter)
@@ -505,6 +526,7 @@ def feedback():
     return render_template("/admin/feedback.html", feedback=feedback)
 
 @admin_blueprint.route('/branch', methods=["GET", "POST"])
+@check_admin
 def branch():
     search_query = request.args.get('searchBranch', '')  
     if search_query:

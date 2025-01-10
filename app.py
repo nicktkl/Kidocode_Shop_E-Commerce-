@@ -317,6 +317,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password_candidate):
             
             if user.userID.startswith('A'):
+                session['admin'] = True
                 session['loggedin'] = True
                 session['email'] = user.email
                 session['user_id'] = user.userID
@@ -444,6 +445,7 @@ def resetpwd(token):
 def logout():
     if session.get('loggedin'):
         session.clear()
+        session.pop('admin', None)
         session.pop('loggedin', None)
         session.pop('email', None)
         session.pop('first_name', None)
