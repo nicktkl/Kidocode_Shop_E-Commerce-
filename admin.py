@@ -103,12 +103,12 @@ def category():
 
                 db.session.add(new_category)
                 db.session.commit()
+                flash('New category added.', 'success')
                 return redirect(url_for('admin.category'))
             
             except Exception as e:
-                print(f"Error occurred: {str(e)}")
+                flash('New category fail to be added.', 'danger')
                 db.session.rollback()
-                print(parent)
 
         elif 'btnsave' in request.form:
             saveID = request.form.get('btnsave')
@@ -124,10 +124,11 @@ def category():
                         category.name = name
                         category.categoryID = f"{saveID[:6]}{name[0].upper()}"
                     db.session.commit()
+                    flash('Category updated.', 'success')
                     return redirect(url_for('admin.category'))
                 except Exception as e:
                     db.session.rollback()
-                    return f"An error occurred while saving the category: {e}", 500
+                    flash('Failed updating category.', 'success')
             return "Category ID not provided", 400
 
 
@@ -140,9 +141,11 @@ def category():
                         Category.query.filter_by(parentID=deleteID).delete()
                         db.session.delete(category_to_delete)
                         db.session.commit()
+                        flash('Category deleted.', 'success')
                         return redirect(url_for('admin.category'))
                     except Exception as e:
                         db.session.rollback()
+                        flash('Category not deleted.', 'danger')
                         return f"An error occurred while deleting the category: {e}", 500
             return "Category ID not provided", 400
 
@@ -203,9 +206,11 @@ def product():
                 )
                 db.session.add(new_product)
                 db.session.commit()
+                flash('New product added.', 'success')
                 return redirect(url_for('admin.product'))
             except Exception as e:
                 db.session.rollback()
+                flash('Failed adding new product.', 'danger')
                 return f"An error occurred: {e}"
             
         if 'btndelete' in request.form:
@@ -214,9 +219,11 @@ def product():
             try:
                 db.session.delete(product)
                 db.session.commit()
+                flash('Product deleted successfully.', 'success')
                 return redirect(url_for('admin.product'))
             except Exception as e:
                 db.session.rollback()
+                flash('Failed deleting product.', 'danger')
                 return f"An error occurred while deleting the product: {e}", 500
 
         if 'btnedit' in request.form:
@@ -229,9 +236,11 @@ def product():
                 product.stock = int(request.form['p_stock'])
                 product.status = 'active' if request.form.get('p_status') == 'active' else 'inactive'
                 db.session.commit()
+                flash('Product updated successfully.', 'success')
                 return redirect(url_for('admin.product'))
             except Exception as e:
                 db.session.rollback()
+                flash('Failed updating product.', 'danger')
                 return f"An error occurred while updating the product: {e}", 500
     
     category = Category.query.filter_by(parentID=None).all()
@@ -265,7 +274,7 @@ def customer():
         malaysia_tz = pytz.timezone('Asia/Kuala_Lumpur')
         timestamp = datetime.now(pytz.utc).astimezone(malaysia_tz).strftime('%Y/%m/%d %H:%M GMT')
         try:
-            with open("templates/reset-pwd.txt", "r") as file:
+            with open("templates/txt/reset-pwd.txt", "r") as file:
                 email_body = file.read()
                 email_body = email_body.replace("{{ url }}", reset_url)
                 email_body = email_body.replace("{{ timestamp }}", timestamp)
@@ -274,10 +283,11 @@ def customer():
             msg = Message(subject=subject, recipients=[email], body=email_body)
             mail.send(msg)
 
+            flash('Email send successfully.', 'success')
             return redirect(url_for('admin.customer'))
 
         except Exception as e:
-            print(f"An error occurred while sending the email: {e}", 'danger')
+            flash('Failed sending email.', 'danger')
             return redirect(url_for('admin.customer'))
         
     return render_template("/admin/customer.html", user=user)
@@ -431,9 +441,8 @@ def feedback():
     query = Feedback.query
 
     if search_query:
-        query = query.join(User).filter(
-            (User.lastName.ilike(f'%{search_query}%')) | 
-            (User.firstName.ilike(f'%{search_query}%'))
+        query = query.filter(
+            (Feedback.sender.ilike(f'%{search_query}%'))
         )
     if typefilter != 'all':
         query = query.filter(Feedback.feedbackType == typefilter)
@@ -450,12 +459,14 @@ def feedback():
     if request.method == 'POST':
         if 'btnsave' in request.form:
                 status = request.form['status']
+                severity = request.form['severity']
                 id = request.form['btnsave']
 
                 feedback = Feedback.query.get_or_404(id)
                         
                 try:
                     feedback.status = status
+                    feedback.severity = severity
                     db.session.commit()
                     return redirect(url_for('admin.feedback'))
                 except Exception as e:
@@ -489,3 +500,16 @@ def feedback():
                     return f"An error occurred: {e}", 500
 
     return render_template("/admin/feedback.html", feedback=feedback)
+
+@admin_blueprint.route('/branch', methods=["GET", "POST"])
+def branch():
+    search_query = request.args.get('searchBranch', '')  
+    if search_query:
+        branch = Branch.query.filter(
+            (Branch.branchID.ilike(f'%{search_query}%')) |
+            (Branch.name.ilike(f'%{search_query}%')) 
+        ).all()  
+    else:
+        branch = Branch.query.all()
+        
+    return render_template("/admin/branch.html", branch=branch)

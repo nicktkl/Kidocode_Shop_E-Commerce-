@@ -67,7 +67,6 @@ class User(db.Model):
 
     orders = db.relationship('Order', back_populates='user')
     reviews = db.relationship('Review', back_populates='user')
-    feedbacks = db.relationship('Feedback', back_populates='user')
 
     def __repr__(self):
         return f"<User {self.firstName} {self.lastName}>"
@@ -81,7 +80,7 @@ class Order(db.Model):
     totalAmount = db.Column(db.Float, nullable=False)
     createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
-    status = db.Column(db.Enum('pending', 'processing', 'shipped', 'delivered', 'canceled', 'completed', name='order_status_enum'), nullable=False, default='pending')
+    status = db.Column(db.Enum('pending', 'processing', 'shipped', 'ready', 'cancelled', 'completed', name='order_status_enum'), nullable=False, default='pending')
     shippingMethod = db.Column(db.String(50), nullable=False)
     dropLocation = db.Column(db.Text, nullable=False)
     
@@ -149,16 +148,15 @@ class Feedback(db.Model):
     __tablename__ = 'feedback'
 
     feedbackID = db.Column(db.String(4), primary_key=True)
-    userID = db.Column(db.String(4), db.ForeignKey('user.userID', ondelete='CASCADE'), nullable=False)
-    feedbackType = db.Column(db.Enum('Bug', 'Suggestion', 'Praise', 'Complaint', name='feedback_type'), nullable=False)
-    feedbackText = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.Enum('Bug', 'Suggestion', 'Praise', 'Complaint', 'Other', name='feedback_type'), nullable=False)
+    text = db.Column(db.Text, nullable=False)
     createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
     updatedAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp(), nullable=False)
     status = db.Column(db.Enum('Pending', 'Reviewed', 'Resolved', name='feedback_status'), default='Pending', nullable=False)
     response = db.Column(db.Text, nullable=True)
     severity = db.Column(db.Enum('Low', 'Medium', 'High', 'Critical', name='feedback_severity'), nullable=True)
-
-    user = db.relationship('User', back_populates='feedbacks')
 
     def __repr__(self):
         return f"<Feedback {self.feedbackID}: {self.feedbackType}>"
