@@ -1,4 +1,4 @@
--- Active: 1733283387949@@127.0.0.1@3306@ecommerce
+-- Active: 1733837847961@@127.0.0.1@3306@ecommerce
 CREATE TABLE branches (
     branchID VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,

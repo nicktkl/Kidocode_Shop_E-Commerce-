@@ -25,10 +25,13 @@ def homepage():
 
     email = session.get('email', None)
     first_name = session.get('first_name', None)
+    user_id = session.get('user_id', None)
+
+    print(f"UserID: {user_id}")
 
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email, first_name = first_name)
+    return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email, first_name = first_name, user_id = user_id)
 
 @user_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -70,11 +73,14 @@ def profile():
 
     return render_template('/user/profile.html', product = random_products, user = user, first_name = first_name)
 
-@user_blueprint.route('/purchases')
+@user_blueprint.route('/purchases', methods=['GET'])
 def purchases():
     email = session.get('email')
     first_name = session.get('first_name')
-    user_id = session.get('userID')
+    user_id = session.get('user_id')
+
+    products = Product.query.all()
+    random_products = random.sample(products, min(len(products), 9))
 
     if not email:
         flash("You need to log in to proceed.", "warning")
@@ -82,12 +88,16 @@ def purchases():
 
     status_filter = request.args.get('status', 'all')
 
+    print(f"UserID: {user_id}, Status Filter: {status_filter}")
+
     if status_filter == 'all':
         orders = Order.query.filter_by(userID = user_id).order_by(Order.createdAt.desc()).all()
     else:
         orders = Order.query.filter_by(userID = user_id, status = status_filter).order_by(Order.createdAt.desc()).all()
 
-    return render_template('/user/purchase.html', email = email, first_name = first_name, orders = orders)
+    print(f"Orders fetched: {orders}")
+
+    return render_template('/user/purchase.html', email = email, first_name = first_name, user_id = user_id, orders = orders, product = random_products)
 
 @user_blueprint.route('/logout')
 def logout():
@@ -137,6 +147,7 @@ def cart():
         {'name': name, 'price': details['price'], 'quantity': details['quantity']}
         for name, details in cart_items.items()
     ]
+
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
 
 @user_blueprint.route('/get-cart', methods=['GET'])
@@ -147,9 +158,11 @@ def get_cart():
 @user_blueprint.route('/remove-from-cart', methods=['POST'])
 def remove_from_cart():
     product_name = request.get_json().get('name')
+
     if 'cart' in session and product_name in session['cart']:
         del session['cart'][product_name]
         session.modified = True
+
     return jsonify({'success': True, 'cart': session.get('cart', {})})
 
 @user_blueprint.route('/checkout', methods=['GET', 'POST'])

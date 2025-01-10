@@ -450,5 +450,9 @@ def logout():
         flash('You have been signed out.', 'info')
         return redirect(url_for('home'))
 
+@app.route('/help')
+def help():
+    return render_template('/user/help.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
