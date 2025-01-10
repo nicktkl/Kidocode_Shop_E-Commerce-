@@ -116,7 +116,7 @@ class Payment(db.Model):
     amount = db.Column(db.Float, nullable=False)
     deliveryCharge = db.Column(db.Float, nullable=False)
     paymentMethod = db.Column(db.String(30), nullable=False)
-    status = db.Column(db.Enum('pending', 'received', 'canceled', 'completed', name='order_status_enum'), nullable=False, default='pending')
+    status = db.Column(db.Enum('pending', 'received', 'cancelled', 'completed', name='order_status_enum'), nullable=False, default='pending')
     createdAt = db.Column(db.TIMESTAMP, default=db.func.current_timestamp(), nullable=False)
 
     order = db.relationship('Order', back_populates='payments')

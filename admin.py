@@ -330,13 +330,14 @@ def order():
             if order:
                 order.status = status
                 db.session.commit()
+                flash('Updated successfully.', 'success')
                 return redirect(url_for('admin.order'))
             else:
-                return "Order not found", 404
+                flash('Failed to update', 'danger')
 
         except Exception as e:
             db.session.rollback()
-            return f"An error occurred while saving the transaction: {e}", 500
+            flash('Failed to update', 'danger')
 
     return render_template("/admin/order.html", order=orders, order_items=orderItems)
 
@@ -373,10 +374,11 @@ def review():
                 try:
                     review.response = response
                     db.session.commit()
+                    flash('New reply is successfully sent.', 'success')
                     return redirect(url_for('admin.review'))
                 except Exception as e:
                     db.session.rollback()
-                    return f"An error occurred: {e}", 500
+                    flash('Failed to send a reply.', 'danger')
         
         if 'btndelete' in request.form:
                 id = request.form['btndelete']
@@ -385,10 +387,11 @@ def review():
                 try:
                     review.response = None
                     db.session.commit()
+                    flash('Reply is successfully deleted.', 'success')
                     return redirect(url_for('admin.review'))
                 except Exception as e:
                     db.session.rollback()
-                    return f"An error occurred: {e}", 500
+                    flash('Failed to delete a reply.', 'danger')
 
     return render_template("/admin/review.html", review=reviews)
 
@@ -420,13 +423,14 @@ def transaction():
             if payment:
                 payment.status = paymentStatus
                 db.session.commit()
+                flash('Updated successfully.', 'success')
                 return redirect(url_for('admin.transaction'))
             else:
-                return "Payment not found", 404
+                flash('Failed to update.', 'danger')
 
         except Exception as e:
             db.session.rollback()
-            return f"An error occurred while saving the transaction: {e}", 500
+            flash('Failed to update.', 'danger')
         
     return render_template("/admin/transaction.html", payment=payment)
 
@@ -457,6 +461,27 @@ def feedback():
     feedback = query.all()
 
     if request.method == 'POST':
+        if 'btnsave' in request.form:
+                status = request.form['status']
+                severity = request.form['severity']
+                id = request.form['btnsave']
+
+                feedback = Feedback.query.get_or_404(id)
+                        
+                try:
+                    feedback.status = status
+                    if severity == "None":
+                        feedback.severity = None
+                    else:
+                        feedback.severity = severity
+                    db.session.commit()
+                    flash('Updated successfully.', 'success')
+                    return redirect(url_for('admin.feedback'))
+                except Exception as e:
+                    db.session.rollback()
+                    flash('Failed to update.', 'danger')
+                    return f"An error occurred: {e}", 500
+                
         if 'btnsend' in request.form:
             response = request.form['reply']
             id = request.form['btnsend']
@@ -466,7 +491,7 @@ def feedback():
                     
             try:
                 email_body = response
-                subject = "Thank you for your feedback for kidocode shop"
+                subject = "Thank You for your feedback!"
                 msg = Message(subject=subject, recipients=[email], body=email_body)
                 mail.send(msg)
                 feedback.response = response
