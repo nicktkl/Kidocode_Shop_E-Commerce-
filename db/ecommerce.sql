@@ -1,13 +1,13 @@
--- Active: 1733283387949@@127.0.0.1@3306@ecommerce
+-- Active: 1733837847961@@127.0.0.1@3306@ecommerce
 CREATE TABLE branches (
-    id VARCHAR(10) PRIMARY KEY,
+    branchID VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     address TEXT NOT NULL,
     operating_hours VARCHAR(50) NOT NULL,
     link VARCHAR(100)
 );
 
-INSERT INTO branches (id, name, address, operating_hours, link)
+INSERT INTO branches (branchID, name, address, operating_hours, link)
 VALUES
     ('MK50480', 'Solaris Mont Kiara', 'L-5-1, Solaris Mont Kiara, Jalan Solaris, Off Jalan Duta Kiara, 50480, Kuala Lumpur', '10:00 AM - 6:00 PM', '8qT2dKUGSaUP36hz7'),
     ('SN47810', 'Sunway Nexis', 'A-1-6, Sunway Nexis, Jalan PJU5/1, Kota Damansara, Petaling Jaya 47810, Selangor', '10:00 AM - 6:00 PM', '1dhDr7wAwzcNaWP1A'),
