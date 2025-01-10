@@ -9,7 +9,7 @@
         <div class="container my-5">
             <h1 class="text-primary">Sale</h1>
         
-            <form action="/admin/transaction" method="get">
+            <form action="/admin/sale" method="get">
                 <div class="d-flex w-100 align-items-center my-3">
                     <!-- Search Form -->
                     <div class="flex-grow-1 me-2">
@@ -30,7 +30,7 @@
                 </div>
             </form>
             {% include "alert.html" %}
-            <!-- Transactions Table -->
+            <!-- sales Table -->
             <div class="table-responsive">
                 <table class="table table-border table-hover">
                     <thead class="table-light">
@@ -45,7 +45,7 @@
                     </thead>
                     <tbody>
                         {% for payment in payment %}
-                        <form method="POST" action="/admin/transaction">
+                        <form method="POST" action="/admin/sale">
                             <tr>
                                 <td>{{ payment.paymentID }}</td>
                                 <td>{{ payment.orderID }}</td>
