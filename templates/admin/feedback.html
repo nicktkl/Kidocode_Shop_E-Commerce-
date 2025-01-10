@@ -64,7 +64,7 @@
                     
                 </div>          
             </form>
-            
+            {% include "alert.hmtl" %}
         
             <!-- Display reviews in cards -->
             <div class="row">
@@ -144,17 +144,9 @@
                                 {% else %}
                                 <div class="d-flex align-items-center my-3">
                                     <div class="flex-grow-1 me-2">
-                                        <textarea class="form-control" name="reply" placeholder="Write a reply" rows="2">{{feedback.response}}</textarea>
+                                        <textarea class="form-control" name="reply" placeholder="Write a reply" rows="2" readonly>{{feedback.response}}</textarea>
 
-                                    </div>
-                                    <div class="d-flex flex-column align-items-start">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger mb-2" name="btndelete" value="{{ feedback.feedbackID }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" type="submit" name="btnsend" value="{{ feedback.feedbackID }}">
-                                            <i class="bi bi-send"></i>
-                                        </button>
-                                    </div>                                    
+                                    </div>                                   
                                 </div>
                                 {% endif %}
                             </div>

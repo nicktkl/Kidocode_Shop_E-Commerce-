@@ -457,47 +457,25 @@ def feedback():
     feedback = query.all()
 
     if request.method == 'POST':
-        if 'btnsave' in request.form:
-                status = request.form['status']
-                severity = request.form['severity']
-                id = request.form['btnsave']
-
-                feedback = Feedback.query.get_or_404(id)
-                        
-                try:
-                    feedback.status = status
-                    feedback.severity = severity
-                    db.session.commit()
-                    return redirect(url_for('admin.feedback'))
-                except Exception as e:
-                    db.session.rollback()
-                    return f"An error occurred: {e}", 500
-                
         if 'btnsend' in request.form:
             response = request.form['reply']
             id = request.form['btnsend']
 
             feedback = Feedback.query.get_or_404(id)
+            email = feedback.email
                     
             try:
+                email_body = response
+                subject = "Thank you for your feedback for kidocode shop"
+                msg = Message(subject=subject, recipients=[email], body=email_body)
+                mail.send(msg)
                 feedback.response = response
                 db.session.commit()
+                flash('Feedback reply sent successfully.', 'success')
                 return redirect(url_for('admin.feedback'))
             except Exception as e:
                 db.session.rollback()
-                return f"An error occurred: {e}", 500
-            
-        if 'btndelete' in request.form:
-                id = request.form['btndelete']
-                feedback = Feedback.query.get_or_404(id)
-                        
-                try:
-                    feedback.response = None
-                    db.session.commit()
-                    return redirect(url_for('admin.feedback'))
-                except Exception as e:
-                    db.session.rollback()
-                    return f"An error occurred: {e}", 500
+                flash('Feedback failed to send.', 'danger')
 
     return render_template("/admin/feedback.html", feedback=feedback)
 
