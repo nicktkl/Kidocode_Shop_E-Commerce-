@@ -15,8 +15,6 @@
         {% include 'navbar.html' %}
         <div class="container my-4">
             <h2 class="title">My Purchases</h2>
-        
-            <!-- Filter Navigation -->
             <div class="navbar-status mb-3">
                 <ul class="nav nav-underline justify-content-center">
                     <li class="nav-item mx-3">
@@ -39,10 +37,8 @@
                     </li>
                 </ul>
             </div>
-        
-            <!-- Purchases Section -->
             {% if orders %}
-            <div class="accordion" id="ordersAccordion">
+            <div class="accordion mx-4" id="ordersAccordion">
                 {% for order in orders %}
                 <div class="accordion-item">
                     <h2 class="accordion-header d-flex align-items-center justify-content-between" id="heading-{{ order.orderID }}">
