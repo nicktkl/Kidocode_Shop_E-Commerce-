@@ -295,6 +295,10 @@ def success():
 
     return render_template('thanks.html', order = order, order_items = orderItems, payment = payment)
 
+@user_blueprint.route('/cancel', methods=['GET', 'POST'])
+def cancel():
+    return "Fail"
+
 #to generate orderID
 def generateOrderID():
     prefix = "KSHOP"

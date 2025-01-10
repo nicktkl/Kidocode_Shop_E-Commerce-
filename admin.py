@@ -322,17 +322,17 @@ def order():
             (Order.userID == search_query) |
             (User.firstName.ilike(f'%{search_query}%')) |
             (User.lastName.ilike(f'%{search_query}%'))
-        ).all()
+        ).order_by(Order.createdAt.desc()).all()
     elif status_filter != "":
         orders = Order.query.filter(
             Order.status.ilike(f'%{status_filter}%')
-        ).all()
+        ).order_by(Order.createdAt.desc()).all()
     elif method_filter != "":
         orders = Order.query.filter(
             Order.shippingMethod.ilike(f'%{method_filter}%')
-        ).all()
+        ).order_by(Order.createdAt.desc()).all()
     else:
-        orders = Order.query.all()
+        orders = Order.query.order_by(Order.createdAt.desc()).all()
 
     order_ids = [order.orderID for order in orders]
     orderItems = OrderItem.query.filter(OrderItem.orderID.in_(order_ids)).all()
@@ -373,13 +373,13 @@ def review():
             (Product.productName.ilike(f'%{search_query}%')) |
             (User.firstName.ilike(f'%{search_query}%')) |
             (User.lastName.ilike(f'%{search_query}%'))
-        ).all()
+        ).order_by(Review.updatedAt.desc()).all()
     elif filter_query != "":
         reviews = Review.query.filter(
             Review.rating == filter_query
-        ).all()
+        ).order_by(Review.updatedAt.desc()).all()
     else:
-        reviews = Review.query.all()
+        reviews = Review.query.order_by(Review.updatedAt.desc()).all()
 
     
     if request.method == 'POST':
@@ -414,9 +414,9 @@ def review():
     return render_template("/admin/review.html", review=reviews)
 
 #SALE DONE
-@admin_blueprint.route('/transaction', methods=["GET", "POST"])
+@admin_blueprint.route('/sale', methods=["GET", "POST"])
 @check_admin
-def transaction():
+def sale():
     search_query = request.args.get('searchPayment', '')
     filter_query = request.args.get('searchStatus', '')  
     if search_query:
@@ -424,13 +424,13 @@ def transaction():
             (Payment.paymentID == search_query) |
             (Payment.orderID == search_query) |
             (Payment.paymentMethod.ilike(f'%{search_query}%'))
-        ).all()
+        ).order_by(Payment.createdAt.desc()).all()
     elif filter_query != "":
         payment = Payment.query.filter(
             Payment.status.ilike(f'%{filter_query}%')
-        ).all()
+        ).order_by(Payment.createdAt.desc()).all()
     else:
-        payment = Payment.query.all()
+        payment = Payment.query.order_by(Payment.createdAt.desc()).all()
 
     if request.method == 'POST':
         paymentID = request.form.get('btnsave')
@@ -443,7 +443,7 @@ def transaction():
                 payment.status = paymentStatus
                 db.session.commit()
                 flash('Updated successfully.', 'success')
-                return redirect(url_for('admin.transaction'))
+                return redirect(url_for('admin.sale'))
             else:
                 flash('Failed to update.', 'danger')
 
@@ -451,7 +451,7 @@ def transaction():
             db.session.rollback()
             flash('Failed to update.', 'danger')
         
-    return render_template("/admin/transaction.html", payment=payment)
+    return render_template("/admin/sale.html", payment=payment)
 
 #FEEDBACK DONE
 @admin_blueprint.route('/feedback', methods=["GET", "POST"])
@@ -479,6 +479,7 @@ def feedback():
     if statusfilter != 'all':
         query = query.filter(Feedback.status == statusfilter)
 
+    query = query.order_by(Feedback.createdAt.desc())
     feedback = query.all()
 
     if request.method == 'POST':
