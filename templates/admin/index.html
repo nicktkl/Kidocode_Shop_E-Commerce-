@@ -11,14 +11,13 @@
 <body>
     <nav class="navbar navbar-expand navbar-light bg-light shadow-sm">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center mx-3" href="#">
+            <a class="navbar-brand d-flex align-items-center mx-3">
                 <img src="/static/images/kidocode_logo.png" height="40" alt="Kidocode Logo">
                 <span class="ms-2 fw-bold text-primary">Admin</span>
             </a>
     
             <div class="collapse navbar-collapse justify-content-end" id="main-nav">
                 <ul class="navbar-nav">
-                    <!-- Dropdown Menu -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-grid-3x3-gap"></i>
@@ -74,10 +73,20 @@
                                         </a>
                                     </div>
                                     <div class="col-4">
+                                        <a href="/admin/branch" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Branch">
+                                            <i class="bi bi-geo-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <!-- Fourth Row -->
+                                    <div class="col-4"></div>
+                                    <div class="col-4">
                                         <a href="/logout" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Logout">
                                             <i class="bi bi-door-open"></i>
                                         </a>
                                     </div>
+                                    <div class="col-4"></div>
                                 </div>
                             </div>
                         </ul>

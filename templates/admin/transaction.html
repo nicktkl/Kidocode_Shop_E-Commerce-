@@ -29,7 +29,7 @@
                     <button type="submit" name="searchStatus" value="received" class="btn btn-outline-primary">Received</button>
                 </div>
             </form>
-        
+            {% include "alert.html" %}
             <!-- Transactions Table -->
             <div class="table-responsive">
                 <table class="table table-border table-hover">
@@ -55,10 +55,10 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <select name="status" class="form-select form-select-sm rounded-pill w-auto me-2">
-                                            <option value="Completed" {% if payment.status == 'Completed' %}selected{% endif %}>Completed</option>
-                                            <option value="Cancelled" {% if payment.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
-                                            <option value="Received" {% if payment.status == 'Received' %}selected{% endif %}>Received</option>
-                                            <option value="Pending" {% if payment.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Completed" {% if payment.status == 'completed' %}selected{% endif %}>Completed</option>
+                                            <option value="Cancelled" {% if payment.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            <option value="Received" {% if payment.status == 'received' %}selected{% endif %}>Received</option>
+                                            <option value="Pending" {% if payment.status == 'pending' %}selected{% endif %}>Pending</option>
                                         </select>
                                         <button class="btn btn-sm btn-outline-success hover-effect" name="btnsave" value="{{payment.paymentID}}">
                                             <i class="bi bi-save"></i>

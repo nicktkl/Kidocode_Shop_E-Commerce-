@@ -64,7 +64,7 @@
                     
                 </div>          
             </form>
-            
+            {% include "alert.html" %}
         
             <!-- Display reviews in cards -->
             <div class="row">
@@ -90,25 +90,47 @@
                                     </select>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                        <strong><i class="bi bi-bar-chart mx-2 
-                                            {% if feedback.severity == 'Critical' %}text-danger 
-                                            {% elif feedback.severity == 'High' %}text-warning 
-                                            {% elif feedback.severity == 'Medium' %}text-warning 
-                                            {% elif feedback.severity == 'Low' %}text-info 
-                                            {% elif feedback.severity == 'None' %}text-primary 
-                                            {% endif %}"></i></strong>
-                                        {{ feedback.severity }}
-                                    </div>
+                                    <div class="d-flex align-items-center me-3">
+                                        <strong>
+                                            <i class="bi bi-bar-chart mx-2 
+                                                {% if feedback.severity == 'Critical' %}text-danger 
+                                                {% elif feedback.severity == 'High' %}text-warning 
+                                                {% elif feedback.severity == 'Medium' %}text-warning 
+                                                {% elif feedback.severity == 'Low' %}text-info 
+                                                {% elif feedback.severity == 'None' %}text-primary 
+                                                {% endif %}"></i>
+                                        </strong>
+                                        <select name="severity" class="form-select form-select-sm rounded-pill w-auto ms-2">
+                                            <option value="None" {% if feedback.severity == None %}selected{% endif %}>
+                                                None
+                                            </option>
+                                            <option value="Low" {% if feedback.severity == 'Low' %}selected{% endif %}>
+                                                Low
+                                            </option>
+                                            <option value="Medium" {% if feedback.severity == 'Medium' %}selected{% endif %}>
+                                                Medium
+                                            </option>
+                                            <option value="High" {% if feedback.severity == 'High' %}selected{% endif %}>
+                                                High
+                                            </option>
+                                            <option value="Critical" {% if feedback.severity == 'Critical' %}selected{% endif %}>
+                                                Critical
+                                            </option>
+                                        </select>
+                                    </div>                                    
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
-                                    <img src="https://via.placeholder.com/30" class="rounded-circle my-2 me-3" alt="User Image">
-                                    <h5 class="card-title my-2"><strong>{{ feedback.user.firstName }} {{ feedback.user.lastName }}</strong></h5>
+                                    <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="User Image" style="width: 50px; height: 50px;">
+                                    <div>
+                                        <h6 class="mb-0"><strong>{{ feedback.name }}</strong></h6>
+                                        <p class="mb-0">{{ feedback.email }}</p>
+                                    </div>
                                 </div>
-            
-                                <p class="card-text">[{{ feedback.feedbackType }}] {{ feedback.feedbackText }}</p>
+                                
+                                <p class="card-text my-2 fw-bold"><i class="bi bi-tag"></i> {{ feedback.type }}</p>
+                                <p class="card-text my-2">{{ feedback.text }}</p>
                         
                                 {% if feedback.response is none %}
                                 <div class="d-flex align-items-center my-3">
@@ -122,17 +144,9 @@
                                 {% else %}
                                 <div class="d-flex align-items-center my-3">
                                     <div class="flex-grow-1 me-2">
-                                        <textarea class="form-control" name="reply" placeholder="Write a reply" rows="2">{{feedback.response}}</textarea>
+                                        <textarea class="form-control" name="reply" placeholder="Write a reply" rows="2" readonly>{{feedback.response}}</textarea>
 
-                                    </div>
-                                    <div class="d-flex flex-column align-items-start">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger mb-2" name="btndelete" value="{{ feedback.feedbackID }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-success" type="submit" name="btnsend" value="{{ feedback.feedbackID }}">
-                                            <i class="bi bi-send"></i>
-                                        </button>
-                                    </div>                                    
+                                    </div>                                   
                                 </div>
                                 {% endif %}
                             </div>

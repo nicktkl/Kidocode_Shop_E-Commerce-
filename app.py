@@ -278,6 +278,34 @@ def trackOrder():
 
     return render_template('/homepage/TrackOrder.html', product = random_products, order_details = order_details, first_name = first_name)
 
+@app.route('/feedbackform', methods=['GET', 'POST'])
+def feedbackform():
+    if request.method == 'POST':
+        if 'btnsend' in request.form:
+            feedback_type = request.form['f_type']
+
+            firstLetter = feedback_type.strip()[:1].upper()
+            count = Feedback.query.filter_by(type=feedback_type).count()
+            ID = f"{firstLetter}{count + 1:03d}"
+            try:
+                sendfeedback = Feedback(
+                    feedbackID = ID,
+                    name = request.form['f_name'],
+                    email = request.form['f_email'],
+                    type = feedback_type,
+                    text = request.form['f_text']
+                )
+                db.session.add(sendfeedback)
+                db.session.commit()
+                flash('Your feedback is sent!', 'success')
+                return redirect(url_for('feedbackform'))
+            except Exception as e:
+                db.session.rollback()
+                flash('Your feedback has failed to sent!', 'danger')
+                return f"An error occurred: {e}"
+    
+    return render_template('feedbackform.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

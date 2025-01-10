@@ -124,20 +124,20 @@ VALUES
 CREATE TABLE payment (
   paymentID int NOT NULL AUTO_INCREMENT,
   orderID VARCHAR(13) NOT NULL,
-  paymentDate date NOT NULL,
   amount DECIMAL(10, 2) NOT NULL,
   deliveryCharge DECIMAL(10, 2) NOT NULL,
-  paymentMethod varchar(30) NOT NULL,
-  status varchar(15) NOT NULL,
+  paymentMethod varchar(30),
+  status ENUM('pending', 'received', 'completed', 'cancelled') DEFAULT 'pending',
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (paymentID),
   FOREIGN KEY (orderID) REFERENCES orders(orderID) ON DELETE CASCADE
 );
 
-INSERT INTO payment (orderID, paymentDate, amount, deliveryCharge, paymentMethod, status)
+INSERT INTO payment (orderID, amount, deliveryCharge, paymentMethod, status)
 VALUES 
-    ('KSHOP01234567', '2024-12-29', 73.97, 0.00, 'Credit Card', 'Pending'),
-    ('KSHOP12345678', '2024-12-29', 81.98, 10.00, 'Bank Transfer', 'Completed'),
-    ('KSHOP23456789', '2024-12-29', 31.98, 0.00, 'Cash', 'Received');
+    ('KSHOP01234567', 73.97, 0.00, 'Credit Card', 'Pending'),
+    ('KSHOP12345678', 81.98, 10.00, 'Bank Transfer', 'Completed'),
+    ('KSHOP23456789', 31.98, 0.00, 'Cash', 'Received');
 
 CREATE TABLE review (
   reviewID INT NOT NULL AUTO_INCREMENT,
@@ -163,23 +163,22 @@ VALUES
     ('KP005', 'C003', 3, 'The LED Lights Pack was okay, but the colors were not as vibrant as expected.', NULL),
     ('KP006', 'C003', 5, 'The USB Cable is sturdy and does its job perfectly.', NULL);
 
-
 CREATE TABLE feedback (
-    feedbackID VARCHAR(4) PRIMARY KEY, 
-    userID varchar(4) NOT NULL,
-    feedbackType ENUM('Bug', 'Suggestion', 'Praise', 'Complaint') NOT NULL,
-    feedbackText TEXT NOT NULL,
+    feedbackID VARCHAR(4) PRIMARY KEY,
+    name varchar(255) NOT NULL, 
+    email varchar(255) NOT NULL,
+    `type` ENUM('Bug', 'Suggestion', 'Praise', 'Complaint', 'Other') NOT NULL,
+    `text` TEXT NOT NULL,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     status ENUM('Pending', 'Reviewed', 'Resolved') DEFAULT 'Pending',
     response TEXT NULL, 
-    severity ENUM('Low', 'Medium', 'High', 'Critical') NULL,
-    FOREIGN KEY (userID) REFERENCES user(userID) ON DELETE CASCADE
+    severity ENUM('Low', 'Medium', 'High', 'Critical') NULL
 );
 
-INSERT INTO feedback (feedbackID, userID, feedbackType, feedbackText, status, response, severity)
+INSERT INTO feedback (feedbackID, name, email, type, text, status, response, severity)
 VALUES
-    ('B001', 'C001', 'Bug', 'The website crashes when I try to check out.', 'Pending', NULL, 'High'),
-    ('S002', 'C002', 'Suggestion', 'Add a dark mode feature for better usability at night.', 'Reviewed', 'Thank you for the suggestion! We are considering it.', 'Low'),
-    ('P003', 'C003', 'Praise', 'Great user experience! The website is intuitive and fast.', 'Reviewed', 'Thank you for your kind words!', NULL),
-    ('C004', 'C002', 'Complaint', 'Customer support response is very slow.', 'Resolved', 'We apologize for the inconvenience. We have addressed this issue with our support team.', 'Medium');
+    ('B001', 'john','john.doe@example.com', 'Bug', 'The website crashes when I try to check out.', 'Pending', NULL, 'High'),
+    ('S001', 'alice', 'alice.jonhson@example.com', 'Suggestion', 'Add a dark mode feature for better usability at night.', 'Reviewed', 'Thank you for the suggestion! We are considering it.', 'Low'),
+    ('P001', 'jane', 'jane.smith@example.com', 'Praise', 'Great user experience! The website is intuitive and fast.', 'Reviewed', 'Thank you for your kind words!', NULL),
+    ('C001', 'smith' ,'test@example.com', 'Complaint', 'Customer support response is very slow.', 'Resolved', 'We apologize for the inconvenience. We have addressed this issue with our support team.', 'Medium');
