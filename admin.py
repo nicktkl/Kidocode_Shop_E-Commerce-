@@ -529,13 +529,60 @@ def feedback():
 @admin_blueprint.route('/branch', methods=["GET", "POST"])
 @check_admin
 def branch():
-    search_query = request.args.get('searchBranch', '')  
+    search_query = request.args.get('searchBranch', '')
     if search_query:
-        branch = Branch.query.filter(
+        branches = Branch.query.filter(
             (Branch.branchID.ilike(f'%{search_query}%')) |
-            (Branch.name.ilike(f'%{search_query}%')) 
-        ).all()  
+            (Branch.name.ilike(f'%{search_query}%'))
+        ).all()
     else:
-        branch = Branch.query.all()
+        branches = Branch.query.all()
         
-    return render_template("/admin/branch.html", branch=branch)
+    if request.method == 'POST':
+        if 'btnadd' in request.form:
+            try:
+                new_branch = Branch(
+                    branchID=request.form['b_id'],
+                    name=request.form['b_name'],
+                    address=request.form['b_address'],
+                    operating_hours=request.form['b_hour'],
+                    link=request.form['b_link']
+                )
+                db.session.add(new_branch)
+                db.session.commit()
+                flash('New branch added.', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Failed to add branch: {str(e)}', 'danger')
+            return redirect(url_for('admin.branch'))
+
+        if 'btndelete' in request.form:
+            deleteID = request.form.get('btndelete')
+            try:
+                branch = Branch.query.get_or_404(deleteID)
+                db.session.delete(branch)
+                db.session.commit()
+                flash('Branch deleted successfully.', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Failed to delete branch: {str(e)}', 'danger')
+            return redirect(url_for('admin.branch'))
+
+        if 'btnsave' in request.form:
+            print(request.form)
+            ID = request.form.get('btnsave')
+            try:
+                branch = Branch.query.get_or_404(ID)
+                branch.name = request.form['b_name']
+                branch.address = request.form['b_address']
+                branch.operating_hours = request.form['b_hour']
+                branch.link = request.form['b_link']
+                db.session.commit()
+                flash('Branch updated successfully.', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Failed to update branch: {str(e)}', 'danger')
+            return redirect(url_for('admin.branch'))
+    
+    return render_template("/admin/branch.html", branch=branches)
+

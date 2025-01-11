@@ -136,9 +136,16 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center mx-3" href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}">
-            <img src="/static/images/kidocode_logo.png" height="40" alt="Kidocode Logo">
+            <!-- Logo for medium and larger screens (col-md and up) -->
+            <img src="/static/images/kidocode_logo.png" class="d-none d-md-block" height="30" alt="Kidocode Logo">
+        
+            <!-- Logo for smaller screens (col-sm and below) -->
+            <img src="/static/images/kidocode_symbol_logo.png" class="d-block d-md-none" height="30" alt="Kidocode Symbol Logo">
+        
             <span class="ms-2 fw-bold text-primary">Shop</span>
         </a>
+        
+        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -177,30 +184,31 @@
                     <a class="nav-link" href="#">Contact Us</a>
                 </li>
             </ul>
-            <div class="d-flex ms-auto align-items-center my-2">
-                {% if not first_name %}
-                <a href="/login" class="btn btn-outline-secondary me-3">
+            
+        </div>
+        <div class="d-flex ms-auto align-items-center my-2">
+            {% if not first_name %}
+            <a href="/login" class="btn btn-outline-secondary me-3">
+                <i id="user-icon" class="bi bi-person-fill"></i>
+            </a>
+            {% else %}
+            <div class="dropdown me-3">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i id="user-icon" class="bi bi-person-fill"></i>
-                </a>
-                {% else %}
-                <div class="dropdown me-3">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i id="user-icon" class="bi bi-person-fill"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="/user/profile">Welcome, {{ first_name }}</a></li>
-                        <li><a class="dropdown-item" href="/user/purchases">My Purchases</a></li>
-                        <li><a class="dropdown-item" href="/user/logout">Sign Out</a></li>
-                    </ul>
-                </div>
-                {% endif %}
-                <a href="#" id="cart-icon" class="btn btn-outline-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                    <i class="bi bi-basket"></i>
-                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px; padding: 3px 5px;">
-                        0
-                    </span>
-                </a>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/user/profile">Welcome, {{ first_name }}</a></li>
+                    <li><a class="dropdown-item" href="/user/purchases">My Purchases</a></li>
+                    <li><a class="dropdown-item" href="/user/logout">Sign Out</a></li>
+                </ul>
             </div>
+            {% endif %}
+            <a href="#" id="cart-icon" class="btn btn-outline-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                <i class="bi bi-basket"></i>
+                <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px; padding: 3px 5px;">
+                    0
+                </span>
+            </a>
         </div>
     </div>
 </nav>
