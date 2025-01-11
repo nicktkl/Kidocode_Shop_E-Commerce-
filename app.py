@@ -354,7 +354,7 @@ def register():
             session['email'] = new_user.email
             session['first_name'] = new_user.firstName
             flash('Registration successful! You are now logged in.', 'success')
-            print("Login successful, flashing success message")
+            # print("Login successful, flashing success message")
             return redirect(url_for('user.homepage'))
         except Exception as e:
             db.session.rollback()
@@ -442,6 +442,62 @@ def logout():
 
 @app.route('/helpform', methods=['GET', 'POST'])
 def helpform():
+    if request.method == 'POST':
+        name = request.form.get('h_name')
+        email = request.form.get('h_email')
+        subject = request.form.get('h_subject')
+        message = request.form.get('h_message')
+
+        if not all([name, email, subject, message]):
+            flash('All fields are required.', 'warning')
+            return redirect(url_for('/user/help.html'))
+        
+        # Send email to shop's address
+        try:
+            # Send email to shop
+            shop_msg = Message(
+                subject=f"Help Request: {subject}",
+                sender=(name, email),
+                recipients=['your_shop_email@gmail.com']
+            )
+            shop_msg.body = f"""
+            Name: {name}
+            Email: {email}
+            
+            Message:
+            {message}
+            """
+            mail.send(shop_msg)
+
+            # Send confirmation email to user
+            user_msg = Message(
+                subject="Kidocode Shop Help Request Received",
+                sender=('Kidocode Shop Support', 'your_shop_email@gmail.com'),
+                recipients=[email]
+            )
+            user_msg.body = f"""
+            Hi {name},
+
+            Thank you for reaching out to us. We have received your help request and will get back to you as soon as possible.
+
+            Here's a copy of your message:
+            Subject: {subject}
+            Name: {name}
+            Message:
+            {message}
+
+            Best regards,
+            Shop Support Team
+            """
+            mail.send(user_msg)
+
+            flash('Your message has been sent. A confirmation email has been sent to your email address.', 'success')
+        except Exception as e:
+            flash('There was an error sending your message. Please try again later.', 'danger')
+            print(f"Error: {e}")
+
+        return redirect(url_for('/user/help.html'))
+    
     return render_template('/user/help.html')
 
 if __name__ == "__main__":
