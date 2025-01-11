@@ -136,14 +136,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center mx-3" href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}">
-            <img 
-                src="/static/images/kidocode_logo.png" 
-                srcset="/static/images/kidocode_logo.png 1024w, /static/images/kidocode_symbol_logo.png 480w" 
-                sizes="(max-width: 768px) 30px, 60px" 
-                height="30" 
-                alt="Kidocode Logo">
+            <!-- Logo for medium and larger screens (col-md and up) -->
+            <img src="/static/images/kidocode_logo.png" class="d-none d-md-block" height="30" alt="Kidocode Logo">
+        
+            <!-- Logo for smaller screens (col-sm and below) -->
+            <img src="/static/images/kidocode_symbol_logo.png" class="d-block d-md-none" height="30" alt="Kidocode Symbol Logo">
+        
             <span class="ms-2 fw-bold text-primary">Shop</span>
         </a>
+        
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
