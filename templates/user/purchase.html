@@ -43,11 +43,20 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header d-flex align-items-center justify-content-between" id="heading-{{ order.orderID }}">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ order.orderID }}" aria-expanded="false" aria-controls="collapse-{{ order.orderID }}">
-                            Order ID: {{ order.orderID }}
+                            <table style="width: 90%; border: none;">
+                                <tr>
+                                    <form action="/admin/category" method="post">
+                                        <td class="col-8">Order ID: {{ order.orderID }}</td>
+                                        <td style="text-align: right; padding: 0; width: 20%;">
+                                            <span class="p-2 rounded-pill bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
+                                                {{ order.status|capitalize }}
+                                            </span>
+                                        </td>
+                                    </form>
+                                </tr>
+                            </table>
                         </button>
-                        <span class="status-badge bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
-                            {{ order.status|capitalize }}
-                        </span>
+                        
                     </h2>
                     <div id="collapse-{{ order.orderID }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ order.orderID }}" data-bs-parent="#ordersAccordion">
                         <div class="accordion-body">
