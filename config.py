@@ -11,7 +11,7 @@ class Config:
     MAIL_USE_SSL = False
     MAIL_USERNAME = os.getenv('MAIL_USERNAME', 'nurulizzatihayat@gmail.com')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', 'tmcn fehq fttp smym')
-    MAIL_DEFAULT_SENDER = ('Kidocode', 'nurulizzatihayat@gmail.com')
+    MAIL_DEFAULT_SENDER = ('Kidocode Shop Support', 'nurulizzatihayat@gmail.com')
 
     # SQLAlchemy configurations
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'mysql+mysqlconnector://root:dlvvkxl@127.0.0.1:3306/ecommerce')
