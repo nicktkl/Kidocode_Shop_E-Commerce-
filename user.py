@@ -74,6 +74,7 @@ def profile():
     return render_template('/user/profile.html', product = random_products, user = user, first_name = first_name)
 
 @user_blueprint.route('/purchases', methods=['GET'])
+@login_required
 def purchases():
     email = session.get('email')
     first_name = session.get('first_name')
@@ -98,6 +99,36 @@ def purchases():
     print(f"Orders fetched: {orders}")
 
     return render_template('/user/purchase.html', email = email, first_name = first_name, user_id = user_id, orders = orders, product = random_products)
+
+@user_blueprint.route('submit-review/<string:order_id>', methods=['GET', 'POST'])
+@login_required
+def submit_review(order_id):
+    data = request.json
+    reviews = data.get('reviews', [])
+    
+    if not reviews:
+        return jsonify({'success': False, 'message': 'No reviews provided'}), 400
+    
+    for review in reviews:
+        product_id = review.get('productID')
+        rating = review.get('rating')
+        comment = review.get('comment')
+
+        if not product_id or not rating:
+            continue
+
+        new_review = Review(
+            productID = product_id,
+            userID = session['userID'],
+            rating = int(rating),
+            comment = comment
+        )
+
+        db.session.add(new_review)
+
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Reviews submitted successfully!'})
 
 @user_blueprint.route('/logout')
 def logout():
