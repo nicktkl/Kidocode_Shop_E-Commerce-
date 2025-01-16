@@ -129,14 +129,27 @@ def get_products():
 @app.route('/product/<string:product_id>', methods = ['GET'])
 def get_product_details(product_id):
     product = Product.query.get_or_404(product_id)
+
+    reviews = [
+        {
+            'user': f"{review.user.firstName} {review.user.lastName}",
+            'rating': review.rating,
+            'comment': review.comment,
+            'created_at': review.createdAt.strftime('%d %b %Y')
+        }
+        for review in product.reviews
+    ]
+
     product_details = {
         'id': product.productID, 'name': product.productName,
         'price': float(product.price),
         'image': url_for('static', filename=product.img.replace('\\', '/')) if product.img else None,
         'description': product.description,
         'quantity': product.stock,
-        'category': product.categoryID
+        'category': product.categoryID,
+        'reviews': reviews
     }
+    
     return jsonify({'success': True, 'product': product_details})
 
 @app.route('/get-cart', methods = ['GET'])
