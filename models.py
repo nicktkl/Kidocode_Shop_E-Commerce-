@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from imports import url_for
 db = SQLAlchemy()
 
 # Branch model
@@ -106,6 +107,17 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return f"<OrderItem {self.orderItemID} for Order {self.orderID}>"
+    
+    def serialize(self):
+        """Serialize the order item for JSON representation."""
+        return {
+            'id': self.orderItemID,
+            'productID': self.productID,
+            'name': self.product.productName if self.product else "Unknown",
+            'quantity': self.quantity,
+            'price': self.price,
+            'img': url_for('static', filename=self.product.img.replace('\\', '/')) if self.product and self.product.img else None
+        }
 
 # Payment model
 class Payment(db.Model):
