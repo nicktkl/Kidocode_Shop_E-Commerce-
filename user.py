@@ -100,7 +100,7 @@ def purchases():
 
     return render_template('/user/purchase.html', email = email, first_name = first_name, user_id = user_id, orders = orders, product = random_products)
 
-@user_blueprint.route('submit-review/<string:order_id>', methods=['GET', 'POST'])
+@user_blueprint.route('/submit-review/<string:order_id>', methods=['GET', 'POST'])
 @login_required
 def submit_review(order_id):
     data = request.json
