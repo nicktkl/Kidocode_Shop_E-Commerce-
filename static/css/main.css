@@ -44,6 +44,11 @@
     transform: scale(1.05);
 }
 
+/* For the 'My Purchases' */
+.actionBtn-container {
+    text-align: right;
+}
+
 .testimonials-section img {
     border: 2px solid #ddd;
     padding: 5px;

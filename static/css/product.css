@@ -9,12 +9,12 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.card-wrapper {
+    transition: all 0.3s ease;
+}
+
 .list-group-item.active {
     background-color: #0d6efd;
     border-color: #0d6efd;
     color: white;
-}
-
-.card-wrapper {
-    transition: all 0.3s ease;
 }
