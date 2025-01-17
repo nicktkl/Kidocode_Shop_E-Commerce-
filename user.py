@@ -95,7 +95,21 @@ def purchases():
         orders = Order.query.filter_by(userID = user_id).order_by(Order.createdAt.desc()).all()
     else:
         orders = Order.query.filter_by(userID = user_id, status = status_filter).order_by(Order.createdAt.desc()).all()
+    
+    
+    for order in orders:
+        order.serialized_items = [item.serialize() for item in order.order_items.all()]
+        
+        # Check if all items in the order have been reviewed
+        order_items = order.order_items.all()
+        reviewed_items = Review.query.filter(
+            Review.productID.in_([item.productID for item in order_items]),
+            Review.userID == user_id
+        ).all()
 
+        # If all items are reviewed, mark the order as fully reviewed
+        order.all_items_reviewed = len(reviewed_items) == len(order_items)
+    
     print(f"Orders fetched: {orders}")
 
     return render_template('/user/purchase.html', email = email, first_name = first_name, user_id = user_id, orders = orders, product = random_products)
@@ -171,15 +185,18 @@ def add_to_cart():
 
 @user_blueprint.route('/cart')
 def cart():
+    first_name = session.get('first_name')
     cart_items = session.get('cart', {})
     total_price = sum(item['price'] * item['quantity'] for item in cart_items.values())
     total_price = round(total_price, 2)
     cart_list = [
-        {'name': name, 'price': details['price'], 'quantity': details['quantity']}
+        {'name': name,
+        'price': details['price'],
+        'quantity': details['quantity']}
         for name, details in cart_items.items()
     ]
 
-    return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
+    return render_template('/homepage/Cart.html', first_name = first_name, cart_items = cart_list, total_price = total_price)
 
 @user_blueprint.route('/get-cart', methods=['GET'])
 def get_cart():
