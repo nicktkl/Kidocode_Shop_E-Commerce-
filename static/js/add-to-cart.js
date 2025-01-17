@@ -119,6 +119,7 @@ function updateCartItems(cart){
     const viewCartButton = document.getElementById('btn-viewCart');
 
     let totalPrice = 0;
+    let totalPriceTable = 0;
 
     if(cartItems){
         cartItems.innerHTML = ''; // Clear existing content
@@ -177,13 +178,14 @@ function updateCartItems(cart){
 
                 cartItemsTable.appendChild(row);
 
-                totalPrice += price * quantity;
+                totalPriceTable += price * quantity;
             }
         }
     }
 
     if(totalPriceElement){
         totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
+        totalPriceElement.textContent = `RM${totalPriceTable.toFixed(2)}`;
     }
 }
 
@@ -192,6 +194,7 @@ function updateCheckoutCart(cart){
     const totalPriceElement = document.getElementById('total-price');
 
     let totalPrice = 0;
+    
     cartItemsElement.innerHTML = '';
 
     if(Object.keys(cart).length === 0){
