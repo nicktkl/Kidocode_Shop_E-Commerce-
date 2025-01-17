@@ -236,7 +236,7 @@ def checkout():
             flash('Invalid email or password. Please try again.', 'danger')
 
     # Render login form on checkout.html for guests
-    return render_template('/homepage/Checkout.html', cart_items = session.get('cart', {}), total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()), is_logged_in = False)
+    return render_template('checkout.html', cart_items = session.get('cart', {}), total_price = sum(item['price'] * item['quantity'] for item in session.get('cart', {}).values()), is_logged_in = False)
 
 @app.route('/trackorder', methods=['GET', 'POST'])
 def trackOrder():
@@ -471,7 +471,7 @@ def helpform():
             shop_msg = Message(
                 subject=f"Help Request: {subject}",
                 sender=(name, email),
-                recipients=['your_shop_email@gmail.com']
+                recipients=['Kidocode Shop Support', 'nurulizzatihayat@gmail.com']
             )
             shop_msg.body = f"""
             Name: {name}
@@ -485,7 +485,7 @@ def helpform():
             # Send confirmation email to user
             user_msg = Message(
                 subject="Kidocode Shop Help Request Received",
-                sender=('Kidocode Shop Support', 'your_shop_email@gmail.com'),
+                sender=('Kidocode Shop Support', 'nurulizzatihayat@gmail.com'),
                 recipients=[email]
             )
             user_msg.body = f"""
