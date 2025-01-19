@@ -144,6 +144,10 @@ def submit_review(order_id):
     
     return jsonify({'success': True, 'message': 'Reviews submitted successfully!'})
 
+@user_blueprint.route('confirm-order', methods=['GET', 'POST'])
+def confirm_order():
+    pass
+
 @user_blueprint.route('/logout')
 def logout():
     if session.get('loggedin'):
