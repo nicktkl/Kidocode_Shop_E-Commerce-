@@ -14,7 +14,7 @@ def login_required(f):
 
 @user_blueprint.route('/session-check', methods=['GET'])
 def session_check():
-    return jsonify({'logged_in': session.get('loggedin', False)})
+    return jsonify({'logged_in': session.get('loggedin', False), 'user_id': session.get('userID')})
 
 @user_blueprint.route('/')
 @login_required
@@ -114,35 +114,50 @@ def purchases():
 
     return render_template('/user/purchase.html', email = email, first_name = first_name, user_id = user_id, orders = orders, product = random_products)
 
-@user_blueprint.route('/submit-review/<string:order_id>', methods=['GET', 'POST'])
+@user_blueprint.route('/submit-review/<string:order_id>', methods=['POST'])
 @login_required
 def submit_review(order_id):
-    data = request.json
-    reviews = data.get('reviews', [])
-    
-    if not reviews:
-        return jsonify({'success': False, 'message': 'No reviews provided'}), 400
-    
-    for review in reviews:
-        product_id = review.get('productID')
-        rating = review.get('rating')
-        comment = review.get('comment')
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'message': 'User not authenticated.'}), 401
 
-        if not product_id or not rating:
-            continue
+        # Verify order belongs to the user
+        order = Order.query.filter_by(orderID=order_id, userID=user_id).first()
+        if not order:
+            return jsonify({'success': False, 'message': 'Order not found or unauthorized.'}), 404
 
-        new_review = Review(
-            productID = product_id,
-            userID = session['userID'],
-            rating = int(rating),
-            comment = comment
-        )
+        data = request.json
+        reviews = data.get('reviews', [])
 
-        db.session.add(new_review)
+        if not reviews:
+            return jsonify({'success': False, 'message': 'No reviews provided'}), 400
 
-    db.session.commit()
-    
-    return jsonify({'success': True, 'message': 'Reviews submitted successfully!'})
+        for review in reviews:
+            product_id = review.get('productID')
+            rating = review.get('rating')
+            comment = review.get('comment')
+
+            if not product_id or not rating:
+                continue
+
+            if not any(item.productID == product_id for item in order.order_items):
+                continue
+
+            new_review = Review(
+                productID=product_id,
+                userID=user_id,
+                rating=int(rating),
+                comment=comment
+            )
+            db.session.add(new_review)
+
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Reviews submitted successfully!'})
+
+    except Exception as e:
+        print(f"Error in submit_review: {e}")
+        return jsonify({'success': False, 'message': 'An error occurred while submitting reviews.'}), 500
 
 @user_blueprint.route('confirm-order', methods=['GET', 'POST'])
 def confirm_order():
