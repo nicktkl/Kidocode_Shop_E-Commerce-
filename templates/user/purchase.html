@@ -198,17 +198,30 @@
                 });
 
                 // Send the reviews to the backend
-                fetch(`/submit-review/${orderID}`, {
+                fetch(`/user/submit-review/${orderID}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ reviews }),
                 })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            if (response.status === 401) {
+                                alert("Please log in to submit reviews.");
+                                window.location.href = "/login"; // Redirect to login
+                            } else if (response.status === 404) {
+                                alert("Order not found.");
+                            } else {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                        }
+                        return response.json(); // Only call json once
+                    })
                     .then(data => {
                         if (data.success) {
                             alert("Reviews submitted successfully!");
                             const reviewModal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
                             reviewModal.hide();
+                            window.location.reload();
                         } else {
                             alert("Failed to submit reviews.");
                         }
