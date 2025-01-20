@@ -96,7 +96,6 @@ def purchases():
     else:
         orders = Order.query.filter_by(userID = user_id, status = status_filter).order_by(Order.createdAt.desc()).all()
     
-    
     for order in orders:
         order.serialized_items = [item.serialize() for item in order.order_items.all()]
         
