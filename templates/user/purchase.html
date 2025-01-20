@@ -48,7 +48,7 @@
                                     <form action="/admin/category" method="POST">
                                         <td class="col-8">Order ID: {{ order.orderID }}</td>
                                         <td style="text-align: right; padding: 0; width: 20%;">
-                                            <span class="p-2 rounded-pill bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
+                                            <span class="p-2 rounded-pill status-bg bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
                                                 {{ order.status|capitalize }}
                                             </span>
                                         </td>

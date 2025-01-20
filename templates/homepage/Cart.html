@@ -32,7 +32,7 @@
                 <div class="text-end me-3">
                     <h3 id="cart-count" class="badge bg-info ms-2">{{ cart_total_items }}</h3> Total Item(s)
                     <h3>Total: <span id="total-price"></span></h3>
-                    <a href="{{ url_for('login', next=url_for('user.checkout')) }}" id="btn-checkout" class="btn btn-success">Checkout</a>
+                    <a href="{{ url_for('user.checkout') }}" id="btn-checkout" class="btn btn-success">Checkout</a>
                     <a href="{{ url_for('home') }}" id="btn-continueShopping" class="btn btn-primary">Continue Shopping</a>
                 </div>
             </div> 
