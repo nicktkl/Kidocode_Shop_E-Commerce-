@@ -37,7 +37,7 @@
                             <div class="accordion-body">
                                 <p><i class="bi bi-info-circle me-2"></i><strong>Status:</strong> {{ order_detail.order.status }}</p>
                                 <p><i class="bi bi-truck me-2"></i><strong>Shipping Method:</strong> {{ order_detail.order.shippingMethod }}</p>
-                                <p><i class="bi bi-geo me-2"></i><strong>Pickup Location:</strong> {{ order_detail.order.pickupBranch or 'Not applicable' }}</p>
+                                <p><i class="bi bi-geo me-2"></i><strong>Pickup Location:</strong> {{ order_detail.order.dropLocation or 'Not applicable' }}</p>
                                 <p><i class="bi bi-calendar me-2"></i><strong>Date:</strong> {{ order_detail.order.createdAt.strftime('%d %b %Y %I:%M %p') }}</p>
                             </div>
                         </div>
