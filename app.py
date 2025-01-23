@@ -319,8 +319,11 @@ def contact_us():
     
     return render_template('contactUs.html')
 
-@app.route('/helpform', methods=['GET', 'POST'])
+@app.route('/helpform', methods=['GET', 'POST']) # Generate a ID and show in email
 def helpform():
+    products = Product.query.all()
+    random_products = random.sample(products, min(len(products), 9))
+
     if request.method == 'POST':
         name = request.form.get('h_name')
         email = request.form.get('h_email')
@@ -351,7 +354,7 @@ def helpform():
             # Send confirmation email to user
             user_msg = Message(
                 subject="Kidocode Shop Help Request Received",
-                sender=('Kidocode Shop Support', 'nurulizzatihayat@gmail.com'),
+                sender=('Kidocode Shop Support', 'nurulizzatihayat@gmail.com'), # Change to 'shop-noreply@kidocode.com'
                 recipients=[email]
             )
             user_msg.body = f"""
@@ -377,7 +380,7 @@ def helpform():
 
         return redirect(url_for('helpform'))
     
-    return render_template('/user/help.html')
+    return render_template('/user/help.html', product = random_products)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -513,6 +516,12 @@ def resetpwd(token):
         return redirect(url_for('forgotpass'))
 
     return render_template('reset-pass.html', token=token)
+
+@app.route('/info')
+def info():
+    first_name = session.get('first_name', None)
+    section = request.args.get('section')
+    return render_template('info.html', first_name = first_name, section = section)
 
 @app.route('/logout')
 def logout():
