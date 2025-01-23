@@ -158,9 +158,56 @@ def submit_review(order_id):
         print(f"Error in submit_review: {e}")
         return jsonify({'success': False, 'message': 'An error occurred while submitting reviews.'}), 500
 
-@user_blueprint.route('confirm-order', methods=['GET', 'POST'])
-def confirm_order():
-    pass
+@user_blueprint.route('confirm-order/<string:order_id>', methods=['POST'])
+@login_required
+def confirm_order(order_id):
+    try:
+        order = Order.query.filter_by(orderID=order_id, userID=session.get('user_id')).first()
+
+        if not order:
+            flash("Order not found or you are not authorized to update this order.", "danger")
+            return redirect(url_for('user.purchases'))
+        
+        order.status = 'completed'
+        db.session.commit()
+
+        flash(f"Your order '{order_id}' is completed!", "success")
+    except Exception as e:
+        flash("An error occurred while updating the order status.", "danger")
+        print(f"Error in confirm_order: {e}")
+
+    return redirect(url_for('user.purchases'))
+
+@user_blueprint.route('/cancel-order/<string:order_id>', methods=['POST'])
+@login_required
+def cancel_order(order_id):
+    try:
+        order = Order.query.filter_by(orderID=order_id, userID=session.get('user_id')).first()
+
+        if not order:
+            flash("Order not found or you are not authorized to cancel this order.", "danger")
+            return redirect(url_for('user.purchases'))
+        
+        is_refund = 'refund' in request.form
+
+        if is_refund and order.status == 'completed':
+            order.status = 'cancelled'
+            order.shippingMethod = 'REFUND'
+            flash(f"Request of refund on order '{order_id}' has been sent.", "success")
+        elif not is_refund and order.status in ['pending', 'processing']:
+            order.status = 'cancelled'
+            flash(f"Your order '{order_id}' has been cancelled.", "success")
+        else:
+            flash("Refund can only be requested for orders with 'Completed' status.", "warning")
+            return redirect(url_for('user.purchases'))
+
+        db.session.commit()
+
+    except Exception as e:
+        flash("An error occurred while processing your request.", "danger")
+        print(f"Error in cancel_order: {e}")
+
+    return redirect(url_for('user.purchases'))
 
 @user_blueprint.route('/logout')
 def logout():
