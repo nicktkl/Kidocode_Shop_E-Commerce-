@@ -8,7 +8,7 @@ body {
 }
 
 .container {
-  max-width: 500px;
+  max-width: 400px;
   width: 100%;
   background: white;
   padding: 3rem;
@@ -25,4 +25,23 @@ body {
 
 .eye-icon {
   cursor: pointer;
+}
+
+.forgotPass a {
+  color: #1d4ed8;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.forgotPass a:hover {
+  text-decoration: underline;
+}
+
+.line {
+  align-items: center;
+  border-bottom: 1px solid #d5d5d5;
+  display: flex;
+  text-align: center;
+  margin: 20px 0px;
 }
