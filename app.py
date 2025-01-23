@@ -329,7 +329,7 @@ def helpform():
 
         if not all([name, email, subject, message]):
             flash('All fields are required.', 'warning')
-            return redirect(url_for('/user/help.html'))
+            return redirect(url_for('helpform'))
         
         # Send email to shop's address
         try:
@@ -375,7 +375,7 @@ def helpform():
             flash('There was an error sending your message. Please try again later.', 'danger')
             print(f"Error: {e}")
 
-        return redirect(url_for('/user/help.html'))
+        return redirect(url_for('helpform'))
     
     return render_template('/user/help.html')
 
