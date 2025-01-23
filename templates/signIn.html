@@ -24,14 +24,10 @@
         {% include '/user/alert.html' %}
         <form action="/login" method = "POST">
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
           </div>
           <div class="mb-3 ">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <label for="password" class="form-label mb-0">Password</label>
-              <a href="{{ url_for('forgotpass') }}" class="text-decoration-none text-end">Forgot password?</a>
-            </div>
+            
               <div class="input-group">
                 <input type="password" class="form-control" id="password" placeholder="Password" name="password" required>
                 <span class="input-group-text eye-icon" onclick="togglePassword()">
@@ -39,8 +35,11 @@
                 </span>
               </div>
           </div>
-          <div class="d-grid">
-              <button type="submit" class="btn btn-primary">Sign In</button>
+          <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+          </div>
+          <div class="text-center forgotPass mb-3">
+            <a href="{{ url_for('forgotpass') }}">Forgot password?</a>
           </div>
         </form>
         <!--<div class="text-center my-3">
@@ -49,8 +48,9 @@
         <div class="d-grid">
           <a href="#" class="btn btn-outline-primary">Sign in with Google</a>
         </div>-->
-        <div class="text-center mt-3">
-          <p>Don't have an account?<a href="{{ url_for('register') }}" class="text-decoration-none"> Sign Up and Shop!</a></p>
+        <div class="line"></div>
+        <div class="d-flex justify-content-center">
+          <a href="{{ url_for('register') }}" class="btn btn-success btn-lg"> Sign Up and Shop!</a>
         </div>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
