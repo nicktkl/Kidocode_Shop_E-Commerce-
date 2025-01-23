@@ -33,9 +33,12 @@
                         <a class="nav-link {% if request.args.get('status') == 'completed' %}active{% endif %}" href="{{ url_for('user.purchases', status='completed') }}">Completed</a>
                     </li>
                     <li class="nav-item mx-3">
-                        <a class="nav-link {% if request.args.get('status') == 'canceled' %}active{% endif %}" href="{{ url_for('user.purchases', status='canceled') }}">Return/Refund</a>
+                        <a class="nav-link {% if request.args.get('status') == 'cancelled' %}active{% endif %}" href="{{ url_for('user.purchases', status='cancelled') }}">Cancelled/Refund</a>
                     </li>
                 </ul>
+            </div>
+            <div class="alert-container mx-5">
+                {% include '/user/alert.html' %}
             </div>
             {% if orders %}
             <div class="accordion mx-5" id="ordersAccordion">
@@ -48,7 +51,7 @@
                                     <form action="/admin/category" method="POST">
                                         <td class="col-8">Order ID: {{ order.orderID }}</td>
                                         <td style="text-align: right; padding: 0; width: 20%;">
-                                            <span class="p-2 rounded-pill status-bg bg-{{ 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'danger' if order.status == 'canceled' else 'warning' }}">
+                                            <span class="p-2 rounded-pill status-bg bg-{{ 'warning' if order.status == 'pending' else 'primary' if order.status == 'processing' else 'info' if order.status == 'shipped' else 'success' if order.status == 'completed' else 'success' if order.status == 'ready' else 'danger' if order.status == 'cancelled' else 'info' }}">
                                                 {{ order.status|capitalize }}
                                             </span>
                                         </td>
@@ -82,17 +85,28 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <div class="actionBtn-container">
-                                {% if order.status == 'completed' %}
-                                <script type="application/json" id="order-items-{{ order.orderID }}">
-                                    {{ order.serialized_items | tojson | safe }}
-                                </script>
-                                <button class="btn btn-outline-secondary me-2" onclick="showReviewModal('{{ order.orderID }}', JSON.parse(document.getElementById('order-items-{{ order.orderID }}').textContent))" {% if order.all_items_reviewed %}disabled{% endif %}>Review Products</button>
+                            <div class="actionBtn-container d-flex justify-content-end flex-wrap gap-2">
+                                {% if order.status == 'pending' or order.status == 'processing' %}
+                                <form action="{{ url_for('user.cancel_order', order_id=order.orderID) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                </form>
                                 {% endif %}
                                 {% if order.status == 'shipped' %}
                                 <form action="{{ url_for('user.confirm_order', order_id=order.orderID) }}" method="POST">
                                     <button type="submit" class="btn btn-success">Order Received</button>
                                 </form>
+                                {% endif %}
+                                {% if order.status == 'completed' %}
+                                <form action="{{ url_for('user.cancel_order', order_id=order.orderID) }}" method="POST" onsubmit="return confirm('Are you sure you want to request a refund for this order?');">
+                                    <input type="hidden" name="refund" value="true">
+                                    <button type="submit" class="btn btn-warning">Request Refund</button>
+                                </form>
+                                {% endif %}
+                                {% if order.status == 'completed' %}
+                                <script type="application/json" id="order-items-{{ order.orderID }}">
+                                    {{ order.serialized_items | tojson | safe }}
+                                </script>
+                                <button class="btn btn-outline-secondary" onclick="showReviewModal('{{ order.orderID }}', JSON.parse(document.getElementById('order-items-{{ order.orderID }}').textContent))" {% if order.all_items_reviewed %}disabled{% endif %}>Review Products</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -116,14 +130,13 @@
                 {% endfor %}
             </div>
             {% else %}
-            <div class="container">
+            <div class="container my-5">
                 <h2 class="title">More of this!</h2>
                 <p class="fs-3 fst-italic text-center">Explore our products and start shopping today!</p>
                 {% include '/user/product-random.html' %}
             </div>
             {% endif %}
         </div>
-                
         {% include 'footer.html' %}
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script>
