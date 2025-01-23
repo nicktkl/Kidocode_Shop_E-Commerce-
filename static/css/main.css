@@ -46,7 +46,7 @@
 
 /* For the 'My Purchases' */
 .actionBtn-container {
-    text-align: right;
+    gap: 10px;
 }
 
 .testimonials-section img {
