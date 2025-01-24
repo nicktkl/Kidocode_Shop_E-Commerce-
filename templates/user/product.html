@@ -34,6 +34,7 @@
     @media (max-width: 768px) {
         .modal-dialog {
             max-width: 90%;
+            margin: 0 auto;
         }
 
         .modal-body {
@@ -74,7 +75,7 @@ function showProductModal(product) {
     }
 
     // Populate the product details
-    modalElement.querySelector('.modal-title').textContent = product.name;
+    modalElement.querySelector('.modal-title').textContent = product.name || 'Product Name Not Available';
     modalElement.querySelector('#product-details').innerHTML = `
         <div class="text-center">
             <img src="${product.image}" alt="${product.name}" class="img-fluid mb-3" style="max-height: 300px; object-fit: contain;">
