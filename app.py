@@ -244,8 +244,10 @@ def checkout():
 @app.route('/trackorder', methods=['GET', 'POST'])
 def trackOrder():
     order_details = []
+
     products = Product.query.all()
     random_products = random.sample(products, min(len(products), 9))
+
     user_id = session.get('user_id')
     first_name = session.get('first_name', None)
 
@@ -280,7 +282,7 @@ def trackOrder():
     if not order_details:
         session.pop('order_ids', None)
 
-    return render_template('/homepage/TrackOrder.html', product = random_products, order_details = order_details, first_name = first_name)
+    return render_template('/homepage/TrackOrder.html', order_details = order_details, product = random_products, first_name = first_name)
 
 @app.route('/feedbackform', methods=['GET', 'POST'])
 def feedbackform():
