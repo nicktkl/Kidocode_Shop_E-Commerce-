@@ -60,6 +60,7 @@
     gap: 10px;
 }
 
+/* For the Homepage 'Review' section */
 .testimonials-section img {
     border: 2px solid #ddd;
     padding: 5px;
@@ -73,6 +74,7 @@
     transform: scale(1.05);
 }
 
+/* IDK wat this */
 .section-box {
     padding: 20px;
     background-color: #ffffff;

@@ -48,6 +48,11 @@
         padding: 0.25rem 1rem;
     }
 
+    #user-icon,
+    #cart-icon {
+        font-size: 1.2rem;
+    }
+
     @media (max-width: 932px) {
         body {
             padding-top: 80px;
@@ -61,10 +66,22 @@
             width: 100%;
             z-index: 1050;
         }
+
+        .navbar-brand {
+            margin-left: auto;
+        }
+
+        .navbar-collapse {
+            text-align: center;
+        }
         
         .navbar-nav {
             flex-direction: column;
             align-items: center;
+        }
+
+        .navbar-toggler {
+            border-color: transparent;
         }
 
         .dropdown-large {
@@ -83,24 +100,12 @@
         }
 
         .ms-auto {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .ms-auto .btn,
-        .ms-auto #cart-icon {
-            margin: 0;
+            margin-left: 0;
         }
 
         .dropdown-item-text {
             font-weight: bold;
             color: #333;
-        }
-
-        .navbar-toggler {
-            border-color: transparent;
         }
 
         .nav-brand {
@@ -112,41 +117,16 @@
             font-size: 1.2rem;
         }
     }
-
-    @media (min-width: 933px) {
-        .navbar-nav {
-            justify-content: center;
-        }
-        
-        .ms-auto {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #user-icon {
-            font-size: 1.2rem;
-        }
-
-        #cart-icon {
-            font-size: 1.2rem;
-        }
-    }
 </style>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center mx-3" href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}">
             <!-- Logo for medium and larger screens (col-md and up) -->
             <img src="/static/images/kidocode_logo.png" class="d-none d-md-block" height="30" alt="Kidocode Logo">
-        
             <!-- Logo for smaller screens (col-sm and below) -->
             <img src="/static/images/kidocode_symbol_logo.png" class="d-block d-md-none" height="30" alt="Kidocode Symbol Logo">
-        
             <span class="ms-2 fw-bold text-primary">Shop</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item mx-3">
@@ -185,6 +165,9 @@
             </ul>
         </div>
         <div class="d-flex ms-auto align-items-center my-2">
+            <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             {% if not first_name %}
             <a href="/login" class="btn btn-outline-secondary me-3">
                 <i id="user-icon" class="bi bi-person-fill"></i>
