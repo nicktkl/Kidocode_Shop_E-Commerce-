@@ -113,6 +113,14 @@ def purchases():
 
     return render_template('/user/purchase.html', email = email, first_name = first_name, user_id = user_id, orders = orders, product = random_products)
 
+@user_blueprint.route('/myreview', methods=['GET'])
+@login_required
+def myreview():
+    user_id = session.get('user_id')
+    print(user_id)
+    reviews = Review.query.filter(Review.userID == user_id).all()
+    return render_template('/reviews.html', reviews=reviews, user_id=user_id)
+
 @user_blueprint.route('/submit-review/<string:order_id>', methods=['POST'])
 @login_required
 def submit_review(order_id):
