@@ -117,9 +117,11 @@ def purchases():
 @login_required
 def myreview():
     user_id = session.get('user_id')
+    first_name = session.get('first_name')
+
     print(user_id)
     reviews = Review.query.filter(Review.userID == user_id).all()
-    return render_template('/reviews.html', reviews=reviews, user_id=user_id)
+    return render_template('/reviews.html', user_id = user_id, first_name = first_name, reviews = reviews)
 
 @user_blueprint.route('/submit-review/<string:order_id>', methods=['POST'])
 @login_required
