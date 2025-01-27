@@ -321,7 +321,7 @@ def contact_us():
     
     return render_template('contactUs.html')
 
-@app.route('/helpform', methods=['GET', 'POST']) # Generate a ID and show in email
+@app.route('/helpform', methods=['GET', 'POST'])
 def helpform():
     products = Product.query.all()
     random_products = random.sample(products, min(len(products), 9))
@@ -336,15 +336,18 @@ def helpform():
             flash('All fields are required.', 'warning')
             return redirect(url_for('helpform'))
         
+        h_id = str(uuid.uuid4())[:8].upper()
+
         # Send email to shop's address
         try:
             # Send email to shop
             shop_msg = Message(
-                subject=f"Help Request: {subject}",
+                subject=f"Help Request: {subject} ({h_id})",
                 sender=(name, email),
                 recipients=['Kidocode Shop Support', 'nurulizzatihayat@gmail.com']
             )
             shop_msg.body = f"""
+            Help ID: {h_id}
             Name: {name}
             Email: {email}
             
@@ -356,11 +359,13 @@ def helpform():
             # Send confirmation email to user
             user_msg = Message(
                 subject="Kidocode Shop Help Request Received",
-                sender=('Kidocode Shop Support', 'nurulizzatihayat@gmail.com'), # Change to 'shop-noreply@kidocode.com'
+                sender=('Kidocode Shop Support', 'shop-noreply@kidocode.com'),
                 recipients=[email]
             )
             user_msg.body = f"""
             Hi {name},
+
+            Your Help Requset ID: {h_id}
 
             Thank you for reaching out to us. We have received your help request and will get back to you as soon as possible.
 
