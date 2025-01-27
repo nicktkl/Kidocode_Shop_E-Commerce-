@@ -522,7 +522,7 @@ def resetpwd(token):
         flash('The reset link is invalid or has expired.', 'danger')
         return redirect(url_for('forgotpass'))
 
-    return render_template('reset-pass.html', token=token)
+    return render_template('reset-pass.html', token = token)
 
 @app.route('/info')
 def info():
