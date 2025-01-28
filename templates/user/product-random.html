@@ -44,24 +44,27 @@
 </div> -->
 
 <style>
-    @media (max-width: 576px) {
-        .carousel-item {
-            display: flex !important; /* Center the product in the slide */
-            justify-content: center;
-        }
+    #productRandomSection .carousel-item {
+        display: flex !important;
+        justify-content: center;
+    }
 
-        .card {
-            width: 100%;
-            max-width: 300px; /* Ensure consistent size */
-        }
+    #productRandomSection .card {
+        width: 100%;
+        max-width: 300px;
+    }
 
-        .card img {
-            height: 200px; /* Smaller image height for mobile */
-            object-fit: cover;
-        }
+    #productRandomSection .card img {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    #productRandomSection .card-hover:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
     }
 </style>
-<div class="container my-3">
+<div id="productRandomSection" class="container my-3">
     <div class="d-block d-md-none">
         <div id="mobileProductCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">

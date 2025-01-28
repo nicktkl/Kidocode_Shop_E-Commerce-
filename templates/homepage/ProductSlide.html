@@ -1,31 +1,32 @@
 <style>
-    .carousel-inner {
+    #productCarouselSection .carousel-inner {
         max-height: 400px;
         overflow: hidden;
     }
 
-    .carousel-inner img {
+    #productCarouselSection .carousel-inner img {
         width: 100%;
         height: 300px;
         object-fit: cover;
     }
 
-    .carousel-indicators {
+    #productCarouselSection .carousel-indicators {
         margin-bottom: -2rem;
     }
-    .product-image {
+
+    #productCarouselSection .product-image {
         position: relative;
         overflow: hidden;
         cursor: pointer;
     }
 
-    .product-image img {
+    #productCarouselSection .product-image img {
         width: 100%;
         height: 300px;
         object-fit: cover;
     }
 
-    .product-overlay {
+    #productCarouselSection .product-overlay {
         position: absolute;
         bottom: 0;
         left: 0;
@@ -39,64 +40,66 @@
         transition: transform 0.3s ease;
     }
 
-    .product-image:hover .product-overlay {
+    #productCarouselSection .product-image:hover .product-overlay {
         transform: translateY(0);
     }
 
     @media (max-width: 576px) {
-        .carousel-item {
+        #productCarouselSection .carousel-item {
             display: flex !important;
             justify-content: center;
         }
 
-        .carousel-inner img {
+        #productCarouselSection .carousel-inner img {
             height: 200px;
         }
 
-        .row {
+        #productCarouselSection .row-product {
             flex-wrap: nowrap;
             overflow-x: auto;
         }
 
-        .col-md-3 {
+        #productCarouselSection .col-md-3 {
             flex: 0 0 auto;
             width: 100%;
         }
     }
 </style>
-<div id="productCarousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        {% for group in product|batch(3) %}
-        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %}active{% endif %}" aria-current="{% if loop.first %}true{% endif %}" aria-label="Slide {{ loop.index }}"></button>
-        {% endfor %}
-    </div>
-    <div class="carousel-inner">
-        {% for group in product|batch(3) %}
-        <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-            <div class="row justify-content-center">
-                {% for product in group %}
-                <div class="col-md-3 product-image card-wrapper" data-category="{{ product.categoryID }}" data-parent-category="{{ product.parentCategoryID }}" data-product-id="{{ product.productID }}" data-context="main">
-                    {% if product.img is none %}
-                    <img src="/static/images/gambar.jpg" alt="{{ product.productName }}">
-                    {% else %}
-                    <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" alt="{{ product.productName }}">
-                    {% endif %}
-                    <div class="product-overlay">
-                        <div><strong>{{ product.productName }}</strong></div>
-                        <div>RM{{ product.price }}</div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+<div id="productCarouselSection" class="carousel-section">
+    <div id="productCarousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for group in product|batch(3) %}
+            <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %}active{% endif %}" aria-current="{% if loop.first %}true{% endif %}" aria-label="Slide {{ loop.index }}"></button>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div class="carousel-inner">
+            {% for group in product|batch(3) %}
+            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+                <div class="row row-product justify-content-center">
+                    {% for product in group %}
+                    <div class="col-md-3 product-image card-wrapper" data-category="{{ product.categoryID }}" data-parent-category="{{ product.parentCategoryID }}" data-product-id="{{ product.productID }}" data-context="main">
+                        {% if product.img is none %}
+                        <img src="/static/images/gambar.jpg" alt="{{ product.productName }}">
+                        {% else %}
+                        <img src="{{ url_for('static', filename=product.img.replace('\\', '/')) }}" alt="{{ product.productName }}">
+                        {% endif %}
+                        <div class="product-overlay">
+                            <div><strong>{{ product.productName }}</strong></div>
+                            <div>RM{{ product.price }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
 </div>
