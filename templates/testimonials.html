@@ -24,12 +24,12 @@
         <p class="fs-5 fst-italic text-secondary text-center">Some quotes from our happy Users</p>
         
         <!-- Carousel for Mobile -->
-        <div id="testimonialsCarousel" class="carousel carousel-dark slide d-md-none" data-bs-ride="carousel" data-bs-interval="3000">
+        <div id="testimonialsCarousel" class="carousel carousel-dark slide d-md-none" data-bs-ride="carousel" data-bs-interval="5000">
             <div class="carousel-inner">
                 {% for review in review %}
                 {% if loop.index <= 3 %}
                 <div class="carousel-item {% if loop.first %}active{% endif %}">
-                    <div class="card border-0 text-center mx-auto" style="max-width: 300px;">
+                    <div class="card border-0 text-center mx-auto mb-3" style="max-width: 300px;">
                         <div class="card-body">
                             <img src="https://via.placeholder.com/50" class="rounded-circle mb-3">
                             <p>“{{ review.comment }}”</p>

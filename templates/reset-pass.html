@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <script src="/static/js/add-to-cart.js"></script>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width-device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <link rel="icon" type="image/x-icon" href="/static/images/kidocode_symbol_logo.png">
         <title>Shop Reset Password - Kidocode</title>
@@ -13,7 +14,7 @@
     </head>
     <body>
         <div class="container">
-            <h2 class="title">Reset Password</h2>
+            <h2 class="title mb-4 p-3">Reset Password</h2>
             <form action="{{ url_for('resetpwd', token=token) }}" method="POST">
                 <div class="mb-5">
                     <div class="input-group">
