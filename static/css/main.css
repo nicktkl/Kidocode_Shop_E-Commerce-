@@ -1,3 +1,33 @@
+/* For 'homepage' Alert Logout */
+#alert-container {
+    position: fixed;
+    top: 50px;
+    right: 50%;
+    z-index: 1055;
+    width: auto;
+    max-width: 300px;
+    pointer-events: none;
+    padding-top: 1rem;
+}
+
+#alert-container .alert-container {
+    pointer-events: auto;
+    max-width: 100%;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .alert-container {
+        top: 1rem;
+        right: 1rem;
+        left: auto;
+        transform: translateX(50%);
+        max-width: 90%;
+        padding-top: 0;
+    }
+}
+/* */
+
 /* For the 'Footer' */
 .main-wrapper {
     display: flex;
@@ -8,6 +38,7 @@
 .content {
     flex-grow: 1;
 }
+/* */
 
 /* For the 'Track Order' */
 .track-container {
@@ -26,6 +57,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+/* */
 
 /* For the 'Help' Section */
 .help-container {
@@ -36,6 +68,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+/* */
 
 /* Heading Text */
 .title {
@@ -44,6 +77,7 @@
     font-weight: bold;
     margin-bottom: 1rem;
 }
+/* */
 
 /* Sub Heading Text */
 /* ADD HERE */
@@ -59,6 +93,7 @@
 .actionBtn-container {
     gap: 10px;
 }
+/* */
 
 /* For the Homepage 'Review' section */
 .testimonials-section img {
@@ -73,6 +108,7 @@
 .testimonials-section .card:hover {
     transform: scale(1.05);
 }
+/* */
 
 /* IDK wat this */
 .section-box {
@@ -116,6 +152,7 @@
 .status-badge {
     font-size: 0.85rem;
 }
+/* */
 
 /* For the User 'My Purchases' */
 .navbar-status {
@@ -129,6 +166,7 @@
 .status-bg {
     color: white;
 }
+/* */
 
 /* For the 'Contact Us' */
 .info-container {
@@ -137,3 +175,4 @@
     align-items: center;
     justify-content: center;
 }
+/* */
