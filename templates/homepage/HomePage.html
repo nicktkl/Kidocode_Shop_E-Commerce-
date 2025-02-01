@@ -16,6 +16,9 @@
         <div class="main-wrapper d-flex flex-column min-wh-100">
             <div class="content flex-grow-1">
                 {% include 'navbar.html' %}
+                <div id="alert-container" class="alert-container">
+                    {% include '/user/alert.html' %}
+                </div>     
                 {% include 'welcome.html' %}
                 {% include '/user/product-random.html' %}
                 {% include '/homepage/ProductSlide.html' %}

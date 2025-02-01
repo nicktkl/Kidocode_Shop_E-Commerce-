@@ -120,7 +120,7 @@
 </style>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center mx-3" href="{{ url_for('user.homepage') if session.get('email') else url_for('home') }}">
+        <a class="navbar-brand d-flex align-items-center mx-3" href="{{ url_for('user.homepage') if session.get('user.email') else url_for('home') }}">
             <!-- Logo for medium and larger screens (col-md and up) -->
             <img src="/static/images/kidocode_logo.png" class="d-none d-md-block" height="30" alt="Kidocode Logo">
             <!-- Logo for smaller screens (col-sm and below) -->
@@ -168,7 +168,7 @@
             <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            {% if not first_name %}
+            {% if not user %}
             <a href="/login" class="btn btn-outline-secondary me-3">
                 <i id="user-icon" class="bi bi-person-fill"></i>
             </a>
@@ -178,7 +178,7 @@
                     <i id="user-icon" class="bi bi-person-fill"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="/user/profile">Welcome, {{ first_name }}</a></li>
+                    <li><a class="dropdown-item" href="/user/myprofile">Welcome, {{ user.firstName }}</a></li>
                     <li><a class="dropdown-item" href="/user/purchases">My Purchases</a></li>
                     <li><a class="dropdown-item" href="/user/myreview">My Reviews</a></li>
                     <li><a class="dropdown-item" href="/user/logout">Sign Out</a></li>

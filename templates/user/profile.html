@@ -20,36 +20,37 @@
 			{% include 'navbar.html' %}
 			<div class="container profile-container">
 			<h2 class="title mb-4 p-3">My Profile</h2>
-			<form>
+			{% include '/user/alert.html' %}
+			<form action="/user/myprofile" method="POST">
 				<div class="row mb-3">
-				<div class="col-md-6">
-					<label for="firstName" class="form-label">Given Name</label>
-					<input type="text" class="form-control" id="first_name" name="first_name" placeholder="Given Name" value="{{ user.firstName }}" required>
-				</div>
-				<div class="col-md-6">
-					<label for="secondName" class="form-label">Surname</label>
-					<input type="text" class="form-control" id="last_name" name="last_name" placeholder="Surname" value="{{ user.lastName }}">
-				</div>
-				</div>
-				<div class="row mb-3">
-				<div class="col-md-6">
-					<label for="email" class="form-label">E-mail</label>
-					<div class="input-group">
-					<input type="email" class="form-control" id="email" name="email" placeholder="example@example.com" value="{{ user.email }}" required>
-					<button class="btn btn-outline-secondary" type="button">Verify</button>
+					<div class="col-md-6">
+						<label for="firstName" class="form-label">Given Name</label>
+						<input type="text" class="form-control" id="first_name" name="p_fname" placeholder="Given Name" value="{{ user.firstName }}" required>
+					</div>
+					<div class="col-md-6">
+						<label for="secondName" class="form-label">Surname</label>
+						<input type="text" class="form-control" id="last_name" name="p_lname" placeholder="Surname" value="{{ user.lastName }}">
 					</div>
 				</div>
-				<div class="col-md-6">
-					<label for="phone" class="form-label">Phone</label>
-					<div class="input-group">
-					<select class="form-select" style="max-width: 70px;">
-						<option selected>+60</option>
-						<option>+1</option>
-						<option>+44</option>
-					</select>
-					<input type="text" class="form-control" id="phone" placeholder="XX XXXX XXXX">
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<label for="email" class="form-label">E-mail</label>
+						<div class="input-group">
+						<input type="email" class="form-control" id="email" name="p_email" placeholder="example@example.com" value="{{ user.email }}" required>
+						<button class="btn btn-outline-secondary" type="button">Verify</button>
+						</div>
 					</div>
-				</div>
+					<div class="col-md-6">
+						<label for="phone" class="form-label">Phone</label>
+						<div class="input-group">
+						<select class="form-select" style="max-width: 70px;">
+							<option selected>+60</option>
+							<option>+1</option>
+							<option>+44</option>
+						</select>
+						<input type="text" class="form-control" id="phone" placeholder="XX XXXX XXXX">
+						</div>
+					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col-md-6">
@@ -62,35 +63,35 @@
 					</div>
 					</div>
 					<div class="col-md-6">
-					<label for="confirm_password" class="form-label">Confirm Password</label>
-					<input type="password" class="form-control" id="confirm_password" name="confirm_password">
+						<label for="confirm_password" class="form-label">Confirm Password</label>
+						<input type="password" class="form-control" id="confirm_password" name="confirm_password">
 					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col-md-12">
-					<label for="address" class="form-label">Address (P.O. Box Not Accepted)</label>
-					<input type="text" class="form-control" id="address" placeholder="House number, Building, Street">
+						<label for="address" class="form-label">Address (P.O. Box Not Accepted)</label>
+						<input type="text" class="form-control" id="address" placeholder="House number, Building, Street">
 					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col-md-4">
-					<label for="postalCode" class="form-label">Postal Code</label>
-					<input type="text" class="form-control" id="postalCode" placeholder="Postal Code" pattern="\d*" required>
-					<div class="invalid-feedback">
-						Please enter a valid postal code (numbers only).
-					</div>
-					</div>
-					<div class="col-md-4">
-					<label for="city" class="form-label">City</label>
-					<input type="text" class="form-control" id="city" placeholder="City">
+						<label for="postalCode" class="form-label">Postal Code</label>
+						<input type="text" class="form-control" id="postalCode" placeholder="Postal Code" pattern="\d*">
+						<div class="invalid-feedback">
+							Please enter a valid postal code (numbers only).
+						</div>
 					</div>
 					<div class="col-md-4">
-					<label for="province" class="form-label">State/Territory</label>
-					<select class="form-select" id="province">
-						<option selected>Kuala Lumpur</option>
-						<option>State 1</option>
-						<option>State 2</option>
-					</select>
+						<label for="city" class="form-label">City</label>
+						<input type="text" class="form-control" id="city" placeholder="City">
+					</div>
+					<div class="col-md-4">
+						<label for="province" class="form-label">State/Territory</label>
+						<select class="form-select" id="province">
+							<option selected>Kuala Lumpur</option>
+							<option>State 1</option>
+							<option>State 2</option>
+						</select>
 					</div>
 				</div>
 				<div class="btn-container">
