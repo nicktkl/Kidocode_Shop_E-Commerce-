@@ -15,6 +15,8 @@ bcrypt = Bcrypt(app)
 mail = Mail(app)
 db.init_app(app)
 
+app.logger.addHandler(app.config['LOGGING_HANDLER'])
+
 @app.errorhandler(404)
 def not_found_error(error):
     return jsonify({'success': False, 'message': 'Resource not found'}), 404
@@ -29,21 +31,30 @@ def home():
     random_products = random.sample(products, min(len(products), 9))
     reviews = Review.query.filter_by(rating=5).all()
 
-    email = session.get('email', None)
+    user_id = session.get('user_id')
+    user = None
+
+    if user_id:
+        user = User.query.get(user_id)
+        return redirect(url_for('user.homepage'))
+
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/HomePage.html', product = random_products, review = reviews, email = email)
+
+    return render_template('/homepage/HomePage.html', user = user, product = random_products, review = reviews)
 
 @app.route('/allproducts')
 def all_products():
+    user_id = session.get('user_id')
+    user = User.query.get(user_id) if user_id else None
+
     products = Product.query.all()
     categories = Category.query.all()
-    email = session.get('email', None)
-    first_name = session.get('first_name', None)
 
     if 'cart' not in session:
         session['cart'] = {}
-    return render_template('/homepage/AllProducts.html', products = products, category = categories, email = email, first_name = first_name)
+        
+    return render_template('/homepage/AllProducts.html', user = user, products = products, category = categories)
 
 @app.route('/categories', methods=['GET'])
 def get_categories():
@@ -155,7 +166,8 @@ def get_product_details(product_id):
 @app.route('/get-cart', methods = ['GET'])
 def get_cart():
     cart = session.get('cart', {})
-    return jsonify(session.get('cart', {}))
+    
+    return jsonify(cart)
 
 @app.route('/cart')
 def cart():
@@ -172,6 +184,7 @@ def cart():
         'image': details.get('img', '/static/images/gambar.jpg')}
         for name, details in cart_items.items()
     ]
+    
     return render_template('/homepage/Cart.html', cart_items = cart_list, total_price = total_price)
 
 @app.route('/add-to-cart', methods = ['POST'])
@@ -205,6 +218,7 @@ def add_to_cart():
 
         session.modified = True
         return jsonify({'success': True, 'cart': session['cart']})
+    
     except Exception as e:
         return jsonify({'success': False, 'message': f"Error: {str(e)}"}), 500
 
@@ -233,7 +247,6 @@ def checkout():
             session['loggedin'] = True
             session['email'] = user.email
             session['first_name'] = user.firstName
-            # flash('Login successful! Redirecting to checkout.', 'success')
             return redirect(url_for('user.checkout'))
         else:
             flash('Invalid email or password. Please try again.', 'danger')
@@ -243,13 +256,13 @@ def checkout():
 
 @app.route('/trackorder', methods=['GET', 'POST'])
 def trackOrder():
+    user_id = session.get('user_id')
+    user = User.query.get(user_id) if user_id else None
+
     order_details = []
 
     products = Product.query.all()
     random_products = random.sample(products, min(len(products), 9))
-
-    user_id = session.get('user_id')
-    first_name = session.get('first_name', None)
 
     if request.method == 'POST':
         order_ids = request.form.get('order_ids').split(',')
@@ -282,7 +295,7 @@ def trackOrder():
     if not order_details:
         session.pop('order_ids', None)
 
-    return render_template('/homepage/TrackOrder.html', order_details = order_details, product = random_products, first_name = first_name)
+    return render_template('/homepage/TrackOrder.html', user = user, order_details = order_details, product = random_products)
 
 @app.route('/feedbackform', methods=['GET', 'POST'])
 def feedbackform():
@@ -301,28 +314,33 @@ def feedbackform():
                     type = feedback_type,
                     text = request.form['f_text']
                 )
+
                 db.session.add(sendfeedback)
+
                 db.session.commit()
+
                 flash('Your feedback is sent!', 'success')
                 return redirect(url_for('feedbackform'))
+            
             except Exception as e:
                 db.session.rollback()
                 flash('Your feedback has failed to sent!', 'danger')
                 return f"An error occurred: {e}"
     
-    return render_template('feedbackform.html')
+    return render_template('home')
 
 @app.route('/contact')
 def contact_us():
-    if session.get('loggedin'):
-        first_name = session.get('first_name')
-
-        return render_template('contactUs.html', first_name = first_name)
+    user_id = session.get('user_id')
+    user = User.query.get(user_id) if user_id else None
     
-    return render_template('contactUs.html')
+    return render_template('contactUs.html', user = user)
 
 @app.route('/helpform', methods=['GET', 'POST'])
 def helpform():
+    user_id = session.get('user_id')
+    user = User.query.get(user_id) if user_id else None
+
     products = Product.query.all()
     random_products = random.sample(products, min(len(products), 9))
 
@@ -387,7 +405,14 @@ def helpform():
 
         return redirect(url_for('helpform'))
     
-    return render_template('/user/help.html', product = random_products)
+    return render_template('/user/help.html', user = user, product = random_products)
+
+@app.route('/info')
+def info():
+    user_id = session.get('user_id')
+    user = User.query.get(user_id) if user_id else None
+    section = request.args.get('section')
+    return render_template('info.html', user = user, section = section)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -398,7 +423,7 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password_candidate):
-            
+            app.logger.info(f'Successful login attempt for {email}')
             if user.userID.startswith('A'):
                 session['admin'] = True
                 session['loggedin'] = True
@@ -414,7 +439,12 @@ def login():
                 next_url = request.args.get('next') or url_for('user.homepage')
                 return redirect(next_url)
         else:
+            ip_address = request.remote_addr
+            user_agent = request.user_agent.string
+            app.logger.warning(f'Failed login attempt for {email} from IP {ip_address} using {user_agent}')
+
             flash('Invalid email or password. Please try again.', 'danger')
+            
             return redirect(url_for('login'))
     
     return render_template('signIn.html')
@@ -449,10 +479,11 @@ def register():
             session['email'] = new_user.email
             session['first_name'] = new_user.firstName
             flash('Registration successful! You are now logged in.', 'success')
-            # print("Login successful, flashing success message")
             return redirect(url_for('user.homepage'))
+        
         except Exception as e:
             db.session.rollback()
+
             flash(f'An error occurred: {str(e)}', 'danger')
             return redirect(url_for('register'))
 
@@ -524,20 +555,12 @@ def resetpwd(token):
 
     return render_template('reset-pass.html', token = token)
 
-@app.route('/info')
-def info():
-    first_name = session.get('first_name', None)
-    section = request.args.get('section')
-    return render_template('info.html', first_name = first_name, section = section)
-
 @app.route('/logout')
 def logout():
     if session.get('loggedin'):
         session.clear()
-        session.pop('admin', None)
-        session.pop('loggedin', None)
-        session.pop('email', None)
-        session.pop('first_name', None)
+        session.pop('user_id', None)
+
         flash('You have been signed out.', 'info')
         return redirect(url_for('home'))
 
