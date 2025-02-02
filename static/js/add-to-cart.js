@@ -108,24 +108,27 @@ function updateCartCount(cart){
 // Function to update cart items in the UI
 function updateCartItems(cart){
     const cartItems = document.getElementById('cart-items');
-    if (!cartItems) {
-        console.warn('Cart items element not found. Skipping cart update.');
-        return;
-    }
-    
     const cartItemsTable = document.getElementById('cart-items-table');
     const totalPriceElement = document.getElementById('total-price');
     const checkoutButton = document.getElementById('btn-checkout');
+    const checkoutCartButton = document.getElementById('btn-cartCheckout')
     const viewCartButton = document.getElementById('btn-viewCart');
 
     let totalPrice = 0;
     let totalPriceTable = 0;
 
+    if (!cartItems) {
+        console.warn('Cart items element not found. Skipping cart update.');
+        return;
+    }
+
     if(cartItems){
-        cartItems.innerHTML = ''; // Clear existing content
+        cartItems.innerHTML = '';
+
         if(Object.keys(cart).length === 0){
             cartItems.innerHTML = '<li class="list-group-item text-center">Your cart is empty!</li>';
-            checkoutButton.classList.add('d-none');
+            
+            if (checkoutButton) disableCheckoutButton();
             viewCartButton.classList.add('d-none');
         } else {
             for(const [name, { price, quantity, image }] of Object.entries(cart)){
@@ -151,16 +154,20 @@ function updateCartItems(cart){
                 totalPrice += price * quantity;
             }
 
-            checkoutButton.classList.remove('d-none');
+            if (checkoutButton) enableCheckoutButton();
             viewCartButton.classList.remove('d-none');
         }
     }
 
     if(cartItemsTable){
         cartItemsTable.innerHTML = ''; // Clear existing content
+        
         if(Object.keys(cart).length === 0){
             cartItemsTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty!</td></tr>';
+            if (checkoutButton) disableCheckoutButton();
         } else {
+            if (checkoutButton) enableCheckoutButton();
+
             for(const [name, { price, quantity }] of Object.entries(cart)){
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -186,6 +193,30 @@ function updateCartItems(cart){
     if(totalPriceElement){
         totalPriceElement.textContent = `RM${totalPrice.toFixed(2)}`;
         totalPriceElement.textContent = `RM${totalPriceTable.toFixed(2)}`;
+    }
+}
+
+/*** Function to Disable Checkout Button ***/
+function disableCheckoutButton() {
+    const checkoutButton = document.getElementById('btn-checkout');
+    const checkoutCartButton = document.getElementById('btn-cartCheckout')
+    if (checkoutButton && checkoutCartButton) {
+        checkoutButton.classList.add('disabled');
+        checkoutCartButton.classList.add('disabled');
+        checkoutButton.setAttribute('disabled', 'disabled');
+        checkoutCartButton.setAttribute('disabled', 'disabled');
+    }
+}
+
+/*** Function to Enable Checkout Button ***/
+function enableCheckoutButton() {
+    const checkoutButton = document.getElementById('btn-checkout');
+    const checkoutCartButton = document.getElementById('btn-cartCheckout')
+    if (checkoutButton && checkoutCartButton) {
+        checkoutButton.classList.remove('disabled');
+        checkoutCartButton.classList.remove('disabled');
+        checkoutButton.removeAttribute('disabled');
+        checkoutCartButton.removeAttribute('disabled');
     }
 }
 
