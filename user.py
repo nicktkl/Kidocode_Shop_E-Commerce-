@@ -421,7 +421,7 @@ def cancel():
     user_id = session.get('user_id')
     user = User.query.get(user_id) if user_id else None
 
-    flash("Order canclled!", "error")
+    flash("Order canclled!", "danger")
 
     return redirect(url_for('home', user = user))
 
