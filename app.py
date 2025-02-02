@@ -414,6 +414,12 @@ def info():
     section = request.args.get('section')
     return render_template('info.html', user = user, section = section)
 
+@app.route('/credits')
+def credits():
+    user_id = session.get('user_id')
+    user = User.query.get(user_id) if user_id else None
+    return render_template('credits.html', user = user)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
