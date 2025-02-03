@@ -28,6 +28,136 @@
 }
 /* */
 
+/* For the 'Credits' */
+#team-container {
+    padding: 50px 0;
+    text-align: center;
+}
+
+#team-container .card {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    position: relative;
+}
+
+#team-container .card::before {
+    content: '';
+    position: absolute;
+    margin: auto;
+    inset: 0;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: 465px;
+    border-radius: 10px;
+    background: linear-gradient(-45deg, #A7E6FF 0%, #3572EF 100% );
+    z-index: -10;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: center;
+}
+
+#team-container .card::after {
+    content: "";
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(-45deg, #A7E6FF 0%, #3572EF 100% );
+    transform: translate3d(0, 0, 0) scale(0.95);
+    filter: blur(20px);
+}
+
+#team-container .card:hover::after {
+    filter: blur(30px);
+}
+
+#team-container .card:hover::before {
+    transform: rotate(-90deg) scaleX(1.453125) scaleY(0.69);
+}
+
+#team-container .team-member {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin: 15px auto;
+    border: 4px solid #050C9C;
+}
+
+#team-container .member-1 {
+    background-image: url('/static/images/credits/sarah(1).jpg');
+}
+#team-container .uni-logo-1 {
+    background-image: url('/static/images/credits/sarah(2).png')
+}
+#team-container .member-2 {
+    background-image: url('/static/images/credits/nicholas(1).jpg');
+}
+#team-container .uni-logo-2 {
+    background-image: url('/static/images/credits/nicholas(2).png')
+}
+#team-container .member-3 {
+    background-image: url('/static/images/credits/izzati(1).jpg');
+}
+#team-container .uni-logo-3 {
+    background-image: url('/static/images/credits/izzati(2).png')
+}
+
+#team-container .uni-logo-1,
+#team-container .uni-logo-2,
+#team-container .uni-logo-3 {
+    display: block;
+    width: 80px;
+    height: 50px;
+    margin: 10px auto 3px auto;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#team-container .card-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #1d4ed8;
+    padding: 10px 0 10px 0;
+}
+
+#team-container .card-text {
+    font-size: 1.25rem;
+    color: #555;
+}
+
+#team-container .uni-name {
+    margin-bottom: 30px;
+}
+
+#team-container .project-role {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    font-weight: bold;
+    font-size: 1.25rem;
+    background: linear-gradient(90deg, #3ABEF9, #A7E6FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 20px #3572EF;
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    #team-container .team-container {
+        text-align: center;
+    }
+    #team-container .uni-logo-1,
+    #team-container .uni-logo-2,
+    #team-container .uni-logo-3 {
+        width: 60px;
+        height: 30px;
+    }
+}
+/* */
+
 /* For the 'Footer' */
 .main-wrapper {
     display: flex;
